@@ -111,11 +111,21 @@ nativas/React Native (que no aplican CORS) como desde el navegador.
 
 | Endpoint | Descripción |
 | --- | --- |
+| `GET /api/v1` | Info de la API y enlaces a cada endpoint (autodescriptivo) |
 | `GET /api/v1/platforms` | Lista de plataformas: `{ platforms: [{ slug, name }] }` |
-| `GET /api/v1/games?platform=<slug>&q=<texto>` | Juegos, filtrables por plataforma y/o búsqueda de texto en el título |
-| `GET /api/v1/hacks?game=<slug>&platform=<slug>` | Hacks (con sus parches y `downloadUrl` listo para usar) para un juego o plataforma |
+| `GET /api/v1/games?platform=<slug>&q=<texto>&limit=&offset=` | Juegos, filtrables por plataforma y/o búsqueda de texto en el título |
+| `GET /api/v1/hacks?game=<slug>&platform=<slug>&q=<texto>&limit=&offset=` | Hacks (con sus parches y `downloadUrl` listo para usar), filtrables por juego, plataforma y/o texto en el título |
 | `GET /api/v1/hacks/<slug>` | Detalle de un hack específico |
 | `GET /api/patches/<id>/download` | Redirige (307) a una URL firmada de R2 válida por 5 minutos — descarga el archivo de parche directo |
+
+`games` y `hacks` devuelven paginación: `{ ..., pagination: { limit, offset, total, hasMore } }`.
+`limit` por defecto es 20 (máximo 50); usa `offset` para pedir la siguiente página.
+Las respuestas exitosas llevan `Cache-Control: public, s-maxage=60, stale-while-revalidate=300`
+(cacheables por CDN/cliente ~1 min); los errores van con `no-store`.
+
+No hay autenticación ni rate limiting en estos endpoints todavía — si el uso
+crece, considera añadir un límite de requests por IP (ej. con Upstash Redis,
+que también tiene capa gratuita).
 
 Ejemplo de flujo típico desde un emulador: el usuario elige su plataforma →
 `GET /api/v1/games?platform=gba` → elige su juego → `GET /api/v1/hacks?game=<slug>`
