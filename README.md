@@ -102,6 +102,29 @@ de comunidad/desarrolladores:
   anuncios de texto pequeños sin tracking agresivo, pensados para sitios de
   developers.
 
+## API pública (para el emulador u otros clientes)
+
+Endpoints de solo lectura, sin autenticación, pensados para que una app
+externa (ej. un emulador) busque hacks y descargue parches directamente —
+CORS abierto (`Access-Control-Allow-Origin: *`), útil tanto desde apps
+nativas/React Native (que no aplican CORS) como desde el navegador.
+
+| Endpoint | Descripción |
+| --- | --- |
+| `GET /api/v1/platforms` | Lista de plataformas: `{ platforms: [{ slug, name }] }` |
+| `GET /api/v1/games?platform=<slug>&q=<texto>` | Juegos, filtrables por plataforma y/o búsqueda de texto en el título |
+| `GET /api/v1/hacks?game=<slug>&platform=<slug>` | Hacks (con sus parches y `downloadUrl` listo para usar) para un juego o plataforma |
+| `GET /api/v1/hacks/<slug>` | Detalle de un hack específico |
+| `GET /api/patches/<id>/download` | Redirige (307) a una URL firmada de R2 válida por 5 minutos — descarga el archivo de parche directo |
+
+Ejemplo de flujo típico desde un emulador: el usuario elige su plataforma →
+`GET /api/v1/games?platform=gba` → elige su juego → `GET /api/v1/hacks?game=<slug>`
+→ el usuario elige un parche → `fetch(patch.downloadUrl)` para obtener los
+bytes → aplicar el parche (mismo algoritmo IPS/BPS/UPS que hay en
+`src/lib/patchers/`, son ~200 líneas de TS sin dependencias, fácil de portar)
+sobre la ROM que el usuario ya tiene cargada, todo en memoria, sin que este
+servidor vea la ROM en ningún momento.
+
 ## Estructura relevante
 
 ```
