@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum PatchFormat {
+  IPS
+  BPS
+  UPS
+  XDELTA
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  hacks Hack[]
+}
+
+model Platform {
+  id   String @id @default(cuid())
+  slug String @unique
+  name String
+
+  games Game[]
+}
+
+model Game {
+  id         String @id @default(cuid())
+  slug       String @unique
+  title      String
+  platformId String
+
+  platform Platform @relation(fields: [platformId], references: [id])
+  hacks    Hack[]
+
+  @@index([platformId])
+}
+
+model Hack {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String
+  createdAt   DateTime @default(now())
+
+  gameId   String
+  authorId String
+
+  game    Game    @relation(fields: [gameId], references: [id])
+  author  User    @relation(fields: [authorId], references: [id])
+  patches Patch[]
+
+  @@index([gameId])
+  @@index([authorId])
+}
+
+model Patch {
+  id           String      @id @default(cuid())
+  version      String
+  format       PatchFormat
+  originalName String
+  storedName   String
+  fileSize     Int
+  sha256       String
+  releaseNotes String
+  createdAt    DateTime    @default(now())
+
+  hackId String
+  hack   Hack   @relation(fields: [hackId], references: [id])
+
+  @@index([hackId])
+}

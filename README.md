@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RomHack Hub
 
-## Getting Started
+Plataforma para publicar y descubrir ROM hacks de consolas retro (NES, SNES,
+N64, Game Boy, GBA, DS, 3DS, Switch).
 
-First, run the development server:
+## Modelo legal: solo parches, nunca ROMs
+
+Este sitio **solo aloja archivos de parche** (`.ips`, `.bps`, `.ups`, `.xdelta`),
+nunca la ROM completa de un juego. Distribuir una ROM con copyright —modificada
+o no— es una infracción de derechos de autor. El modelo de parches es el que
+usan comunidades como RomHacking.net:
+
+1. El autor del hack sube únicamente el parche (la diferencia entre el juego
+   original y el juego modificado).
+2. Quien lo descarga usa su **propia copia legal** del juego original y aplica
+   el parche con la herramienta de parcheo en `/patch`, que corre 100% en el
+   navegador (nada se sube al servidor).
+
+No subas archivos de ROM completos: serán eliminados.
+
+## Stack
+
+- [Next.js 16](https://nextjs.org) (App Router, TypeScript, Tailwind CSS 4)
+- [Prisma 7](https://www.prisma.io) + SQLite (`@prisma/adapter-better-sqlite3`)
+- Auth propia con JWT en cookie httpOnly (bcrypt para contraseñas)
+- Parcheo IPS/BPS/UPS implementado desde cero en TypeScript, ejecutado en el
+  navegador del usuario (`src/lib/patchers/`)
+
+## Requisitos
+
+- Node.js 20+
+- [pnpm](https://pnpm.io) (el proyecto usa `pnpm-workspace.yaml` para aprobar
+  scripts de build nativos — no uses `npm install`, tuvo problemas de
+  estabilidad durante el desarrollo)
+
+## Puesta en marcha
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+pnpm exec prisma migrate dev   # crea prisma/dev.db y aplica el esquema
+pnpm run seed                  # carga las plataformas (NES, SNES, GBA, DS, ...)
+pnpm dev                       # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Variables de entorno (`.env`, ya incluido para desarrollo local):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Variable | Descripción |
+| --- | --- |
+| `DATABASE_URL` | Ruta del archivo SQLite, ej. `file:./prisma/dev.db` |
+| `JWT_SECRET` | Secreto para firmar las cookies de sesión |
+| `PATCH_STORAGE_DIR` | Carpeta donde se guardan los archivos de parche subidos (`./storage/patches` por defecto) |
+| `MAX_PATCH_SIZE_BYTES` | Tamaño máximo permitido por archivo de parche |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+En producción, genera un `JWT_SECRET` nuevo y aleatorio, y considera mover
+`PATCH_STORAGE_DIR` a un volumen persistente o un bucket compatible con S3.
 
-## Learn More
+## Estructura relevante
 
-To learn more about Next.js, take a look at the following resources:
+```
+prisma/schema.prisma        Modelos: User, Platform, Game, Hack, Patch
+src/lib/auth.ts             Sesión JWT (cookie httpOnly)
+src/lib/storage.ts          Guardado/lectura de archivos de parche en disco
+src/lib/patchers/           Implementación de IPS, BPS, UPS y CRC32 (cliente)
+src/app/api/hacks           Crear hack + primera versión de parche
+src/app/api/patches         Agregar nueva versión / descargar un parche
+src/app/hacks/new           Formulario de publicación (requiere sesión)
+src/app/patch               Herramienta de parcheo en el navegador
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Notas sobre Next.js 16
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Este proyecto usa Next.js 16, cuya API difiere de versiones anteriores en
+puntos que vale la pena tener presentes al modificar el código:
 
-## Deploy on Vercel
+- `params` y `searchParams` son `Promise` tanto en Server Components como en
+  Route Handlers (`const { slug } = await params`).
+- El middleware se renombró a `proxy.ts` (no se usa en este proyecto).
+- `cacheComponents` (PPR / `use cache`) está deshabilitado a propósito: la app
+  necesita datos dinámicos por request.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Prisma 7: driver adapter obligatorio
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Prisma 7 ya no incluye un motor de conexión por defecto: hace falta pasar un
+`adapter` explícito incluso para SQLite. Ver `src/lib/prisma.ts`, que usa
+`@prisma/adapter-better-sqlite3`.

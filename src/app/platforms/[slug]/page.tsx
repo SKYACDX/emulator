@@ -1,0 +1,56 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+
+export default async function PlatformPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+
+  const platform = await prisma.platform.findUnique({
+    where: { slug },
+    include: {
+      games: {
+        orderBy: { title: "asc" },
+        include: { hacks: { orderBy: { createdAt: "desc" } } },
+      },
+    },
+  });
+
+  if (!platform) notFound();
+
+  return (
+    <div className="flex flex-col gap-6">
+      <h1 className="text-2xl font-bold text-white">{platform.name}</h1>
+      {platform.games.length === 0 ? (
+        <p className="text-neutral-500">
+          Todavía no hay juegos con hacks publicados para esta plataforma.
+        </p>
+      ) : (
+        <div className="flex flex-col gap-6">
+          {platform.games.map((game) => (
+            <div key={game.id}>
+              <h2 className="mb-2 text-lg font-semibold text-white">
+                {game.title}
+              </h2>
+              <ul className="flex flex-col gap-2">
+                {game.hacks.map((hack) => (
+                  <li key={hack.id}>
+                    <Link
+                      href={`/hacks/${hack.slug}`}
+                      className="block rounded-lg border border-neutral-800 bg-neutral-900 p-3 hover:border-neutral-700"
+                    >
+                      {hack.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

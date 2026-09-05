@@ -1,0 +1,32 @@
+import { z } from "zod";
+
+export const registerSchema = z.object({
+  email: z.string().trim().toLowerCase().email("Correo inválido"),
+  username: z
+    .string()
+    .trim()
+    .min(3, "El nombre de usuario debe tener al menos 3 caracteres")
+    .max(24, "El nombre de usuario debe tener como máximo 24 caracteres")
+    .regex(/^[a-zA-Z0-9_]+$/, "Solo letras, números y guion bajo"),
+  password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
+});
+
+export const loginSchema = z.object({
+  email: z.string().trim().toLowerCase().email("Correo inválido"),
+  password: z.string().min(1, "La contraseña es obligatoria"),
+});
+
+export const createHackSchema = z.object({
+  platformSlug: z.string().min(1, "Selecciona una plataforma"),
+  gameTitle: z.string().trim().min(1, "El nombre del juego es obligatorio").max(120),
+  hackTitle: z.string().trim().min(1, "El título del hack es obligatorio").max(120),
+  description: z.string().trim().min(1, "La descripción es obligatoria").max(5000),
+  version: z.string().trim().min(1, "La versión es obligatoria").max(30),
+  releaseNotes: z.string().trim().max(5000).optional().default(""),
+});
+
+export const addPatchSchema = z.object({
+  hackId: z.string().min(1),
+  version: z.string().trim().min(1, "La versión es obligatoria").max(30),
+  releaseNotes: z.string().trim().max(5000).optional().default(""),
+});
