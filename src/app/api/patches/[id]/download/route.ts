@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { readPatchFile } from "@/lib/storage";
+import { getPatchDownloadUrl } from "@/lib/storage";
 
 export async function GET(
   _request: Request,
@@ -16,18 +16,14 @@ export async function GET(
     return NextResponse.json({ error: "Parche no encontrado" }, { status: 404 });
   }
 
-  const buffer = await readPatchFile(patch.storedName).catch(() => null);
-  if (!buffer) {
+  const downloadName = `${patch.hack.slug}-v${patch.version}.${patch.format.toLowerCase()}`;
+
+  const url = await getPatchDownloadUrl(patch.storedName, downloadName).catch(
+    () => null
+  );
+  if (!url) {
     return NextResponse.json({ error: "Archivo no disponible" }, { status: 404 });
   }
 
-  const downloadName = `${patch.hack.slug}-v${patch.version}.${patch.format.toLowerCase()}`;
-
-  return new NextResponse(new Uint8Array(buffer), {
-    headers: {
-      "Content-Type": "application/octet-stream",
-      "Content-Disposition": `attachment; filename="${downloadName}"`,
-      "Content-Length": String(buffer.byteLength),
-    },
-  });
+  return NextResponse.redirect(url);
 }
