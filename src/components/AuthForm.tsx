@@ -9,6 +9,8 @@ export default function AuthForm({ mode }: { mode: Mode }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [pendingToken, setPendingToken] = useState<string | null>(null);
+  const [totpCode, setTotpCode] = useState("");
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -39,11 +41,68 @@ export default function AuthForm({ mode }: { mode: Mode }) {
         setError(data.error ?? "Algo salió mal");
         return;
       }
+      if (data.requiresTotp) {
+        setPendingToken(data.pendingToken);
+        return;
+      }
       router.push("/");
       router.refresh();
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleTotpSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!pendingToken) return;
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/totp/verify-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pendingToken, code: totpCode }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Código incorrecto");
+        return;
+      }
+      router.push("/");
+      router.refresh();
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (pendingToken) {
+    return (
+      <form onSubmit={handleTotpSubmit} className="flex max-w-sm flex-col gap-4">
+        <p className="text-sm text-neutral-400">
+          Ingresa el código de 6 dígitos de tu app de autenticación.
+        </p>
+        <label className="flex flex-col gap-1 text-sm text-neutral-300">
+          Código de verificación
+          <input
+            value={totpCode}
+            onChange={(e) => setTotpCode(e.target.value)}
+            required
+            autoFocus
+            inputMode="numeric"
+            maxLength={8}
+            className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white tracking-widest"
+          />
+        </label>
+        {error && <p className="text-sm text-red-400">{error}</p>}
+        <button
+          type="submit"
+          disabled={loading}
+          className="rounded bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-500 disabled:opacity-60"
+        >
+          {loading ? "Verificando..." : "Verificar"}
+        </button>
+      </form>
+    );
   }
 
   return (

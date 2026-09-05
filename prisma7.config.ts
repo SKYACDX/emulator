@@ -8,7 +8,12 @@ export default defineConfig({
   migrations: {
     path: "prisma/migrations",
   },
+  // Only consulted by the Prisma CLI (migrate, studio, ...) — the running
+  // app connects through its own adapter in src/lib/prisma.ts using
+  // DATABASE_URL (the pooled connection). Migrate needs the *direct*
+  // connection because Neon's pooler doesn't support the advisory locks
+  // it relies on.
   datasource: {
-    url: process.env["DATABASE_URL"],
+    url: process.env["DIRECT_DATABASE_URL"] ?? process.env["DATABASE_URL"],
   },
 });

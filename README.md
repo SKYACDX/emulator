@@ -53,8 +53,10 @@ local persistente ni base de datos con estado en el propio servidor.
 
    | Variable | Descripción |
    | --- | --- |
-   | `DATABASE_URL` | Connection string de Postgres (Neon, pooled) |
+   | `DATABASE_URL` | Connection string de Postgres (Neon, **pooled**) — la usa la app en runtime |
+   | `DIRECT_DATABASE_URL` | Connection string **directa** (sin `-pooler` en el host) — solo la usa `prisma migrate`, porque el pooler de Neon no soporta los advisory locks que necesita |
    | `JWT_SECRET` | Secreto para firmar las cookies de sesión (genera uno nuevo con `openssl rand -hex 32`) |
+   | `TOTP_ENCRYPTION_KEY` | Clave de 32 bytes en hex para cifrar los secretos TOTP en la base de datos (genera uno nuevo con `openssl rand -hex 32`) |
    | `R2_ACCOUNT_ID` | ID de cuenta de Cloudflare (aparece en la URL del dashboard) |
    | `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | Credenciales del API token de R2 |
    | `R2_BUCKET_NAME` | Nombre del bucket creado |
@@ -80,6 +82,23 @@ local persistente ni base de datos con estado en el propio servidor.
    que lleva a `/admin`: ahí puedes eliminar cualquier hack (borra también
    sus archivos de R2) y gestionar usuarios (promover/degradar admins,
    eliminar cuentas junto con sus hacks).
+
+## Verificación en dos pasos (2FA / TOTP)
+
+Cualquier usuario puede activar 2FA desde `/me/security` (compatible con
+Google Authenticator, Authy, 1Password, etc.):
+
+- El secreto se genera con [`otplib`](https://www.npmjs.com/package/otplib)
+  y se cifra con AES-256-GCM (`src/lib/totp.ts`) antes de guardarse — nunca
+  queda en texto plano en la base de datos.
+- Activar 2FA requiere escanear un QR y confirmar con un código válido
+  (`/api/auth/totp/setup` → `/api/auth/totp/confirm`).
+- Con 2FA activo, `POST /api/auth/login` ya no abre sesión directamente:
+  devuelve `{ requiresTotp: true, pendingToken }` (token de 5 minutos), y
+  hay que llamar a `/api/auth/totp/verify-login` con el código para
+  completar el inicio de sesión.
+- Desactivar 2FA (`/api/auth/totp/disable`) exige contraseña **y** un
+  código válido, para que no baste con robar solo la sesión activa.
 
 ## Desplegar gratis en Vercel
 

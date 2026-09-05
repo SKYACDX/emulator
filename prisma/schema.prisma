@@ -30,6 +30,12 @@ model User {
   role         Role     @default(USER)
   createdAt    DateTime @default(now())
 
+  // TOTP two-factor auth. totpSecret is encrypted at rest (see src/lib/totp.ts)
+  // and totpPendingSecret holds a not-yet-confirmed secret during setup.
+  totpEnabled       Boolean @default(false)
+  totpSecret        String?
+  totpPendingSecret String?
+
   hacks Hack[]
 }
 

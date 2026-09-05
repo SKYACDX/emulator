@@ -20,12 +20,20 @@ export default async function MyHacksPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-white">Mis hacks</h1>
-        <Link
-          href="/hacks/new"
-          className="rounded bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500"
-        >
-          Publicar nuevo hack
-        </Link>
+        <div className="flex gap-2">
+          <Link
+            href="/me/security"
+            className="rounded bg-neutral-800 px-4 py-2 text-sm text-white hover:bg-neutral-700"
+          >
+            Seguridad
+          </Link>
+          <Link
+            href="/hacks/new"
+            className="rounded bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500"
+          >
+            Publicar nuevo hack
+          </Link>
+        </div>
       </div>
 
       {hacks.length === 0 ? (

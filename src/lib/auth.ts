@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 const SESSION_COOKIE = "session";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30; // 30 days
+const TOTP_PENDING_MAX_AGE_SECONDS = 60 * 5; // 5 minutes
 
 function getJwtSecret(): string {
   const secret = process.env.JWT_SECRET;
@@ -64,7 +65,14 @@ export async function getCurrentUser() {
 
   const user = await prisma.user.findUnique({
     where: { id: payload.userId },
-    select: { id: true, email: true, username: true, role: true, createdAt: true },
+    select: {
+      id: true,
+      email: true,
+      username: true,
+      role: true,
+      totpEnabled: true,
+      createdAt: true,
+    },
   });
   return user;
 }
@@ -81,4 +89,24 @@ export async function getCurrentAdmin() {
   const user = await getCurrentUser();
   if (!user || user.role !== "ADMIN") return null;
   return user;
+}
+
+type TotpPendingPayload = { userId: string; purpose: "totp-pending" };
+
+/** Short-lived token issued after password check when 2FA is still required. */
+export function signTotpPendingToken(userId: string): string {
+  const payload: TotpPendingPayload = { userId, purpose: "totp-pending" };
+  return jwt.sign(payload, getJwtSecret(), {
+    expiresIn: TOTP_PENDING_MAX_AGE_SECONDS,
+  });
+}
+
+export function verifyTotpPendingToken(token: string): string | null {
+  try {
+    const payload = jwt.verify(token, getJwtSecret()) as TotpPendingPayload;
+    if (payload.purpose !== "totp-pending") return null;
+    return payload.userId;
+  } catch {
+    return null;
+  }
 }
