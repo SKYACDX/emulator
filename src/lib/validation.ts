@@ -42,4 +42,5 @@ export const createSharedFileSchema = z.object({
   description: z.string().trim().max(5000).optional().default(""),
   storedName: z.string().trim().min(1),
   originalName: z.string().trim().min(1).max(255),
+  isPublic: z.boolean().optional().default(true),
 });

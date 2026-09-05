@@ -86,6 +86,7 @@ model SharedFile {
   storedName   String
   fileSize     Int
   mimeType     String
+  isPublic     Boolean  @default(true)
   createdAt    DateTime @default(now())
 
   uploaderId String

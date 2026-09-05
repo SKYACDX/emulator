@@ -48,6 +48,19 @@ desde el dominio del sitio (y `localhost:3000` para desarrollo) — si creas
 un bucket nuevo, configúralo con `PutBucketCorsCommand` del SDK de S3 antes
 de probar la subida.
 
+### Público / privado
+
+Cada archivo se sube como **público** (cualquiera lo ve en `/files` y lo
+puede descargar) o **privado** (solo el dueño y los admins lo ven en la
+lista y pueden descargarlo — para cualquier otra persona, `GET
+/api/files/<id>/download` devuelve 404 en vez de 403, para no revelar ni
+la existencia del archivo). Los admins ven todos los archivos, públicos o
+privados, para poder moderar.
+
+**El bloqueo de extensiones de video/ROM se aplica sin excepción, incluso
+a administradores** — no es una restricción de UX, es la salvaguarda legal
+de la que depende todo el proyecto (ver "Modelo legal" arriba).
+
 ## Stack
 
 - [Next.js 16](https://nextjs.org) (App Router, TypeScript, Tailwind CSS 4)

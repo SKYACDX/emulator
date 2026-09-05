@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { title, description, storedName, originalName } = parsed.data;
+  const { title, description, storedName, originalName, isPublic } = parsed.data;
 
   if (isBlockedUploadExtension(originalName) || !storedName.startsWith("files/")) {
     return NextResponse.json({ error: "Archivo no permitido" }, { status: 400 });
@@ -48,6 +48,7 @@ export async function POST(request: Request) {
       storedName,
       fileSize: info.size,
       mimeType: info.contentType ?? "application/octet-stream",
+      isPublic,
       uploaderId: user.id,
     },
   });

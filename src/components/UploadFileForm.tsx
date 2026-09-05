@@ -18,6 +18,7 @@ export default function UploadFileForm() {
     const formData = new FormData(form);
     const title = String(formData.get("title") ?? "");
     const description = String(formData.get("description") ?? "");
+    const isPublic = formData.get("visibility") === "public";
     const fileInput = form.elements.namedItem("file") as HTMLInputElement;
     const file = fileInput.files?.[0];
 
@@ -64,6 +65,7 @@ export default function UploadFileForm() {
           description,
           storedName: presignData.storedName,
           originalName: file.name,
+          isPublic,
         }),
       });
       const createData = await createRes.json();
@@ -105,6 +107,18 @@ export default function UploadFileForm() {
         Archivo
         <input type="file" name="file" required className="text-neutral-300" />
       </label>
+
+      <fieldset className="flex flex-col gap-2 text-sm text-neutral-300">
+        <legend className="mb-1">Visibilidad</legend>
+        <label className="flex items-center gap-2">
+          <input type="radio" name="visibility" value="public" defaultChecked />
+          Público — cualquiera puede verlo y descargarlo
+        </label>
+        <label className="flex items-center gap-2">
+          <input type="radio" name="visibility" value="private" />
+          Privado — solo tú (y los administradores) pueden verlo y descargarlo
+        </label>
+      </fieldset>
 
       {status && <p className="text-sm text-neutral-400">{status}</p>}
       {error && <p className="text-sm text-red-400">{error}</p>}

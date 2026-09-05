@@ -9,6 +9,7 @@ type SharedFile = {
   description: string;
   originalName: string;
   fileSize: number;
+  isPublic: boolean;
   uploader: string;
   createdAt: string;
 };
@@ -51,7 +52,18 @@ export default function FileListItem({
     <li className="rounded-lg border border-neutral-800 bg-neutral-900 p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <h2 className="font-medium text-white">{file.title}</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="font-medium text-white">{file.title}</h2>
+            <span
+              className={
+                file.isPublic
+                  ? "rounded bg-neutral-800 px-2 py-0.5 text-xs text-neutral-400"
+                  : "rounded bg-amber-900 px-2 py-0.5 text-xs text-amber-300"
+              }
+            >
+              {file.isPublic ? "Público" : "Privado"}
+            </span>
+          </div>
           <p className="text-xs text-neutral-500">
             {file.originalName} · {formatBytes(file.fileSize)} · subido por{" "}
             {file.uploader}

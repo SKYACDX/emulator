@@ -6,14 +6,24 @@ import FileListItem from "@/components/FileListItem";
 export const dynamic = "force-dynamic";
 
 export default async function FilesPage() {
-  const [files, currentUser] = await Promise.all([
-    prisma.sharedFile.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 100,
-      include: { uploader: { select: { username: true } } },
-    }),
-    getCurrentUser(),
-  ]);
+  const currentUser = await getCurrentUser();
+
+  const where =
+    currentUser?.role === "ADMIN"
+      ? {}
+      : {
+          OR: [
+            { isPublic: true },
+            ...(currentUser ? [{ uploaderId: currentUser.id }] : []),
+          ],
+        };
+
+  const files = await prisma.sharedFile.findMany({
+    where,
+    orderBy: { createdAt: "desc" },
+    take: 100,
+    include: { uploader: { select: { username: true } } },
+  });
 
   return (
     <div className="flex flex-col gap-6">
@@ -22,7 +32,8 @@ export default async function FilesPage() {
           <h1 className="text-2xl font-bold text-white">Archivos de la comunidad</h1>
           <p className="mt-1 max-w-2xl text-sm text-neutral-400">
             Capturas, guías, savestates y otros archivos relacionados con los
-            hacks. No se permiten videos ni volcados de ROM/ISO.
+            hacks. No se permiten videos ni volcados de ROM/ISO. Los archivos
+            privados solo los ve su dueño (y los admins).
           </p>
         </div>
         {currentUser && (
@@ -48,6 +59,7 @@ export default async function FilesPage() {
                 description: file.description,
                 originalName: file.originalName,
                 fileSize: file.fileSize,
+                isPublic: file.isPublic,
                 uploader: file.uploader.username,
                 createdAt: file.createdAt.toISOString(),
               }}
