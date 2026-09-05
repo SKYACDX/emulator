@@ -18,6 +18,36 @@ usan comunidades como RomHacking.net:
 
 No subas archivos de ROM completos: serán eliminados.
 
+## Archivos de la comunidad (`/files`)
+
+Además de los parches (ligados a un hack), hay una sección de archivos
+generales sin restricción de tipo — capturas, guías, savestates, assets,
+etc. — pensada para que la comunidad comparta lo que necesite sin tener que
+crear un hack falso solo para subir algo.
+
+Dos bloqueos automáticos en `src/lib/fileTypes.ts` (por extensión, aplican
+sin importar el tipo de archivo que se declare):
+
+- **Videos** (`.mp4`, `.mkv`, `.avi`, `.webm`, ...): para no volar el
+  almacenamiento gratuito de R2 con archivos pesados.
+- **Volcados de ROM/ISO** (`.nds`, `.gba`, `.sfc`, `.nsp`, `.xci`, `.iso`,
+  ...): el único tipo de archivo que representa el riesgo legal real de
+  esta plataforma, así que se bloquea aquí también aunque la sección sea
+  "de tipo libre".
+
+Todo lo demás se permite sin filtro. La moderación de lo que sí se sube es
+manual: cualquier admin puede eliminar cualquier archivo desde `/files` (el
+botón "Eliminar" aparece para el dueño del archivo y para admins).
+
+La subida va **directo del navegador a R2** (URL prefirmada vía
+`POST /api/files/presign`), sin pasar por la función serverless de Vercel —
+por eso no está limitada a los ~4.5 MB de Vercel Hobby como los parches
+(tope configurable con `MAX_SHARED_FILE_SIZE_BYTES`, 200 MB por defecto).
+Esto requiere CORS configurado en el bucket de R2 para `PUT`/`GET`/`HEAD`
+desde el dominio del sitio (y `localhost:3000` para desarrollo) — si creas
+un bucket nuevo, configúralo con `PutBucketCorsCommand` del SDK de S3 antes
+de probar la subida.
+
 ## Stack
 
 - [Next.js 16](https://nextjs.org) (App Router, TypeScript, Tailwind CSS 4)

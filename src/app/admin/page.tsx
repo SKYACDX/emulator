@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -10,7 +11,7 @@ export default async function AdminPage() {
   const admin = await getCurrentAdmin();
   if (!admin) redirect("/");
 
-  const [hacks, users] = await Promise.all([
+  const [hacks, users, sharedFileCount] = await Promise.all([
     prisma.hack.findMany({
       orderBy: { createdAt: "desc" },
       include: {
@@ -30,6 +31,7 @@ export default async function AdminPage() {
         _count: { select: { hacks: true } },
       },
     }),
+    prisma.sharedFile.count(),
   ]);
 
   return (
@@ -57,6 +59,20 @@ export default async function AdminPage() {
             createdAt: h.createdAt.toISOString(),
           }))}
         />
+      </section>
+
+      <section>
+        <h2 className="mb-3 text-lg font-semibold text-white">
+          Archivos compartidos ({sharedFileCount})
+        </h2>
+        <p className="text-sm text-neutral-400">
+          Modéralos desde{" "}
+          <Link href="/files" className="text-emerald-400 underline">
+            /files
+          </Link>
+          : como admin puedes eliminar cualquier archivo de cualquier usuario
+          directamente desde esa página.
+        </p>
       </section>
 
       <section>

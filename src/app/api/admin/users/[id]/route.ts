@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentAdmin } from "@/lib/auth";
-import { deletePatchFile } from "@/lib/storage";
+import { deletePatchFile, deleteSharedFile } from "@/lib/storage";
 import { z } from "zod";
 
 const roleSchema = z.object({ role: z.enum(["USER", "ADMIN"]) });
@@ -60,7 +60,7 @@ export async function DELETE(
 
   const user = await prisma.user.findUnique({
     where: { id },
-    include: { hacks: { include: { patches: true } } },
+    include: { hacks: { include: { patches: true } }, sharedFiles: true },
   });
   if (!user) {
     return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
@@ -73,6 +73,12 @@ export async function DELETE(
     await prisma.patch.deleteMany({ where: { hackId: hack.id } });
   }
   await prisma.hack.deleteMany({ where: { authorId: user.id } });
+
+  await Promise.all(
+    user.sharedFiles.map((file) => deleteSharedFile(file.storedName).catch(() => {}))
+  );
+  await prisma.sharedFile.deleteMany({ where: { uploaderId: user.id } });
+
   await prisma.user.delete({ where: { id: user.id } });
 
   return NextResponse.json({ ok: true });

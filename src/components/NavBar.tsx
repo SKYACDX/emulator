@@ -18,6 +18,9 @@ export default async function NavBar() {
           <Link href="/patch" className="hover:text-white">
             Aplicar parche
           </Link>
+          <Link href="/files" className="hover:text-white">
+            Archivos
+          </Link>
           {user ? (
             <>
               <Link href="/hacks/new" className="hover:text-white">

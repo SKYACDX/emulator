@@ -4,6 +4,7 @@ import {
   PutObjectCommand,
   GetObjectCommand,
   DeleteObjectCommand,
+  HeadObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -80,6 +81,70 @@ export async function getPatchDownloadUrl(
 }
 
 export async function deletePatchFile(storedName: string): Promise<void> {
+  await s3Client().send(
+    new DeleteObjectCommand({ Bucket: bucketName(), Key: storedName })
+  );
+}
+
+export function maxSharedFileSizeBytes(): number {
+  // Direct-to-R2 uploads bypass Vercel's serverless body limit entirely, so
+  // this can be much larger than MAX_PATCH_SIZE_BYTES. Still capped to keep
+  // R2's free tier (10 GB storage) from disappearing into a few uploads.
+  return Number(process.env.MAX_SHARED_FILE_SIZE_BYTES ?? 200_000_000); // 200 MB
+}
+
+/**
+ * A short-lived signed URL the browser can PUT the file to directly — the
+ * bytes never pass through our serverless function.
+ */
+export async function createFileUploadUrl(
+  storedName: string,
+  contentType: string
+): Promise<string> {
+  const command = new PutObjectCommand({
+    Bucket: bucketName(),
+    Key: storedName,
+    ContentType: contentType,
+  });
+  return getSignedUrl(s3Client(), command, { expiresIn: 600 });
+}
+
+export function newStoredFileName(originalName: string, prefix: string): string {
+  const ext = originalName.split(".").pop()?.toLowerCase();
+  return ext ? `${prefix}/${randomUUID()}.${ext}` : `${prefix}/${randomUUID()}`;
+}
+
+/**
+ * Confirms an object actually landed in R2 (after a client-side direct
+ * upload) and returns its real size, so we never trust client-reported
+ * metadata for what gets stored in the database.
+ */
+export async function headObject(
+  storedName: string
+): Promise<{ size: number; contentType?: string } | null> {
+  try {
+    const result = await s3Client().send(
+      new HeadObjectCommand({ Bucket: bucketName(), Key: storedName })
+    );
+    return { size: result.ContentLength ?? 0, contentType: result.ContentType };
+  } catch {
+    return null;
+  }
+}
+
+export async function getFileDownloadUrl(
+  storedName: string,
+  downloadFilename: string
+): Promise<string> {
+  const command = new GetObjectCommand({
+    Bucket: bucketName(),
+    Key: storedName,
+    ResponseContentDisposition: `attachment; filename="${downloadFilename}"`,
+  });
+  return getSignedUrl(s3Client(), command, { expiresIn: 300 });
+}
+
+export async function deleteSharedFile(storedName: string): Promise<void> {
   await s3Client().send(
     new DeleteObjectCommand({ Bucket: bucketName(), Key: storedName })
   );

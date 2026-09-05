@@ -36,7 +36,8 @@ model User {
   totpSecret        String?
   totpPendingSecret String?
 
-  hacks Hack[]
+  hacks       Hack[]
+  sharedFiles SharedFile[]
 }
 
 model Platform {
@@ -75,6 +76,22 @@ model Hack {
 
   @@index([gameId])
   @@index([authorId])
+}
+
+model SharedFile {
+  id           String   @id @default(cuid())
+  title        String
+  description  String
+  originalName String
+  storedName   String
+  fileSize     Int
+  mimeType     String
+  createdAt    DateTime @default(now())
+
+  uploaderId String
+  uploader   User   @relation(fields: [uploaderId], references: [id])
+
+  @@index([uploaderId])
 }
 
 model Patch {

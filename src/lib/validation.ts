@@ -30,3 +30,16 @@ export const addPatchSchema = z.object({
   version: z.string().trim().min(1, "La versión es obligatoria").max(30),
   releaseNotes: z.string().trim().max(5000).optional().default(""),
 });
+
+export const presignFileSchema = z.object({
+  filename: z.string().trim().min(1).max(255),
+  fileSize: z.number().int().positive(),
+  contentType: z.string().trim().min(1).max(255),
+});
+
+export const createSharedFileSchema = z.object({
+  title: z.string().trim().min(1, "El título es obligatorio").max(120),
+  description: z.string().trim().max(5000).optional().default(""),
+  storedName: z.string().trim().min(1),
+  originalName: z.string().trim().min(1).max(255),
+});
