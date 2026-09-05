@@ -64,7 +64,7 @@ export async function getCurrentUser() {
 
   const user = await prisma.user.findUnique({
     where: { id: payload.userId },
-    select: { id: true, email: true, username: true, createdAt: true },
+    select: { id: true, email: true, username: true, role: true, createdAt: true },
   });
   return user;
 }
@@ -74,5 +74,11 @@ export async function requireCurrentUser() {
   if (!user) {
     throw new Error("UNAUTHENTICATED");
   }
+  return user;
+}
+
+export async function getCurrentAdmin() {
+  const user = await getCurrentUser();
+  if (!user || user.role !== "ADMIN") return null;
   return user;
 }

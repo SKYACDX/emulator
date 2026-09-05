@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "seed": "tsx prisma/seed.ts",
+    "make-admin": "tsx prisma/make-admin.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

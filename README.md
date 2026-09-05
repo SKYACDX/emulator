@@ -69,6 +69,18 @@ local persistente ni base de datos con estado en el propio servidor.
    pnpm dev                       # http://localhost:3000
    ```
 
+5. Regístrate normalmente en la web y luego promuévete a administrador
+   (no hay forma de hacerlo desde la UI, a propósito):
+
+   ```bash
+   pnpm exec tsx prisma/make-admin.ts tu@correo.com
+   ```
+
+   Con el rol `ADMIN` aparece un enlace "Admin" en la barra de navegación,
+   que lleva a `/admin`: ahí puedes eliminar cualquier hack (borra también
+   sus archivos de R2) y gestionar usuarios (promover/degradar admins,
+   eliminar cuentas junto con sus hacks).
+
 ## Desplegar gratis en Vercel
 
 1. Sube el repo a GitHub y [importa el proyecto en Vercel](https://vercel.com/new)

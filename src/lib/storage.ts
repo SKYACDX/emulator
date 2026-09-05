@@ -3,6 +3,7 @@ import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
+  DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -76,4 +77,10 @@ export async function getPatchDownloadUrl(
     ResponseContentDisposition: `attachment; filename="${downloadFilename}"`,
   });
   return getSignedUrl(s3Client(), command, { expiresIn: 300 });
+}
+
+export async function deletePatchFile(storedName: string): Promise<void> {
+  await s3Client().send(
+    new DeleteObjectCommand({ Bucket: bucketName(), Key: storedName })
+  );
 }

@@ -26,6 +26,11 @@ export default async function NavBar() {
               <Link href="/me" className="text-neutral-400 hover:text-white">
                 {user.username}
               </Link>
+              {user.role === "ADMIN" && (
+                <Link href="/admin" className="text-amber-400 hover:text-amber-300">
+                  Admin
+                </Link>
+              )}
               <LogoutButton />
             </>
           ) : (
