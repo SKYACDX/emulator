@@ -100,6 +100,10 @@ export async function DELETE(
   });
   await prisma.community.deleteMany({ where: { creatorId: user.id } });
 
+  await prisma.friendship.deleteMany({
+    where: { OR: [{ requesterId: user.id }, { addresseeId: user.id }] },
+  });
+
   await prisma.user.delete({ where: { id: user.id } });
 
   return NextResponse.json({ ok: true });

@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getAvatarUrl } from "@/lib/storage";
+import { getCurrentUser } from "@/lib/auth";
+import FriendActions from "@/components/FriendActions";
 
 export const dynamic = "force-dynamic";
 
@@ -50,6 +52,29 @@ export default async function ProfilePage({
 
   const avatarUrl = user.avatarKey ? await getAvatarUrl(user.avatarKey) : null;
 
+  const viewer = await getCurrentUser();
+  let friendStatus: "none" | "friends" | "incoming" | "outgoing" = "none";
+  let friendshipId: string | null = null;
+  if (viewer && viewer.id !== user.id) {
+    const friendship = await prisma.friendship.findFirst({
+      where: {
+        OR: [
+          { requesterId: viewer.id, addresseeId: user.id },
+          { requesterId: user.id, addresseeId: viewer.id },
+        ],
+      },
+    });
+    if (friendship) {
+      friendshipId = friendship.id;
+      friendStatus =
+        friendship.status === "accepted"
+          ? "friends"
+          : friendship.requesterId === viewer.id
+            ? "outgoing"
+            : "incoming";
+    }
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center gap-4">
@@ -65,6 +90,11 @@ export default async function ProfilePage({
             Miembro desde {user.createdAt.toLocaleDateString("es")}
           </p>
         </div>
+        {viewer && viewer.id !== user.id && (
+          <div className="ml-auto">
+            <FriendActions username={user.username} status={friendStatus} friendshipId={friendshipId} />
+          </div>
+        )}
       </div>
 
       {user.gameSaves.length > 0 && (

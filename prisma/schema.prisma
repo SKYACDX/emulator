@@ -57,6 +57,22 @@ model User {
   gameSaves           GameSave[]
   createdCommunities  Community[]
   communityMemberships CommunityMembership[]
+  sentFriendRequests     Friendship[] @relation("FriendshipRequester")
+  receivedFriendRequests Friendship[] @relation("FriendshipAddressee")
+}
+
+model Friendship {
+  id        String   @id @default(cuid())
+  status    String   @default("pending") // "pending" | "accepted"
+  createdAt DateTime @default(now())
+
+  requesterId String
+  requester   User   @relation("FriendshipRequester", fields: [requesterId], references: [id])
+  addresseeId String
+  addressee   User   @relation("FriendshipAddressee", fields: [addresseeId], references: [id])
+
+  @@unique([requesterId, addresseeId])
+  @@index([addresseeId])
 }
 
 model Community {

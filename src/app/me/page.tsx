@@ -28,6 +28,12 @@ export default async function MyHacksPage() {
         <h1 className="text-2xl font-bold text-base">Mis hacks</h1>
         <div className="flex gap-2">
           <Link
+            href="/me/friends"
+            className="rounded bg-surface px-4 py-2 text-sm text-base hover-surface"
+          >
+            Amigos
+          </Link>
+          <Link
             href="/me/security"
             className="rounded bg-surface px-4 py-2 text-sm text-base hover-surface"
           >
