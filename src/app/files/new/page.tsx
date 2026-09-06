@@ -1,10 +1,13 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import UploadFileForm from "@/components/UploadFileForm";
 
 export default async function NewFilePage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+
+  const platforms = await prisma.platform.findMany({ orderBy: { name: "asc" } });
 
   return (
     <div className="flex flex-col gap-6">
@@ -17,7 +20,7 @@ export default async function NewFilePage() {
           assets, etc.
         </p>
       </div>
-      <UploadFileForm />
+      <UploadFileForm platforms={platforms} />
     </div>
   );
 }

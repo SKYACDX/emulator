@@ -34,9 +34,17 @@ export default async function PlatformPage({
         <div className="flex flex-col gap-6">
           {platform.games.map((game) => (
             <div key={game.id}>
-              <h2 className="mb-2 text-lg font-semibold text-white">
-                {game.title}
-              </h2>
+              <div className="mb-2 flex items-center gap-3">
+                {game.coverImageUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={game.coverImageUrl}
+                    alt={game.title}
+                    className="h-10 w-auto rounded border border-neutral-800"
+                  />
+                )}
+                <h2 className="text-lg font-semibold text-white">{game.title}</h2>
+              </div>
               <ul className="flex flex-col gap-2">
                 {game.hacks.map((hack) => (
                   <li key={hack.id}>

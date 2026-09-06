@@ -5,6 +5,7 @@ import { createHackSchema } from "@/lib/validation";
 import { formatFromFilename, ALLOWED_PATCH_EXTENSIONS } from "@/lib/patchFormats";
 import { savePatchFile, maxPatchSizeBytes } from "@/lib/storage";
 import { slugify, uniqueSlug } from "@/lib/slug";
+import { isAllowedCoverUrl } from "@/lib/thegamesdb";
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
@@ -54,6 +55,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Plataforma inválida" }, { status: 400 });
   }
 
+  const rawCoverImageUrl = formData.get("coverImageUrl");
+  const coverImageUrl =
+    typeof rawCoverImageUrl === "string" && isAllowedCoverUrl(rawCoverImageUrl)
+      ? rawCoverImageUrl
+      : null;
+
   const gameSlugBase = `${platformSlug}-${slugify(gameTitle)}`;
   let game = await prisma.game.findFirst({
     where: { platformId: platform.id, title: { equals: gameTitle } },
@@ -63,10 +70,16 @@ export async function POST(request: Request) {
       data: {
         title: gameTitle,
         platformId: platform.id,
+        coverImageUrl,
         slug: (await prisma.game.findUnique({ where: { slug: gameSlugBase } }))
           ? uniqueSlug(gameSlugBase)
           : gameSlugBase,
       },
+    });
+  } else if (!game.coverImageUrl && coverImageUrl) {
+    game = await prisma.game.update({
+      where: { id: game.id },
+      data: { coverImageUrl },
     });
   }
 

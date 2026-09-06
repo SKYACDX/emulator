@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import CoverPicker from "./CoverPicker";
 
 type Platform = { id: string; slug: string; name: string };
 
@@ -9,6 +10,9 @@ export default function NewHackForm({ platforms }: { platforms: Platform[] }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [platformSlug, setPlatformSlug] = useState("");
+  const [gameTitle, setGameTitle] = useState("");
+  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -16,6 +20,7 @@ export default function NewHackForm({ platforms }: { platforms: Platform[] }) {
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
+    if (coverImageUrl) formData.set("coverImageUrl", coverImageUrl);
 
     try {
       const res = await fetch("/api/hacks", { method: "POST", body: formData });
@@ -37,7 +42,8 @@ export default function NewHackForm({ platforms }: { platforms: Platform[] }) {
         <select
           name="platformSlug"
           required
-          defaultValue=""
+          value={platformSlug}
+          onChange={(e) => setPlatformSlug(e.target.value)}
           className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white"
         >
           <option value="" disabled>
@@ -58,9 +64,21 @@ export default function NewHackForm({ platforms }: { platforms: Platform[] }) {
           required
           maxLength={120}
           placeholder="Ej. Super Mario World"
+          value={gameTitle}
+          onChange={(e) => setGameTitle(e.target.value)}
           className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white"
         />
       </label>
+
+      <div className="flex flex-col gap-1 text-sm text-neutral-300">
+        <span>Portada (opcional)</span>
+        <CoverPicker
+          gameTitle={gameTitle}
+          platformSlug={platformSlug || undefined}
+          value={coverImageUrl}
+          onChange={setCoverImageUrl}
+        />
+      </div>
 
       <label className="flex flex-col gap-1 text-sm text-neutral-300">
         Título del hack

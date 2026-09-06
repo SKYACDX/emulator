@@ -10,6 +10,9 @@ type SharedFile = {
   originalName: string;
   fileSize: number;
   isPublic: boolean;
+  platformName: string | null;
+  gameTitle: string | null;
+  coverImageUrl: string | null;
   uploader: string;
   createdAt: string;
 };
@@ -51,23 +54,38 @@ export default function FileListItem({
   return (
     <li className="rounded-lg border border-neutral-800 bg-neutral-900 p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <div>
-          <div className="flex items-center gap-2">
-            <h2 className="font-medium text-white">{file.title}</h2>
-            <span
-              className={
-                file.isPublic
-                  ? "rounded bg-neutral-800 px-2 py-0.5 text-xs text-neutral-400"
-                  : "rounded bg-amber-900 px-2 py-0.5 text-xs text-amber-300"
-              }
-            >
-              {file.isPublic ? "Público" : "Privado"}
-            </span>
+        <div className="flex gap-3">
+          {file.coverImageUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={file.coverImageUrl}
+              alt={file.gameTitle ?? file.title}
+              className="h-14 w-auto shrink-0 rounded border border-neutral-800"
+            />
+          )}
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="font-medium text-white">{file.title}</h2>
+              <span
+                className={
+                  file.isPublic
+                    ? "rounded bg-neutral-800 px-2 py-0.5 text-xs text-neutral-400"
+                    : "rounded bg-amber-900 px-2 py-0.5 text-xs text-amber-300"
+                }
+              >
+                {file.isPublic ? "Público" : "Privado"}
+              </span>
+              {(file.platformName || file.gameTitle) && (
+                <span className="rounded bg-sky-900 px-2 py-0.5 text-xs text-sky-300">
+                  {[file.platformName, file.gameTitle].filter(Boolean).join(" · ")}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-neutral-500">
+              {file.originalName} · {formatBytes(file.fileSize)} · subido por{" "}
+              {file.uploader}
+            </p>
           </div>
-          <p className="text-xs text-neutral-500">
-            {file.originalName} · {formatBytes(file.fileSize)} · subido por{" "}
-            {file.uploader}
-          </p>
         </div>
         <div className="flex shrink-0 gap-2">
           <a

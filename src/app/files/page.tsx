@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import FileListItem from "@/components/FileListItem";
+import FilesSearchList from "@/components/FilesSearchList";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +22,7 @@ export default async function FilesPage() {
     where,
     orderBy: { createdAt: "desc" },
     take: 100,
-    include: { uploader: { select: { username: true } } },
+    include: { uploader: { select: { username: true } }, platform: true },
   });
 
   return (
@@ -46,31 +46,24 @@ export default async function FilesPage() {
         )}
       </div>
 
-      {files.length === 0 ? (
-        <p className="text-neutral-500">Todavía no hay archivos compartidos.</p>
-      ) : (
-        <ul className="flex flex-col gap-3">
-          {files.map((file) => (
-            <FileListItem
-              key={file.id}
-              file={{
-                id: file.id,
-                title: file.title,
-                description: file.description,
-                originalName: file.originalName,
-                fileSize: file.fileSize,
-                isPublic: file.isPublic,
-                uploader: file.uploader.username,
-                createdAt: file.createdAt.toISOString(),
-              }}
-              canDelete={
-                !!currentUser &&
-                (currentUser.id === file.uploaderId || currentUser.role === "ADMIN")
-              }
-            />
-          ))}
-        </ul>
-      )}
+      <FilesSearchList
+        files={files.map((file) => ({
+          id: file.id,
+          title: file.title,
+          description: file.description,
+          originalName: file.originalName,
+          fileSize: file.fileSize,
+          isPublic: file.isPublic,
+          platformName: file.platform?.name ?? null,
+          gameTitle: file.gameTitle,
+          coverImageUrl: file.coverImageUrl,
+          uploader: file.uploader.username,
+          createdAt: file.createdAt.toISOString(),
+          canDelete:
+            !!currentUser &&
+            (currentUser.id === file.uploaderId || currentUser.role === "ADMIN"),
+        }))}
+      />
     </div>
   );
 }

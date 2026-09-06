@@ -36,21 +36,31 @@ export default async function HackPage({
 
   return (
     <div className="flex flex-col gap-8">
-      <div>
-        <div className="flex items-center gap-2 text-sm text-neutral-500">
-          <Link href={`/platforms/${hack.game.platform.slug}`} className="hover:underline">
-            {hack.game.platform.name}
-          </Link>
-          <span>/</span>
-          <span>{hack.game.title}</span>
+      <div className="flex gap-4">
+        {hack.game.coverImageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={hack.game.coverImageUrl}
+            alt={hack.game.title}
+            className="h-32 w-auto shrink-0 rounded border border-neutral-800"
+          />
+        )}
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 text-sm text-neutral-500">
+            <Link href={`/platforms/${hack.game.platform.slug}`} className="hover:underline">
+              {hack.game.platform.name}
+            </Link>
+            <span>/</span>
+            <span>{hack.game.title}</span>
+          </div>
+          <h1 className="mt-1 text-2xl font-bold text-white">{hack.title}</h1>
+          <p className="mt-1 text-sm text-neutral-500">
+            Publicado por {hack.author.username}
+          </p>
+          <p className="mt-4 whitespace-pre-wrap text-neutral-300">
+            {hack.description}
+          </p>
         </div>
-        <h1 className="mt-1 text-2xl font-bold text-white">{hack.title}</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Publicado por {hack.author.username}
-        </p>
-        <p className="mt-4 whitespace-pre-wrap text-neutral-300">
-          {hack.description}
-        </p>
       </div>
 
       <section>

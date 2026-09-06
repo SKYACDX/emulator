@@ -43,4 +43,7 @@ export const createSharedFileSchema = z.object({
   storedName: z.string().trim().min(1),
   originalName: z.string().trim().min(1).max(255),
   isPublic: z.boolean().optional().default(true),
+  platformSlug: z.string().trim().max(30).optional(),
+  gameTitle: z.string().trim().max(120).optional(),
+  coverImageUrl: z.string().trim().url().max(500).optional(),
 });

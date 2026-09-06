@@ -45,14 +45,16 @@ model Platform {
   slug String @unique
   name String
 
-  games Game[]
+  games       Game[]
+  sharedFiles SharedFile[]
 }
 
 model Game {
-  id         String @id @default(cuid())
-  slug       String @unique
-  title      String
-  platformId String
+  id            String  @id @default(cuid())
+  slug          String  @unique
+  title         String
+  platformId    String
+  coverImageUrl String?
 
   platform Platform @relation(fields: [platformId], references: [id])
   hacks    Hack[]
@@ -89,10 +91,19 @@ model SharedFile {
   isPublic     Boolean  @default(true)
   createdAt    DateTime @default(now())
 
+  // Optional tagging so a general-purpose file can say what it's about:
+  // a platform (Game Boy, NDS, ...) and/or a free-text game name, without
+  // requiring it to be linked to an actual Game/Hack record.
+  platformId    String?
+  gameTitle     String?
+  coverImageUrl String?
+  platform      Platform? @relation(fields: [platformId], references: [id])
+
   uploaderId String
   uploader   User   @relation(fields: [uploaderId], references: [id])
 
   @@index([uploaderId])
+  @@index([platformId])
 }
 
 model Patch {

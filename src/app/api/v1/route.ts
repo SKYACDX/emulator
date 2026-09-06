@@ -20,6 +20,9 @@ export async function GET(request: Request) {
       hacks: `${origin}/api/v1/hacks?game=<slug>&platform=<slug>&q=<texto>&limit=&offset=`,
       hackDetail: `${origin}/api/v1/hacks/<slug>`,
       patchDownload: `${origin}/api/patches/<id>/download`,
+      files: `${origin}/api/v1/files?platform=<slug>&q=<texto>&limit=&offset=`,
+      fileDetail: `${origin}/api/v1/files/<id>`,
+      fileDownload: `${origin}/api/files/<id>/download`,
     },
   });
 }

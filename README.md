@@ -61,6 +61,24 @@ privados, para poder moderar.
 a administradores** — no es una restricción de UX, es la salvaguarda legal
 de la que depende todo el proyecto (ver "Modelo legal" arriba).
 
+## Portadas de juegos
+
+Al crear un hack o etiquetar un archivo con un juego, hay un botón "Buscar
+portada" que consulta [TheGamesDB](https://thegamesdb.net) (`src/lib/thegamesdb.ts`)
+y deja elegir entre las miniaturas encontradas. Importante:
+
+- Solo se **guarda la URL** de la imagen (en el CDN de TheGamesDB); nunca se
+  descarga ni se re-aloja en nuestro R2. `isAllowedCoverUrl()` rechaza
+  cualquier URL que no apunte a `cdn.thegamesdb.net`, así que no se puede
+  usar este campo para inyectar una URL arbitraria vía la API.
+- La portada de un `Game` se fija una sola vez (al crear el primer hack para
+  ese juego); hacks posteriores del mismo juego no la sobreescriben.
+- Un archivo de `/files` puede tener su propia portada independiente, ya
+  que su `gameTitle` es texto libre y no está ligado a un `Game` real.
+- La ruta `/api/games/search-cover` requiere sesión (evita gastar la cuota
+  gratuita de la API con tráfico anónimo) y mantiene el `TGDB_API_KEY` en
+  el servidor — nunca se expone al navegador.
+
 ## Stack
 
 - [Next.js 16](https://nextjs.org) (App Router, TypeScript, Tailwind CSS 4)
@@ -104,6 +122,7 @@ local persistente ni base de datos con estado en el propio servidor.
    | `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | Credenciales del API token de R2 |
    | `R2_BUCKET_NAME` | Nombre del bucket creado |
    | `MAX_PATCH_SIZE_BYTES` | Tamaño máximo por archivo de parche (4 MB por defecto, ver nota de Vercel abajo) |
+   | `TGDB_API_KEY` | API key gratuita de [TheGamesDB](https://thegamesdb.net/member/apikey) — usada para buscar portadas de juegos |
 
 4. Instala dependencias y aplica el esquema:
 

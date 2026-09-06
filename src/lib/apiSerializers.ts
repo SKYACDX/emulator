@@ -18,6 +18,7 @@ export function serializeHack(hack: HackWithRelations, origin: string) {
     game: {
       slug: hack.game.slug,
       title: hack.game.title,
+      coverImageUrl: hack.game.coverImageUrl,
       platform: { slug: hack.game.platform.slug, name: hack.game.platform.name },
     },
     patches: hack.patches.map((patch) => ({

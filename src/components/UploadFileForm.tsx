@@ -2,12 +2,18 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import CoverPicker from "./CoverPicker";
 
-export default function UploadFileForm() {
+type Platform = { id: string; slug: string; name: string };
+
+export default function UploadFileForm({ platforms }: { platforms: Platform[] }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [platformSlug, setPlatformSlug] = useState("");
+  const [gameTitle, setGameTitle] = useState("");
+  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -66,6 +72,9 @@ export default function UploadFileForm() {
           storedName: presignData.storedName,
           originalName: file.name,
           isPublic,
+          platformSlug: platformSlug || undefined,
+          gameTitle: gameTitle || undefined,
+          coverImageUrl: coverImageUrl || undefined,
         }),
       });
       const createData = await createRes.json();
@@ -107,6 +116,45 @@ export default function UploadFileForm() {
         Archivo
         <input type="file" name="file" required className="text-neutral-300" />
       </label>
+
+      <div className="flex flex-col gap-1 text-sm text-neutral-300">
+        <span>Etiquetas (opcional, para saber de qué trata el archivo)</span>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <select
+            name="platformSlug"
+            value={platformSlug}
+            onChange={(e) => setPlatformSlug(e.target.value)}
+            className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white sm:w-1/2"
+          >
+            <option value="">Sin plataforma</option>
+            {platforms.map((p) => (
+              <option key={p.id} value={p.slug}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+          <input
+            name="gameTitle"
+            placeholder="Juego específico (ej. Pokémon Esmeralda)"
+            maxLength={120}
+            value={gameTitle}
+            onChange={(e) => setGameTitle(e.target.value)}
+            className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white sm:w-1/2"
+          />
+        </div>
+      </div>
+
+      {gameTitle.trim() && (
+        <div className="flex flex-col gap-1 text-sm text-neutral-300">
+          <span>Portada (opcional)</span>
+          <CoverPicker
+            gameTitle={gameTitle}
+            platformSlug={platformSlug || undefined}
+            value={coverImageUrl}
+            onChange={setCoverImageUrl}
+          />
+        </div>
+      )}
 
       <fieldset className="flex flex-col gap-2 text-sm text-neutral-300">
         <legend className="mb-1">Visibilidad</legend>

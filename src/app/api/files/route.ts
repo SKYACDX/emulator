@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { createSharedFileSchema } from "@/lib/validation";
 import { isBlockedUploadExtension } from "@/lib/fileTypes";
 import { headObject, maxSharedFileSizeBytes, deleteSharedFile } from "@/lib/storage";
+import { isAllowedCoverUrl } from "@/lib/thegamesdb";
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
@@ -20,10 +21,26 @@ export async function POST(request: Request) {
     );
   }
 
-  const { title, description, storedName, originalName, isPublic } = parsed.data;
+  const {
+    title,
+    description,
+    storedName,
+    originalName,
+    isPublic,
+    platformSlug,
+    gameTitle,
+    coverImageUrl,
+  } = parsed.data;
 
   if (isBlockedUploadExtension(originalName) || !storedName.startsWith("files/")) {
     return NextResponse.json({ error: "Archivo no permitido" }, { status: 400 });
+  }
+
+  const platform = platformSlug
+    ? await prisma.platform.findUnique({ where: { slug: platformSlug } })
+    : null;
+  if (platformSlug && !platform) {
+    return NextResponse.json({ error: "Plataforma inválida" }, { status: 400 });
   }
 
   // Never trust client-reported size/type: confirm the object actually
@@ -49,6 +66,9 @@ export async function POST(request: Request) {
       fileSize: info.size,
       mimeType: info.contentType ?? "application/octet-stream",
       isPublic,
+      platformId: platform?.id,
+      gameTitle: gameTitle || null,
+      coverImageUrl: coverImageUrl && isAllowedCoverUrl(coverImageUrl) ? coverImageUrl : null,
       uploaderId: user.id,
     },
   });

@@ -41,16 +41,26 @@ export default async function HomePage() {
                 key={hack.id}
                 className="rounded-lg border border-neutral-800 bg-neutral-900 p-4 hover:border-neutral-700"
               >
-                <Link href={`/hacks/${hack.slug}`} className="block">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-medium text-white">{hack.title}</h3>
-                    <span className="rounded bg-neutral-800 px-2 py-0.5 text-xs text-neutral-400">
-                      {hack.game.platform.name}
-                    </span>
+                <Link href={`/hacks/${hack.slug}`} className="flex gap-3">
+                  {hack.game.coverImageUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={hack.game.coverImageUrl}
+                      alt={hack.game.title}
+                      className="h-16 w-auto shrink-0 rounded border border-neutral-800"
+                    />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-medium text-white">{hack.title}</h3>
+                      <span className="rounded bg-neutral-800 px-2 py-0.5 text-xs text-neutral-400">
+                        {hack.game.platform.name}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-sm text-neutral-400">
+                      {hack.game.title} · por {hack.author.username}
+                    </p>
                   </div>
-                  <p className="mt-1 text-sm text-neutral-400">
-                    {hack.game.title} · por {hack.author.username}
-                  </p>
                 </Link>
               </li>
             ))}
