@@ -19,7 +19,11 @@ export async function DELETE(
     return NextResponse.json({ error: "Archivo no encontrado" }, { status: 404 });
   }
 
-  if (file.uploaderId !== user.id && user.role !== "ADMIN") {
+  if (
+    file.uploaderId !== user.id &&
+    user.role !== "ADMIN" &&
+    user.role !== "MODERATOR"
+  ) {
     return NextResponse.json({ error: "No autorizado" }, { status: 403 });
   }
 

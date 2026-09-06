@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentAdmin } from "@/lib/auth";
+import { getCurrentStaff } from "@/lib/auth";
 
-/** Dismiss all reports on a file (admin reviewed it, no action needed). */
+/** Dismiss all reports on a file (staff reviewed it, no action needed). */
 export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const admin = await getCurrentAdmin();
-  if (!admin) {
+  const staff = await getCurrentStaff();
+  if (!staff) {
     return NextResponse.json({ error: "No autorizado" }, { status: 403 });
   }
 

@@ -34,6 +34,11 @@ export default async function NavBar() {
                   Admin
                 </Link>
               )}
+              {user.role === "MODERATOR" && (
+                <Link href="/moderation" className="text-amber-400 hover:text-amber-300">
+                  Moderación
+                </Link>
+              )}
               <LogoutButton />
             </>
           ) : (

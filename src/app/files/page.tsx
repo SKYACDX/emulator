@@ -73,7 +73,9 @@ export default async function FilesPage() {
           createdAt: file.createdAt.toISOString(),
           canDelete:
             !!currentUser &&
-            (currentUser.id === file.uploaderId || currentUser.role === "ADMIN"),
+            (currentUser.id === file.uploaderId ||
+              currentUser.role === "ADMIN" ||
+              currentUser.role === "MODERATOR"),
           canReport: !!currentUser && currentUser.id !== file.uploaderId,
         }))}
       />

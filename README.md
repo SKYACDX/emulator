@@ -157,8 +157,23 @@ local persistente ni base de datos con estado en el propio servidor.
 
    Con el rol `ADMIN` aparece un enlace "Admin" en la barra de navegación,
    que lleva a `/admin`: ahí puedes eliminar cualquier hack (borra también
-   sus archivos de R2) y gestionar usuarios (promover/degradar admins,
+   sus archivos de R2) y gestionar usuarios (promover/degradar roles,
    eliminar cuentas junto con sus hacks).
+
+### Rol `MODERATOR`
+
+Un tercer rol, más limitado que `ADMIN`, pensado para delegar la
+moderación de contenido sin dar acceso a la gestión de usuarios ni a la
+lista completa de hacks/archivos:
+
+- Ve `/moderation` (enlace "Moderación" en la nav) — **solo** la lista de
+  archivos reportados por la comunidad, con motivo y quién reportó.
+- Puede eliminar el archivo reportado o descartar los reportes.
+- **No** puede ver la lista de usuarios, otros admins/moderadores, ni
+  gestionar hacks — `/admin` le redirige a `/` si lo intenta.
+
+Solo un `ADMIN` puede asignar el rol `MODERATOR` (desde el selector de rol
+en la tabla de usuarios de `/admin`) — no hay forma de auto-promoverse.
 
 ## Verificación en dos pasos (2FA / TOTP)
 

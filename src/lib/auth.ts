@@ -91,6 +91,13 @@ export async function getCurrentAdmin() {
   return user;
 }
 
+/** ADMIN or MODERATOR — anyone allowed to handle file reports. */
+export async function getCurrentStaff() {
+  const user = await getCurrentUser();
+  if (!user || (user.role !== "ADMIN" && user.role !== "MODERATOR")) return null;
+  return user;
+}
+
 type TotpPendingPayload = { userId: string; purpose: "totp-pending" };
 
 /** Short-lived token issued after password check when 2FA is still required. */

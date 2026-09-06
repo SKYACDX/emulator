@@ -3,13 +3,27 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+type Role = "USER" | "MODERATOR" | "ADMIN";
+
 type User = {
   id: string;
   username: string;
   email: string;
-  role: "USER" | "ADMIN";
+  role: Role;
   hackCount: number;
   createdAt: string;
+};
+
+const ROLE_LABELS: Record<Role, string> = {
+  USER: "Usuario",
+  MODERATOR: "Moderador",
+  ADMIN: "Admin",
+};
+
+const ROLE_BADGE_CLASS: Record<Role, string> = {
+  USER: "rounded bg-neutral-800 px-2 py-0.5 text-xs text-neutral-400",
+  MODERATOR: "rounded bg-sky-900 px-2 py-0.5 text-xs text-sky-300",
+  ADMIN: "rounded bg-emerald-900 px-2 py-0.5 text-xs text-emerald-300",
 };
 
 export default function AdminUsersTable({
@@ -23,13 +37,11 @@ export default function AdminUsersTable({
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleToggleRole(user: User) {
-    const nextRole = user.role === "ADMIN" ? "USER" : "ADMIN";
+  async function handleRoleChange(user: User, nextRole: Role) {
+    if (nextRole === user.role) return;
     if (
       !confirm(
-        nextRole === "ADMIN"
-          ? `¿Hacer administrador a "${user.username}"?`
-          : `¿Quitarle el rol de administrador a "${user.username}"?`
+        `¿Cambiar el rol de "${user.username}" de ${ROLE_LABELS[user.role]} a ${ROLE_LABELS[nextRole]}?`
       )
     ) {
       return;
@@ -100,27 +112,24 @@ export default function AdminUsersTable({
                 </td>
                 <td className="px-3 py-2 text-neutral-400">{user.email}</td>
                 <td className="px-3 py-2">
-                  <span
-                    className={
-                      user.role === "ADMIN"
-                        ? "rounded bg-emerald-900 px-2 py-0.5 text-xs text-emerald-300"
-                        : "rounded bg-neutral-800 px-2 py-0.5 text-xs text-neutral-400"
-                    }
-                  >
-                    {user.role}
+                  <span className={ROLE_BADGE_CLASS[user.role]}>
+                    {ROLE_LABELS[user.role]}
                   </span>
                 </td>
                 <td className="px-3 py-2 text-neutral-400">{user.hackCount}</td>
                 <td className="px-3 py-2 text-right">
                   {!isSelf && (
                     <div className="flex justify-end gap-2">
-                      <button
-                        onClick={() => handleToggleRole(user)}
+                      <select
+                        value={user.role}
+                        onChange={(e) => handleRoleChange(user, e.target.value as Role)}
                         disabled={pendingId === user.id}
-                        className="rounded bg-neutral-800 px-3 py-1 text-white hover:bg-neutral-700 disabled:opacity-60"
+                        className="rounded border border-neutral-700 bg-neutral-800 px-2 py-1 text-white disabled:opacity-60"
                       >
-                        {user.role === "ADMIN" ? "Quitar admin" : "Hacer admin"}
-                      </button>
+                        <option value="USER">Usuario</option>
+                        <option value="MODERATOR">Moderador</option>
+                        <option value="ADMIN">Admin</option>
+                      </select>
                       <button
                         onClick={() => handleDelete(user)}
                         disabled={pendingId === user.id}

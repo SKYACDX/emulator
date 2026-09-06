@@ -4,7 +4,7 @@ import { getCurrentAdmin } from "@/lib/auth";
 import { deletePatchFile, deleteSharedFile } from "@/lib/storage";
 import { z } from "zod";
 
-const roleSchema = z.object({ role: z.enum(["USER", "ADMIN"]) });
+const roleSchema = z.object({ role: z.enum(["USER", "MODERATOR", "ADMIN"]) });
 
 export async function PATCH(
   request: Request,
