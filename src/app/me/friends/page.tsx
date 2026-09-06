@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import FriendActions from "@/components/FriendActions";
+import UserSearch from "@/components/UserSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +27,11 @@ export default async function FriendsPage() {
   return (
     <div className="flex flex-col gap-8">
       <h1 className="text-2xl font-bold text-base">Amigos</h1>
+
+      <section>
+        <h2 className="mb-2 text-lg font-semibold text-base">Buscar usuarios</h2>
+        <UserSearch />
+      </section>
 
       {incoming.length > 0 && (
         <section>
