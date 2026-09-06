@@ -24,15 +24,15 @@ export default async function ModerationPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">Moderación</h1>
-        <p className="mt-1 text-sm text-neutral-400">
+        <h1 className="text-2xl font-bold text-base">Moderación</h1>
+        <p className="mt-1 text-sm text-muted">
           Sesión: {staff.username} — revisa y actúa sobre archivos reportados
           por la comunidad.
         </p>
       </div>
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-white">
+        <h2 className="mb-3 text-lg font-semibold text-base">
           Archivos reportados ({reportedFiles.length})
         </h2>
         <AdminReportsTable

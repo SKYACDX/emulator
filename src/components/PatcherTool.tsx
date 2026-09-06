@@ -72,31 +72,31 @@ export default function PatcherTool() {
   }
 
   return (
-    <div className="flex max-w-lg flex-col gap-4 rounded-lg border border-neutral-800 bg-neutral-900 p-4">
-      <label className="flex flex-col gap-1 text-sm text-neutral-300">
+    <div className="flex max-w-lg flex-col gap-4 rounded-lg border border-base bg-surface p-4">
+      <label className="flex flex-col gap-1 text-sm text-muted">
         1. Tu ROM original (nunca sale de tu equipo)
-        <input type="file" onChange={handleRomChange} className="text-neutral-300" />
+        <input type="file" onChange={handleRomChange} className="text-muted" />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm text-neutral-300">
+      <label className="flex flex-col gap-1 text-sm text-muted">
         2. Archivo de parche (.ips, .bps, .ups)
         <input
           type="file"
           accept=".ips,.bps,.ups"
           onChange={handlePatchChange}
-          className="text-neutral-300"
+          className="text-muted"
         />
       </label>
 
       <button
         onClick={handleApply}
         disabled={!romFile || !patchFile || busy}
-        className="self-start rounded bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-500 disabled:opacity-60"
+        className="self-start btn-accent rounded px-4 py-2 font-medium disabled:opacity-60"
       >
         {busy ? "Aplicando..." : "Aplicar parche y descargar"}
       </button>
 
-      {status && <p className="text-sm text-emerald-400">{status}</p>}
+      {status && <p className="text-sm text-accent">{status}</p>}
       {warning && <p className="text-sm text-amber-400">{warning}</p>}
       {error && <p className="text-sm text-red-400">{error}</p>}
     </div>

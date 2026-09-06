@@ -13,14 +13,14 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <section className="rounded-lg border border-neutral-800 bg-neutral-900 p-6">
-        <h1 className="text-2xl font-bold text-white">RomHack Hub</h1>
-        <p className="mt-2 max-w-2xl text-neutral-400">
+      <section className="rounded-lg border border-base bg-surface p-6">
+        <h1 className="text-2xl font-bold text-base">RomHack Hub</h1>
+        <p className="mt-2 max-w-2xl text-muted">
           Publica y descubre ROM hacks para consolas retro. Aquí solo se
           alojan <strong>parches</strong> (IPS, BPS, UPS): descárgalos y
           aplícalos sobre tu propia copia legal del juego original desde
           nuestra{" "}
-          <Link href="/patch" className="text-emerald-400 underline">
+          <Link href="/patch" className="text-accent underline">
             herramienta de parcheo
           </Link>
           , que corre enteramente en tu navegador.
@@ -30,11 +30,11 @@ export default async function HomePage() {
       <AdSlot />
 
       <section>
-        <h2 className="mb-4 text-lg font-semibold text-white">
+        <h2 className="mb-4 text-lg font-semibold text-base">
           Hacks recientes
         </h2>
         {hacks.length === 0 ? (
-          <p className="text-neutral-500">
+          <p className="text-muted">
             Todavía no hay hacks publicados. ¡Sé el primero!
           </p>
         ) : (
@@ -42,7 +42,7 @@ export default async function HomePage() {
             {hacks.map((hack) => (
               <li
                 key={hack.id}
-                className="rounded-lg border border-neutral-800 bg-neutral-900 p-4 hover:border-neutral-700"
+                className="rounded-lg border border-base bg-surface p-4 hover-border"
               >
                 <Link href={`/hacks/${hack.slug}`} className="flex gap-3">
                   {hack.game.coverImageUrl && (
@@ -50,17 +50,17 @@ export default async function HomePage() {
                     <img
                       src={hack.game.coverImageUrl}
                       alt={hack.game.title}
-                      className="h-16 w-auto shrink-0 rounded border border-neutral-800"
+                      className="h-16 w-auto shrink-0 rounded border border-base"
                     />
                   )}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-medium text-white">{hack.title}</h3>
-                      <span className="rounded bg-neutral-800 px-2 py-0.5 text-xs text-neutral-400">
+                      <h3 className="font-medium text-base">{hack.title}</h3>
+                      <span className="rounded bg-surface px-2 py-0.5 text-xs text-muted">
                         {hack.game.platform.name}
                       </span>
                     </div>
-                    <p className="mt-1 text-sm text-neutral-400">
+                    <p className="mt-1 text-sm text-muted">
                       {hack.game.title} · por {hack.author.username}
                     </p>
                   </div>

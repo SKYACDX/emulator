@@ -82,8 +82,8 @@ export default function TotpSettings({ initialEnabled }: { initialEnabled: boole
 
   if (setupData) {
     return (
-      <div className="flex max-w-sm flex-col gap-4 rounded-lg border border-neutral-800 bg-neutral-900 p-4">
-        <p className="text-sm text-neutral-300">
+      <div className="flex max-w-sm flex-col gap-4 rounded-lg border border-base bg-surface p-4">
+        <p className="text-sm text-muted">
           Escanea este código con Google Authenticator, Authy, o cualquier app
           compatible con TOTP.
         </p>
@@ -93,13 +93,13 @@ export default function TotpSettings({ initialEnabled }: { initialEnabled: boole
           alt="Código QR para configurar 2FA"
           className="h-48 w-48 self-center rounded bg-white p-2"
         />
-        <p className="text-xs text-neutral-500">
+        <p className="text-xs text-muted">
           ¿No puedes escanear? Ingresa esta clave manualmente:
           <br />
-          <code className="text-neutral-300">{setupData.secret}</code>
+          <code className="text-muted">{setupData.secret}</code>
         </p>
         <form onSubmit={handleConfirm} className="flex flex-col gap-3">
-          <label className="flex flex-col gap-1 text-sm text-neutral-300">
+          <label className="flex flex-col gap-1 text-sm text-muted">
             Código de 6 dígitos
             <input
               value={code}
@@ -108,7 +108,7 @@ export default function TotpSettings({ initialEnabled }: { initialEnabled: boole
               autoFocus
               inputMode="numeric"
               maxLength={8}
-              className="rounded border border-neutral-700 bg-neutral-950 px-3 py-2 text-white tracking-widest"
+              className="rounded border border-base bg-page px-3 py-2 text-base tracking-widest"
             />
           </label>
           {error && <p className="text-sm text-red-400">{error}</p>}
@@ -116,7 +116,7 @@ export default function TotpSettings({ initialEnabled }: { initialEnabled: boole
             <button
               type="submit"
               disabled={loading}
-              className="rounded bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-500 disabled:opacity-60"
+              className="btn-accent rounded px-4 py-2 font-medium disabled:opacity-60"
             >
               {loading ? "Verificando..." : "Confirmar y activar"}
             </button>
@@ -126,7 +126,7 @@ export default function TotpSettings({ initialEnabled }: { initialEnabled: boole
                 setSetupData(null);
                 setError(null);
               }}
-              className="rounded bg-neutral-800 px-4 py-2 text-white hover:bg-neutral-700"
+              className="rounded bg-surface px-4 py-2 text-base hover-surface"
             >
               Cancelar
             </button>
@@ -140,23 +140,23 @@ export default function TotpSettings({ initialEnabled }: { initialEnabled: boole
     return (
       <form
         onSubmit={handleDisable}
-        className="flex max-w-sm flex-col gap-3 rounded-lg border border-neutral-800 bg-neutral-900 p-4"
+        className="flex max-w-sm flex-col gap-3 rounded-lg border border-base bg-surface p-4"
       >
-        <p className="text-sm text-neutral-300">
+        <p className="text-sm text-muted">
           Para desactivar la verificación en dos pasos, confirma tu contraseña
           y un código actual de tu app de autenticación.
         </p>
-        <label className="flex flex-col gap-1 text-sm text-neutral-300">
+        <label className="flex flex-col gap-1 text-sm text-muted">
           Contraseña
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="rounded border border-neutral-700 bg-neutral-950 px-3 py-2 text-white"
+            className="rounded border border-base bg-page px-3 py-2 text-base"
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm text-neutral-300">
+        <label className="flex flex-col gap-1 text-sm text-muted">
           Código de 6 dígitos
           <input
             value={code}
@@ -164,7 +164,7 @@ export default function TotpSettings({ initialEnabled }: { initialEnabled: boole
             required
             inputMode="numeric"
             maxLength={8}
-            className="rounded border border-neutral-700 bg-neutral-950 px-3 py-2 text-white tracking-widest"
+            className="rounded border border-base bg-page px-3 py-2 text-base tracking-widest"
           />
         </label>
         {error && <p className="text-sm text-red-400">{error}</p>}
@@ -182,7 +182,7 @@ export default function TotpSettings({ initialEnabled }: { initialEnabled: boole
               setDisabling(false);
               setError(null);
             }}
-            className="rounded bg-neutral-800 px-4 py-2 text-white hover:bg-neutral-700"
+            className="rounded bg-surface px-4 py-2 text-base hover-surface"
           >
             Cancelar
           </button>
@@ -192,16 +192,16 @@ export default function TotpSettings({ initialEnabled }: { initialEnabled: boole
   }
 
   return (
-    <div className="flex max-w-sm flex-col gap-3 rounded-lg border border-neutral-800 bg-neutral-900 p-4">
+    <div className="flex max-w-sm flex-col gap-3 rounded-lg border border-base bg-surface p-4">
       <div className="flex items-center justify-between">
-        <span className="text-sm text-neutral-300">
+        <span className="text-sm text-muted">
           Verificación en dos pasos (2FA)
         </span>
         <span
           className={
             enabled
-              ? "rounded bg-emerald-900 px-2 py-0.5 text-xs text-emerald-300"
-              : "rounded bg-neutral-800 px-2 py-0.5 text-xs text-neutral-400"
+              ? "rounded badge-accent px-2 py-0.5 text-xs"
+              : "rounded bg-surface px-2 py-0.5 text-xs text-muted"
           }
         >
           {enabled ? "Activada" : "Desactivada"}
@@ -211,7 +211,7 @@ export default function TotpSettings({ initialEnabled }: { initialEnabled: boole
       {enabled ? (
         <button
           onClick={() => setDisabling(true)}
-          className="self-start rounded bg-neutral-800 px-4 py-2 text-white hover:bg-neutral-700"
+          className="self-start rounded bg-surface px-4 py-2 text-base hover-surface"
         >
           Desactivar 2FA
         </button>
@@ -219,7 +219,7 @@ export default function TotpSettings({ initialEnabled }: { initialEnabled: boole
         <button
           onClick={startSetup}
           disabled={loading}
-          className="self-start rounded bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-500 disabled:opacity-60"
+          className="self-start btn-accent rounded px-4 py-2 font-medium disabled:opacity-60"
         >
           {loading ? "Cargando..." : "Activar 2FA"}
         </button>

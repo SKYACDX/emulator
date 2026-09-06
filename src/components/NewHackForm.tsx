@@ -37,14 +37,14 @@ export default function NewHackForm({ platforms }: { platforms: Platform[] }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex max-w-xl flex-col gap-4">
-      <label className="flex flex-col gap-1 text-sm text-neutral-300">
+      <label className="flex flex-col gap-1 text-sm text-muted">
         Plataforma
         <select
           name="platformSlug"
           required
           value={platformSlug}
           onChange={(e) => setPlatformSlug(e.target.value)}
-          className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white"
+          className="rounded border border-base bg-surface px-3 py-2 text-base"
         >
           <option value="" disabled>
             Selecciona una plataforma
@@ -57,7 +57,7 @@ export default function NewHackForm({ platforms }: { platforms: Platform[] }) {
         </select>
       </label>
 
-      <label className="flex flex-col gap-1 text-sm text-neutral-300">
+      <label className="flex flex-col gap-1 text-sm text-muted">
         Juego base
         <input
           name="gameTitle"
@@ -66,11 +66,11 @@ export default function NewHackForm({ platforms }: { platforms: Platform[] }) {
           placeholder="Ej. Super Mario World"
           value={gameTitle}
           onChange={(e) => setGameTitle(e.target.value)}
-          className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white"
+          className="rounded border border-base bg-surface px-3 py-2 text-base"
         />
       </label>
 
-      <div className="flex flex-col gap-1 text-sm text-neutral-300">
+      <div className="flex flex-col gap-1 text-sm text-muted">
         <span>Portada (opcional)</span>
         <CoverPicker
           gameTitle={gameTitle}
@@ -80,54 +80,54 @@ export default function NewHackForm({ platforms }: { platforms: Platform[] }) {
         />
       </div>
 
-      <label className="flex flex-col gap-1 text-sm text-neutral-300">
+      <label className="flex flex-col gap-1 text-sm text-muted">
         Título del hack
         <input
           name="hackTitle"
           required
           maxLength={120}
-          className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white"
+          className="rounded border border-base bg-surface px-3 py-2 text-base"
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm text-neutral-300">
+      <label className="flex flex-col gap-1 text-sm text-muted">
         Descripción
         <textarea
           name="description"
           required
           rows={5}
-          className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white"
+          className="rounded border border-base bg-surface px-3 py-2 text-base"
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm text-neutral-300">
+      <label className="flex flex-col gap-1 text-sm text-muted">
         Versión inicial
         <input
           name="version"
           required
           maxLength={30}
           placeholder="1.0"
-          className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white"
+          className="rounded border border-base bg-surface px-3 py-2 text-base"
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm text-neutral-300">
+      <label className="flex flex-col gap-1 text-sm text-muted">
         Notas de la versión (opcional)
         <textarea
           name="releaseNotes"
           rows={3}
-          className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white"
+          className="rounded border border-base bg-surface px-3 py-2 text-base"
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm text-neutral-300">
+      <label className="flex flex-col gap-1 text-sm text-muted">
         Archivo de parche (.ips, .bps, .ups, .xdelta)
         <input
           type="file"
           name="patchFile"
           required
           accept=".ips,.bps,.ups,.xdelta"
-          className="text-neutral-300"
+          className="text-muted"
         />
       </label>
 

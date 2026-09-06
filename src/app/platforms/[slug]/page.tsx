@@ -51,9 +51,9 @@ export default async function PlatformPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold text-white">{platform.name}</h1>
+      <h1 className="text-2xl font-bold text-base">{platform.name}</h1>
       {platform.games.length === 0 ? (
-        <p className="text-neutral-500">
+        <p className="text-muted">
           Todavía no hay juegos con hacks publicados para esta plataforma.
         </p>
       ) : (
@@ -66,17 +66,17 @@ export default async function PlatformPage({
                   <img
                     src={game.coverImageUrl}
                     alt={game.title}
-                    className="h-10 w-auto rounded border border-neutral-800"
+                    className="h-10 w-auto rounded border border-base"
                   />
                 )}
-                <h2 className="text-lg font-semibold text-white">{game.title}</h2>
+                <h2 className="text-lg font-semibold text-base">{game.title}</h2>
               </div>
               <ul className="flex flex-col gap-2">
                 {game.hacks.map((hack) => (
                   <li key={hack.id}>
                     <Link
                       href={`/hacks/${hack.slug}`}
-                      className="block rounded-lg border border-neutral-800 bg-neutral-900 p-3 hover:border-neutral-700"
+                      className="block rounded-lg border border-base bg-surface p-3 hover-border"
                     >
                       {hack.title}
                     </Link>

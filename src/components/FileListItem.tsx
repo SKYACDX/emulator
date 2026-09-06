@@ -80,7 +80,7 @@ export default function FileListItem({
   }
 
   return (
-    <li className="rounded-lg border border-neutral-800 bg-neutral-900 p-4">
+    <li className="rounded-lg border border-base bg-surface p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="flex gap-3">
           {file.coverImageUrl && (
@@ -88,16 +88,16 @@ export default function FileListItem({
             <img
               src={file.coverImageUrl}
               alt={file.gameTitle ?? file.title}
-              className="h-14 w-auto shrink-0 rounded border border-neutral-800"
+              className="h-14 w-auto shrink-0 rounded border border-base"
             />
           )}
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="font-medium text-white">{file.title}</h2>
+              <h2 className="font-medium text-base">{file.title}</h2>
               <span
                 className={
                   file.isPublic
-                    ? "rounded bg-neutral-800 px-2 py-0.5 text-xs text-neutral-400"
+                    ? "rounded bg-surface px-2 py-0.5 text-xs text-muted"
                     : "rounded bg-amber-900 px-2 py-0.5 text-xs text-amber-300"
                 }
               >
@@ -109,7 +109,7 @@ export default function FileListItem({
                 </span>
               )}
             </div>
-            <p className="text-xs text-neutral-500">
+            <p className="text-xs text-muted">
               {file.originalName} · {formatBytes(file.fileSize)} · subido por{" "}
               {file.uploader}
             </p>
@@ -118,20 +118,20 @@ export default function FileListItem({
         <div className="flex shrink-0 gap-2">
           <a
             href={`/api/files/${file.id}/download`}
-            className="rounded bg-emerald-600 px-3 py-1.5 text-sm text-white hover:bg-emerald-500"
+            className="btn-accent rounded px-3 py-1.5 text-sm"
           >
             Descargar
           </a>
           {canReport && !reportSent && (
             <button
               onClick={() => setReporting((v) => !v)}
-              className="rounded bg-neutral-800 px-3 py-1.5 text-sm text-white hover:bg-neutral-700"
+              className="rounded bg-surface px-3 py-1.5 text-sm text-base hover-surface"
             >
               Reportar
             </button>
           )}
           {reportSent && (
-            <span className="self-center text-sm text-neutral-500">Reportado</span>
+            <span className="self-center text-sm text-muted">Reportado</span>
           )}
           {canDelete && (
             <button
@@ -145,19 +145,19 @@ export default function FileListItem({
         </div>
       </div>
       {file.description && (
-        <p className="mt-2 whitespace-pre-wrap text-sm text-neutral-400">
+        <p className="mt-2 whitespace-pre-wrap text-sm text-muted">
           {file.description}
         </p>
       )}
 
       {reporting && (
-        <div className="mt-3 flex flex-col gap-2 rounded border border-neutral-800 bg-neutral-950 p-3">
-          <label className="flex flex-col gap-1 text-sm text-neutral-300">
+        <div className="mt-3 flex flex-col gap-2 rounded border border-base bg-page p-3">
+          <label className="flex flex-col gap-1 text-sm text-muted">
             Motivo del reporte
             <select
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white"
+              className="rounded border border-base bg-surface px-3 py-2 text-base"
             >
               {REPORT_REASONS.map((r) => (
                 <option key={r} value={r}>
@@ -172,7 +172,7 @@ export default function FileListItem({
               onChange={(e) => setDetails(e.target.value)}
               placeholder="Describe el motivo"
               maxLength={500}
-              className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white"
+              className="rounded border border-base bg-surface px-3 py-2 text-base"
             />
           )}
           <div className="flex gap-2">
@@ -185,7 +185,7 @@ export default function FileListItem({
             </button>
             <button
               onClick={() => setReporting(false)}
-              className="rounded bg-neutral-800 px-3 py-1.5 text-sm text-white hover:bg-neutral-700"
+              className="rounded bg-surface px-3 py-1.5 text-sm text-base hover-surface"
             >
               Cancelar
             </button>

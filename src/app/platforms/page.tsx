@@ -19,16 +19,16 @@ export default async function PlatformsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold text-white">Plataformas</h1>
+      <h1 className="text-2xl font-bold text-base">Plataformas</h1>
       <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {platforms.map((platform) => (
           <li key={platform.id}>
             <Link
               href={`/platforms/${platform.slug}`}
-              className="block rounded-lg border border-neutral-800 bg-neutral-900 p-4 hover:border-neutral-700"
+              className="block rounded-lg border border-base bg-surface p-4 hover-border"
             >
-              <span className="font-medium text-white">{platform.name}</span>
-              <p className="text-sm text-neutral-500">
+              <span className="font-medium text-base">{platform.name}</span>
+              <p className="text-sm text-muted">
                 {platform._count.games} juego(s)
               </p>
             </Link>

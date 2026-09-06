@@ -3,7 +3,12 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import NavBar from "@/components/NavBar";
 import { getCurrentUser } from "@/lib/auth";
-import { DEFAULT_THEME_ID } from "@/lib/themes";
+import {
+  DEFAULT_THEME_ID,
+  CUSTOM_THEME_ID,
+  DEFAULT_CUSTOM_COLORS,
+  buildCustomThemeStyle,
+} from "@/lib/themes";
 
 const ADSENSE_CLIENT_ID = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
 
@@ -40,10 +45,21 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const user = await getCurrentUser();
   const themeId = user?.theme ?? DEFAULT_THEME_ID;
 
+  const customStyle =
+    themeId === CUSTOM_THEME_ID
+      ? buildCustomThemeStyle({
+          bg: user?.customThemeBg ?? DEFAULT_CUSTOM_COLORS.bg,
+          surface: user?.customThemeSurface ?? DEFAULT_CUSTOM_COLORS.surface,
+          accent: user?.customThemeAccent ?? DEFAULT_CUSTOM_COLORS.accent,
+          text: user?.customThemeText ?? DEFAULT_CUSTOM_COLORS.text,
+        })
+      : undefined;
+
   return (
     <html
       lang="es"
       data-theme={themeId}
+      style={customStyle}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       {ADSENSE_CLIENT_ID && (
@@ -63,12 +79,12 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           />
         </head>
       )}
-      <body className="min-h-full flex flex-col bg-neutral-950 text-neutral-100">
+      <body className="bg-page text-base min-h-full flex flex-col">
         <NavBar />
         <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
           {children}
         </main>
-        <footer className="border-t border-neutral-800 px-4 py-6 text-center text-xs text-neutral-500">
+        <footer className="border-base text-muted border-t px-4 py-6 text-center text-xs">
           Este sitio distribuye únicamente parches (IPS/BPS/UPS), nunca ROMs completas.
           Necesitas tu propia copia legal del juego original para aplicar un parche.
         </footer>

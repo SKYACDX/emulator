@@ -54,14 +54,14 @@ export default function CoverPicker({
           <img
             src={value}
             alt="Portada seleccionada"
-            className="h-16 w-auto rounded border border-neutral-700"
+            className="h-16 w-auto rounded border border-base"
           />
         )}
         <button
           type="button"
           onClick={handleSearch}
           disabled={loading}
-          className="rounded bg-neutral-800 px-3 py-1.5 text-sm text-white hover:bg-neutral-700 disabled:opacity-60"
+          className="rounded bg-surface px-3 py-1.5 text-sm text-base hover-surface disabled:opacity-60"
         >
           {loading ? "Buscando..." : value ? "Cambiar portada" : "Buscar portada"}
         </button>
@@ -69,7 +69,7 @@ export default function CoverPicker({
           <button
             type="button"
             onClick={() => onChange(null)}
-            className="text-sm text-neutral-400 hover:text-white"
+            className="text-sm text-muted hover:text-base"
           >
             Quitar
           </button>
@@ -79,9 +79,9 @@ export default function CoverPicker({
       {error && <p className="text-sm text-red-400">{error}</p>}
 
       {results && (
-        <div className="flex flex-wrap gap-2 rounded border border-neutral-800 bg-neutral-950 p-2">
+        <div className="flex flex-wrap gap-2 rounded border border-base bg-page p-2">
           {results.length === 0 ? (
-            <p className="text-sm text-neutral-500">
+            <p className="text-sm text-muted">
               Sin resultados con portada para ese nombre.
             </p>
           ) : (
@@ -94,11 +94,11 @@ export default function CoverPicker({
                   setResults(null);
                 }}
                 title={r.title}
-                className="flex flex-col items-center gap-1 rounded border border-neutral-700 p-1 hover:border-emerald-500"
+                className="flex flex-col items-center gap-1 rounded border border-base p-1 hover-border-accent"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={r.coverUrl!} alt={r.title} className="h-24 w-auto" />
-                <span className="max-w-20 truncate text-xs text-neutral-400">
+                <span className="max-w-20 truncate text-xs text-muted">
                   {r.title}
                 </span>
               </button>
@@ -107,7 +107,7 @@ export default function CoverPicker({
         </div>
       )}
 
-      <p className="text-xs text-neutral-600">
+      <p className="text-xs text-muted">
         Portadas cortesía de{" "}
         <a
           href="https://thegamesdb.net"

@@ -33,33 +33,33 @@ export default function AddPatchForm({ hackId }: { hackId: string }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex max-w-md flex-col gap-3 rounded-lg border border-neutral-800 bg-neutral-900 p-4"
+      className="flex max-w-md flex-col gap-3 rounded-lg border border-base bg-surface p-4"
     >
-      <label className="flex flex-col gap-1 text-sm text-neutral-300">
+      <label className="flex flex-col gap-1 text-sm text-muted">
         Versión
         <input
           name="version"
           required
           maxLength={30}
-          className="rounded border border-neutral-700 bg-neutral-950 px-3 py-2 text-white"
+          className="rounded border border-base bg-page px-3 py-2 text-base"
         />
       </label>
-      <label className="flex flex-col gap-1 text-sm text-neutral-300">
+      <label className="flex flex-col gap-1 text-sm text-muted">
         Notas de la versión (opcional)
         <textarea
           name="releaseNotes"
           rows={3}
-          className="rounded border border-neutral-700 bg-neutral-950 px-3 py-2 text-white"
+          className="rounded border border-base bg-page px-3 py-2 text-base"
         />
       </label>
-      <label className="flex flex-col gap-1 text-sm text-neutral-300">
+      <label className="flex flex-col gap-1 text-sm text-muted">
         Archivo de parche (.ips, .bps, .ups, .xdelta)
         <input
           type="file"
           name="patchFile"
           required
           accept=".ips,.bps,.ups,.xdelta"
-          className="text-neutral-300"
+          className="text-muted"
         />
       </label>
       {error && <p className="text-sm text-red-400">{error}</p>}

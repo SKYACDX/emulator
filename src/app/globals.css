@@ -7,41 +7,104 @@
 
 /*
  * Per-user visual themes (see src/lib/themes.tsx for the matching registry
- * used by the picker UI). Swaps a small set of "accent" variables based on
- * [data-theme] on <html> — the rest of the site's dark neutral chrome stays
- * the same for consistency/readability, only primary CTAs and highlights
- * pick up the theme color.
+ * used by the picker UI). Every surface color in the app — page background,
+ * card/panel background, borders, text, and the accent used by buttons and
+ * highlighted links — comes from these variables, swapped via [data-theme]
+ * on <html>. "custom" doesn't have a block here: its values are injected as
+ * an inline style on <html> instead, since they're arbitrary per-user hex
+ * colors rather than one of these fixed presets.
  */
 :root {
+  --color-bg: #0a0a0a;
+  --color-surface: #171717;
+  --color-surface-hover: #262626;
+  --color-border: #262626;
+  --color-border-hover: #404040;
+  --color-text: #f5f5f5;
+  --color-text-muted: #a3a3a3;
   --color-accent: #10b981;
   --color-accent-hover: #34d399;
   --color-accent-text: #ffffff;
 }
 
 [data-theme="mushroom"] {
+  --color-bg: #1a0a0a;
+  --color-surface: #2a1212;
+  --color-surface-hover: #3a1a1a;
+  --color-border: #4a2222;
+  --color-border-hover: #602c2c;
+  --color-text: #fdf2f2;
+  --color-text-muted: #c99999;
   --color-accent: #dc2626;
   --color-accent-hover: #ef4444;
   --color-accent-text: #ffffff;
 }
 
 [data-theme="forest"] {
+  --color-bg: #0a140d;
+  --color-surface: #102015;
+  --color-surface-hover: #17301f;
+  --color-border: #1e4026;
+  --color-border-hover: #275632;
+  --color-text: #f0f7f2;
+  --color-text-muted: #9cbba8;
   --color-accent: #16a34a;
   --color-accent-hover: #22c55e;
   --color-accent-text: #ffffff;
 }
 
 [data-theme="cosmic"] {
+  --color-bg: #120a1a;
+  --color-surface: #1e1030;
+  --color-surface-hover: #2b1745;
+  --color-border: #3b1f5c;
+  --color-border-hover: #4d2a75;
+  --color-text: #f5f0fa;
+  --color-text-muted: #b8a4cc;
   --color-accent: #9333ea;
   --color-accent-hover: #a855f7;
   --color-accent-text: #ffffff;
 }
 
 [data-theme="speedway"] {
+  --color-bg: #14120a;
+  --color-surface: #241f10;
+  --color-surface-hover: #332b16;
+  --color-border: #453b1d;
+  --color-border-hover: #5c4f27;
+  --color-text: #faf7ef;
+  --color-text-muted: #cbbf94;
   --color-accent: #eab308;
   --color-accent-hover: #facc15;
   --color-accent-text: #1c1917;
 }
 
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.bg-page {
+  background-color: var(--color-bg);
+}
+.bg-surface {
+  background-color: var(--color-surface);
+}
+.hover-surface:hover {
+  background-color: var(--color-surface-hover);
+}
+.border-base {
+  border-color: var(--color-border);
+}
+.hover-border:hover {
+  border-color: var(--color-border-hover);
+}
+.text-base {
+  color: var(--color-text);
+}
+.text-muted {
+  color: var(--color-text-muted);
+}
 .btn-accent {
   background-color: var(--color-accent);
   color: var(--color-accent-text);
@@ -53,5 +116,15 @@
   color: var(--color-accent);
 }
 .border-accent {
+  border-color: var(--color-accent);
+}
+.badge-accent {
+  background-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
+  color: var(--color-accent);
+}
+.hover-text-accent:hover {
+  color: var(--color-accent);
+}
+.hover-border-accent:hover {
   border-color: var(--color-accent);
 }

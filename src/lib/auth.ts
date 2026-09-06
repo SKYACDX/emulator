@@ -72,6 +72,10 @@ export async function getCurrentUser() {
       role: true,
       totpEnabled: true,
       theme: true,
+      customThemeBg: true,
+      customThemeSurface: true,
+      customThemeAccent: true,
+      customThemeText: true,
       createdAt: true,
     },
   });

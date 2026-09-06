@@ -195,15 +195,30 @@ Google Authenticator, Authy, 1Password, etc.):
 ## Temas por usuario
 
 Cada usuario logueado puede elegir un tema visual desde `/me` (persistido en
-`User.theme`, sincronizado entre dispositivos). Los temas están inspirados
-en géneros de juegos de Nintendo (aventura, plataformas, espacial, carreras)
+`User`, sincronizado entre dispositivos). Los temas están inspirados en
+géneros de juegos de Nintendo (aventura, plataformas, espacial, carreras)
 pero **usan solo colores e íconos originales dibujados a mano en
-`src/lib/themes.tsx`** — ninguna imagen, sprite o logo oficial. El sitio no
-se re-diseña por completo: solo cambia el color de acento (botones
-primarios, enlaces destacados) vía variables CSS en `globals.css`
-(`[data-theme="..."]` sobre `<html>`), manteniendo el resto del look oscuro
-neutro para legibilidad. Agregar un tema nuevo es agregar una entrada al
-arreglo `THEMES` + su bloque `[data-theme="id"]` correspondiente en CSS.
+`src/lib/themes.tsx`** — ninguna imagen, sprite o logo oficial.
+
+A diferencia de la primera versión (que solo cambiaba el color de los
+botones), el tema ahora controla **todo el sitio**: fondo de página,
+superficie de tarjetas/paneles, bordes, texto y el acento de botones/enlaces
+destacados — todo vía variables CSS en `globals.css` (`[data-theme="..."]`
+sobre `<html>`) y las clases utilitarias `bg-page`, `bg-surface`,
+`border-base`, `text-base`, `text-muted`, `btn-accent`, `text-accent`, etc.
+(en vez de clases fijas de Tailwind como `bg-neutral-900`). Agregar un tema
+nuevo es agregar una entrada al arreglo `THEMES` + su bloque
+`[data-theme="id"]` correspondiente en CSS.
+
+### Tema personalizado
+
+Además de los 5 presets, cualquier usuario puede crear su propio tema
+("Personalizado") eligiendo 4 colores (fondo, superficie, acento, texto)
+con selectores de color nativos del navegador. Estos valores son arbitrarios
+por usuario, así que no tienen un bloque `[data-theme]` fijo en CSS — se
+inyectan como `style` inline sobre `<html>` (`buildCustomThemeStyle()` en
+`src/lib/themes.tsx`), validados en el servidor como hex de 6 dígitos antes
+de guardarse (`PATCH /api/me/theme`).
 
 ## Desplegar gratis en Vercel
 

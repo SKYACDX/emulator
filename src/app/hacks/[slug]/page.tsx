@@ -97,22 +97,22 @@ export default async function HackPage({
           <img
             src={hack.game.coverImageUrl}
             alt={hack.game.title}
-            className="h-32 w-auto shrink-0 rounded border border-neutral-800"
+            className="h-32 w-auto shrink-0 rounded border border-base"
           />
         )}
         <div className="min-w-0">
-          <div className="flex items-center gap-2 text-sm text-neutral-500">
+          <div className="flex items-center gap-2 text-sm text-muted">
             <Link href={`/platforms/${hack.game.platform.slug}`} className="hover:underline">
               {hack.game.platform.name}
             </Link>
             <span>/</span>
             <span>{hack.game.title}</span>
           </div>
-          <h1 className="mt-1 text-2xl font-bold text-white">{hack.title}</h1>
-          <p className="mt-1 text-sm text-neutral-500">
+          <h1 className="mt-1 text-2xl font-bold text-base">{hack.title}</h1>
+          <p className="mt-1 text-sm text-muted">
             Publicado por {hack.author.username}
           </p>
-          <p className="mt-4 whitespace-pre-wrap text-neutral-300">
+          <p className="mt-4 whitespace-pre-wrap text-muted">
             {hack.description}
           </p>
         </div>
@@ -121,32 +121,32 @@ export default async function HackPage({
       <AdSlot />
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-white">
+        <h2 className="mb-3 text-lg font-semibold text-base">
           Versiones del parche
         </h2>
         <ul className="flex flex-col gap-3">
           {hack.patches.map((patch) => (
             <li
               key={patch.id}
-              className="rounded-lg border border-neutral-800 bg-neutral-900 p-4"
+              className="rounded-lg border border-base bg-surface p-4"
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="font-medium text-white">
+                <span className="font-medium text-base">
                   v{patch.version} · {formatLabel(patch.format)}
                 </span>
                 <a
                   href={`/api/patches/${patch.id}/download`}
-                  className="rounded bg-emerald-600 px-3 py-1.5 text-sm text-white hover:bg-emerald-500"
+                  className="btn-accent rounded px-3 py-1.5 text-sm"
                 >
                   Descargar parche ({formatBytes(patch.fileSize)})
                 </a>
               </div>
               {patch.releaseNotes && (
-                <p className="mt-2 whitespace-pre-wrap text-sm text-neutral-400">
+                <p className="mt-2 whitespace-pre-wrap text-sm text-muted">
                   {patch.releaseNotes}
                 </p>
               )}
-              <p className="mt-2 font-mono text-xs text-neutral-600">
+              <p className="mt-2 font-mono text-xs text-muted">
                 SHA-256: {patch.sha256}
               </p>
             </li>
@@ -154,10 +154,10 @@ export default async function HackPage({
         </ul>
       </section>
 
-      <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-4 text-sm text-neutral-400">
+      <div className="rounded-lg border border-base bg-surface p-4 text-sm text-muted">
         Necesitas tu propia copia legal de <strong>{hack.game.title}</strong>{" "}
         para aplicar este parche. Usa la{" "}
-        <Link href="/patch" className="text-emerald-400 underline">
+        <Link href="/patch" className="text-accent underline">
           herramienta de parcheo
         </Link>{" "}
         para generar la ROM parcheada en tu navegador; el archivo original
@@ -166,7 +166,7 @@ export default async function HackPage({
 
       {isOwner && (
         <section>
-          <h2 className="mb-3 text-lg font-semibold text-white">
+          <h2 className="mb-3 text-lg font-semibold text-base">
             Publicar nueva versión
           </h2>
           <AddPatchForm hackId={hack.id} />

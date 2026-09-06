@@ -37,9 +37,14 @@ model User {
   totpSecret        String?
   totpPendingSecret String?
 
-  // Visual theme id from src/lib/themes.ts (validated server-side against
-  // that registry, not a free-text field).
-  theme String @default("default")
+  // Visual theme id from src/lib/themes.tsx (validated server-side against
+  // that registry). "custom" activates the customTheme* hex colors below
+  // instead of a preset.
+  theme               String  @default("default")
+  customThemeBg       String?
+  customThemeSurface  String?
+  customThemeAccent   String?
+  customThemeText     String?
 
   hacks       Hack[]
   sharedFiles SharedFile[]

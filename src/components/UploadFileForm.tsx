@@ -93,38 +93,38 @@ export default function UploadFileForm({ platforms }: { platforms: Platform[] })
 
   return (
     <form onSubmit={handleSubmit} className="flex max-w-xl flex-col gap-4">
-      <label className="flex flex-col gap-1 text-sm text-neutral-300">
+      <label className="flex flex-col gap-1 text-sm text-muted">
         Título
         <input
           name="title"
           required
           maxLength={120}
-          className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white"
+          className="rounded border border-base bg-surface px-3 py-2 text-base"
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm text-neutral-300">
+      <label className="flex flex-col gap-1 text-sm text-muted">
         Descripción (opcional)
         <textarea
           name="description"
           rows={4}
-          className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white"
+          className="rounded border border-base bg-surface px-3 py-2 text-base"
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm text-neutral-300">
+      <label className="flex flex-col gap-1 text-sm text-muted">
         Archivo
-        <input type="file" name="file" required className="text-neutral-300" />
+        <input type="file" name="file" required className="text-muted" />
       </label>
 
-      <div className="flex flex-col gap-1 text-sm text-neutral-300">
+      <div className="flex flex-col gap-1 text-sm text-muted">
         <span>Etiquetas (opcional, para saber de qué trata el archivo)</span>
         <div className="flex flex-col gap-2 sm:flex-row">
           <select
             name="platformSlug"
             value={platformSlug}
             onChange={(e) => setPlatformSlug(e.target.value)}
-            className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white sm:w-1/2"
+            className="rounded border border-base bg-surface px-3 py-2 text-base sm:w-1/2"
           >
             <option value="">Sin plataforma</option>
             {platforms.map((p) => (
@@ -139,13 +139,13 @@ export default function UploadFileForm({ platforms }: { platforms: Platform[] })
             maxLength={120}
             value={gameTitle}
             onChange={(e) => setGameTitle(e.target.value)}
-            className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white sm:w-1/2"
+            className="rounded border border-base bg-surface px-3 py-2 text-base sm:w-1/2"
           />
         </div>
       </div>
 
       {gameTitle.trim() && (
-        <div className="flex flex-col gap-1 text-sm text-neutral-300">
+        <div className="flex flex-col gap-1 text-sm text-muted">
           <span>Portada (opcional)</span>
           <CoverPicker
             gameTitle={gameTitle}
@@ -156,7 +156,7 @@ export default function UploadFileForm({ platforms }: { platforms: Platform[] })
         </div>
       )}
 
-      <fieldset className="flex flex-col gap-2 text-sm text-neutral-300">
+      <fieldset className="flex flex-col gap-2 text-sm text-muted">
         <legend className="mb-1">Visibilidad</legend>
         <label className="flex items-center gap-2">
           <input type="radio" name="visibility" value="public" defaultChecked />
@@ -168,7 +168,7 @@ export default function UploadFileForm({ platforms }: { platforms: Platform[] })
         </label>
       </fieldset>
 
-      {status && <p className="text-sm text-neutral-400">{status}</p>}
+      {status && <p className="text-sm text-muted">{status}</p>}
       {error && <p className="text-sm text-red-400">{error}</p>}
 
       <button

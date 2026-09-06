@@ -14,7 +14,7 @@ export default function LogoutButton() {
   return (
     <button
       onClick={handleLogout}
-      className="text-neutral-300 hover:text-white"
+      className="text-muted hover:text-base"
     >
       Cerrar sesión
     </button>

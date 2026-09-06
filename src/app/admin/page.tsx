@@ -49,14 +49,14 @@ export default async function AdminPage() {
   return (
     <div className="flex flex-col gap-10">
       <div>
-        <h1 className="text-2xl font-bold text-white">Panel de administración</h1>
-        <p className="mt-1 text-sm text-neutral-400">
+        <h1 className="text-2xl font-bold text-base">Panel de administración</h1>
+        <p className="mt-1 text-sm text-muted">
           Sesión: {admin.username} ({admin.email})
         </p>
       </div>
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-white">
+        <h2 className="mb-3 text-lg font-semibold text-base">
           Hacks publicados ({hacks.length})
         </h2>
         <AdminHacksTable
@@ -74,7 +74,7 @@ export default async function AdminPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-white">
+        <h2 className="mb-3 text-lg font-semibold text-base">
           Archivos reportados ({reportedFiles.length})
         </h2>
         <AdminReportsTable
@@ -93,12 +93,12 @@ export default async function AdminPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-white">
+        <h2 className="mb-3 text-lg font-semibold text-base">
           Archivos compartidos ({sharedFileCount})
         </h2>
-        <p className="text-sm text-neutral-400">
+        <p className="text-sm text-muted">
           Modéralos desde{" "}
-          <Link href="/files" className="text-emerald-400 underline">
+          <Link href="/files" className="text-accent underline">
             /files
           </Link>
           : como admin puedes eliminar cualquier archivo de cualquier usuario
@@ -107,7 +107,7 @@ export default async function AdminPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-white">
+        <h2 className="mb-3 text-lg font-semibold text-base">
           Usuarios ({users.length})
         </h2>
         <AdminUsersTable

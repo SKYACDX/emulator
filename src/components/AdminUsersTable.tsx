@@ -21,9 +21,9 @@ const ROLE_LABELS: Record<Role, string> = {
 };
 
 const ROLE_BADGE_CLASS: Record<Role, string> = {
-  USER: "rounded bg-neutral-800 px-2 py-0.5 text-xs text-neutral-400",
+  USER: "rounded bg-surface px-2 py-0.5 text-xs text-muted",
   MODERATOR: "rounded bg-sky-900 px-2 py-0.5 text-xs text-sky-300",
-  ADMIN: "rounded bg-emerald-900 px-2 py-0.5 text-xs text-emerald-300",
+  ADMIN: "rounded badge-accent px-2 py-0.5 text-xs",
 };
 
 export default function AdminUsersTable({
@@ -89,10 +89,10 @@ export default function AdminUsersTable({
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-neutral-800">
+    <div className="overflow-x-auto rounded-lg border border-base">
       {error && <p className="p-3 text-sm text-red-400">{error}</p>}
       <table className="w-full text-left text-sm">
-        <thead className="bg-neutral-900 text-neutral-400">
+        <thead className="bg-surface text-muted">
           <tr>
             <th className="px-3 py-2">Usuario</th>
             <th className="px-3 py-2">Correo</th>
@@ -105,18 +105,18 @@ export default function AdminUsersTable({
           {users.map((user) => {
             const isSelf = user.id === currentAdminId;
             return (
-              <tr key={user.id} className="border-t border-neutral-800">
-                <td className="px-3 py-2 text-white">
+              <tr key={user.id} className="border-t border-base">
+                <td className="px-3 py-2 text-base">
                   {user.username}
-                  {isSelf && <span className="ml-2 text-xs text-neutral-500">(tú)</span>}
+                  {isSelf && <span className="ml-2 text-xs text-muted">(tú)</span>}
                 </td>
-                <td className="px-3 py-2 text-neutral-400">{user.email}</td>
+                <td className="px-3 py-2 text-muted">{user.email}</td>
                 <td className="px-3 py-2">
                   <span className={ROLE_BADGE_CLASS[user.role]}>
                     {ROLE_LABELS[user.role]}
                   </span>
                 </td>
-                <td className="px-3 py-2 text-neutral-400">{user.hackCount}</td>
+                <td className="px-3 py-2 text-muted">{user.hackCount}</td>
                 <td className="px-3 py-2 text-right">
                   {!isSelf && (
                     <div className="flex justify-end gap-2">
@@ -124,7 +124,7 @@ export default function AdminUsersTable({
                         value={user.role}
                         onChange={(e) => handleRoleChange(user, e.target.value as Role)}
                         disabled={pendingId === user.id}
-                        className="rounded border border-neutral-700 bg-neutral-800 px-2 py-1 text-white disabled:opacity-60"
+                        className="rounded border border-base bg-surface px-2 py-1 text-base disabled:opacity-60"
                       >
                         <option value="USER">Usuario</option>
                         <option value="MODERATOR">Moderador</option>

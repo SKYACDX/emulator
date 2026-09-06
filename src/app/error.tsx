@@ -9,18 +9,18 @@ export default function ErrorBoundary({
 }) {
   return (
     <div className="flex flex-col items-center gap-4 py-16 text-center">
-      <h1 className="text-2xl font-bold text-white">Algo salió mal</h1>
-      <p className="max-w-md text-neutral-400">
+      <h1 className="text-2xl font-bold text-base">Algo salió mal</h1>
+      <p className="max-w-md text-muted">
         Ocurrió un error inesperado. Puedes intentarlo de nuevo.
       </p>
       {process.env.NODE_ENV !== "production" && (
-        <pre className="max-w-lg overflow-auto rounded bg-neutral-900 p-3 text-left text-xs text-red-400">
+        <pre className="max-w-lg overflow-auto rounded bg-surface p-3 text-left text-xs text-red-400">
           {error.message}
         </pre>
       )}
       <button
         onClick={reset}
-        className="rounded bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-500"
+        className="btn-accent rounded px-4 py-2 font-medium"
       >
         Reintentar
       </button>

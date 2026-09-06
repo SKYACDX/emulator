@@ -62,12 +62,12 @@ export default function FilesSearchList({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Buscar por título, juego, plataforma, archivo o usuario..."
-          className="flex-1 rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white"
+          className="flex-1 rounded border border-base bg-surface px-3 py-2 text-base"
         />
         <select
           value={platformFilter}
           onChange={(e) => setPlatformFilter(e.target.value)}
-          className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white sm:w-56"
+          className="rounded border border-base bg-surface px-3 py-2 text-base sm:w-56"
         >
           <option value="">Todas las plataformas</option>
           {platforms.map((name) => (
@@ -80,7 +80,7 @@ export default function FilesSearchList({
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-neutral-500">
+        <p className="text-muted">
           {files.length === 0
             ? "Todavía no hay archivos compartidos."
             : "Ningún archivo coincide con tu búsqueda."}

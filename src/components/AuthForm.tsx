@@ -78,10 +78,10 @@ export default function AuthForm({ mode }: { mode: Mode }) {
   if (pendingToken) {
     return (
       <form onSubmit={handleTotpSubmit} className="flex max-w-sm flex-col gap-4">
-        <p className="text-sm text-neutral-400">
+        <p className="text-sm text-muted">
           Ingresa el código de 6 dígitos de tu app de autenticación.
         </p>
-        <label className="flex flex-col gap-1 text-sm text-neutral-300">
+        <label className="flex flex-col gap-1 text-sm text-muted">
           Código de verificación
           <input
             value={totpCode}
@@ -90,14 +90,14 @@ export default function AuthForm({ mode }: { mode: Mode }) {
             autoFocus
             inputMode="numeric"
             maxLength={8}
-            className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white tracking-widest"
+            className="rounded border border-base bg-surface px-3 py-2 text-base tracking-widest"
           />
         </label>
         {error && <p className="text-sm text-red-400">{error}</p>}
         <button
           type="submit"
           disabled={loading}
-          className="rounded bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-500 disabled:opacity-60"
+          className="btn-accent rounded px-4 py-2 font-medium disabled:opacity-60"
         >
           {loading ? "Verificando..." : "Verificar"}
         </button>
@@ -108,41 +108,41 @@ export default function AuthForm({ mode }: { mode: Mode }) {
   return (
     <form onSubmit={handleSubmit} className="flex max-w-sm flex-col gap-4">
       {mode === "register" && (
-        <label className="flex flex-col gap-1 text-sm text-neutral-300">
+        <label className="flex flex-col gap-1 text-sm text-muted">
           Nombre de usuario
           <input
             name="username"
             required
             minLength={3}
             maxLength={24}
-            className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white"
+            className="rounded border border-base bg-surface px-3 py-2 text-base"
           />
         </label>
       )}
-      <label className="flex flex-col gap-1 text-sm text-neutral-300">
+      <label className="flex flex-col gap-1 text-sm text-muted">
         Correo electrónico
         <input
           type="email"
           name="email"
           required
-          className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white"
+          className="rounded border border-base bg-surface px-3 py-2 text-base"
         />
       </label>
-      <label className="flex flex-col gap-1 text-sm text-neutral-300">
+      <label className="flex flex-col gap-1 text-sm text-muted">
         Contraseña
         <input
           type="password"
           name="password"
           required
           minLength={8}
-          className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white"
+          className="rounded border border-base bg-surface px-3 py-2 text-base"
         />
       </label>
       {error && <p className="text-sm text-red-400">{error}</p>}
       <button
         type="submit"
         disabled={loading}
-        className="rounded bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-500 disabled:opacity-60"
+        className="btn-accent rounded px-4 py-2 font-medium disabled:opacity-60"
       >
         {loading
           ? "Enviando..."

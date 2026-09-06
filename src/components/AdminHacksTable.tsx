@@ -44,14 +44,14 @@ export default function AdminHacksTable({ hacks }: { hacks: Hack[] }) {
   }
 
   if (hacks.length === 0) {
-    return <p className="text-neutral-500">No hay hacks publicados.</p>;
+    return <p className="text-muted">No hay hacks publicados.</p>;
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-neutral-800">
+    <div className="overflow-x-auto rounded-lg border border-base">
       {error && <p className="p-3 text-sm text-red-400">{error}</p>}
       <table className="w-full text-left text-sm">
-        <thead className="bg-neutral-900 text-neutral-400">
+        <thead className="bg-surface text-muted">
           <tr>
             <th className="px-3 py-2">Título</th>
             <th className="px-3 py-2">Juego / Plataforma</th>
@@ -62,17 +62,17 @@ export default function AdminHacksTable({ hacks }: { hacks: Hack[] }) {
         </thead>
         <tbody>
           {hacks.map((hack) => (
-            <tr key={hack.id} className="border-t border-neutral-800">
+            <tr key={hack.id} className="border-t border-base">
               <td className="px-3 py-2">
-                <Link href={`/hacks/${hack.slug}`} className="text-emerald-400 hover:underline">
+                <Link href={`/hacks/${hack.slug}`} className="text-accent hover:underline">
                   {hack.title}
                 </Link>
               </td>
-              <td className="px-3 py-2 text-neutral-400">
+              <td className="px-3 py-2 text-muted">
                 {hack.game} · {hack.platform}
               </td>
-              <td className="px-3 py-2 text-neutral-400">{hack.author}</td>
-              <td className="px-3 py-2 text-neutral-400">{hack.patchCount}</td>
+              <td className="px-3 py-2 text-muted">{hack.author}</td>
+              <td className="px-3 py-2 text-muted">{hack.patchCount}</td>
               <td className="px-3 py-2 text-right">
                 <button
                   onClick={() => handleDelete(hack)}
