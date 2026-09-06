@@ -16,7 +16,11 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https://*.r2.cloudflarestorage.com https://cdn.thegamesdb.net https://*.googlesyndication.com https://*.gstatic.com https://*.doubleclick.net https://*.adtrafficquality.google",
   "font-src 'self'",
-  "connect-src 'self' https://*.googlesyndication.com https://*.doubleclick.net https://*.adtrafficquality.google https://*.ethicalads.io https://*.google.com https://cloudflareinsights.com",
+  // Direct-to-R2 uploads (avatar, shared files, community post images) PUT
+  // straight from the browser to a presigned R2 URL via fetch() — that's a
+  // connect-src concern, not img-src, and missing it here silently broke
+  // every upload flow on the site until caught.
+  "connect-src 'self' https://*.r2.cloudflarestorage.com https://*.googlesyndication.com https://*.doubleclick.net https://*.adtrafficquality.google https://*.ethicalads.io https://*.google.com https://cloudflareinsights.com",
   "frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://*.google.com https://*.adtrafficquality.google",
   "object-src 'none'",
   "base-uri 'self'",
