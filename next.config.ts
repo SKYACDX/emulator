@@ -12,11 +12,11 @@ import type { NextConfig } from "next";
 // still holds. Revisit if Next/Turbopack ever supports nonce auto-injection.
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.adtrafficquality.google https://media.ethicalads.io https://*.google.com https://*.gstatic.com",
+  "script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.adtrafficquality.google https://media.ethicalads.io https://*.google.com https://*.gstatic.com https://static.cloudflareinsights.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https://*.r2.cloudflarestorage.com https://cdn.thegamesdb.net https://*.googlesyndication.com https://*.gstatic.com https://*.doubleclick.net https://*.adtrafficquality.google",
   "font-src 'self'",
-  "connect-src 'self' https://*.googlesyndication.com https://*.doubleclick.net https://*.adtrafficquality.google https://*.ethicalads.io https://*.google.com",
+  "connect-src 'self' https://*.googlesyndication.com https://*.doubleclick.net https://*.adtrafficquality.google https://*.ethicalads.io https://*.google.com https://cloudflareinsights.com",
   "frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://*.google.com https://*.adtrafficquality.google",
   "object-src 'none'",
   "base-uri 'self'",
