@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Debes iniciar sesión" }, { status: 401 });
   }
 
-  if (!checkRateLimit(`totp-disable:${user.id}`, 10, 15 * 60 * 1000)) {
+  if (!(await checkRateLimit(`totp-disable:${user.id}`, 10, 15 * 60 * 1000))) {
     return NextResponse.json(
       { error: "Demasiados intentos, espera unos minutos" },
       { status: 429 }

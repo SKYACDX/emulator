@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 async function requireParticipant(conversationId: string, userId: string) {
   const participant = await prisma.conversationParticipant.findUnique({
@@ -51,6 +52,9 @@ const sendSchema = z.object({ body: z.string().trim().min(1).max(2000) });
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Debes iniciar sesión" }, { status: 401 });
+  if (!(await checkRateLimit(`message-send:${user.id}`, 60, 60 * 1000))) {
+    return NextResponse.json({ error: "Estás enviando mensajes muy rápido" }, { status: 429 });
+  }
 
   const { id } = await params;
   const result = await requireParticipant(id, user.id);

@@ -6,11 +6,15 @@ import { formatFromFilename, ALLOWED_PATCH_EXTENSIONS } from "@/lib/patchFormats
 import { savePatchFile, maxPatchSizeBytes } from "@/lib/storage";
 import { slugify, uniqueSlug } from "@/lib/slug";
 import { isAllowedCoverUrl } from "@/lib/thegamesdb";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Debes iniciar sesión" }, { status: 401 });
+  }
+  if (!(await checkRateLimit(`hacks-create:${user.id}`, 10, 60 * 60 * 1000))) {
+    return NextResponse.json({ error: "Demasiadas publicaciones, espera un rato" }, { status: 429 });
   }
 
   const formData = await request.formData().catch(() => null);

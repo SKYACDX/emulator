@@ -12,11 +12,15 @@ import {
 } from "@/lib/storage";
 import { isAllowedCoverUrl } from "@/lib/thegamesdb";
 import { scanFile, virusScanningEnabled, maxScannableSizeBytes } from "@/lib/virustotal";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Debes iniciar sesión" }, { status: 401 });
+  }
+  if (!(await checkRateLimit(`files-create:${user.id}`, 20, 60 * 60 * 1000))) {
+    return NextResponse.json({ error: "Demasiados archivos, espera un rato" }, { status: 429 });
   }
 
   const body = await request.json().catch(() => null);

@@ -374,6 +374,42 @@ desde `/me/security` → "Dispositivos vinculados" (`GET`/`DELETE
 borra el token de la base de datos — la próxima request de esa app con ese
 token da 401.
 
+## Seguridad
+
+- **Cabeceras** (`next.config.ts`): `Content-Security-Policy` (allowlist
+  explícita para AdSense, EthicalAds, TheGamesDB, R2 y Cloudflare Insights —
+  cualquier otro origen de script/imagen/conexión se bloquea),
+  `X-Frame-Options: SAMEORIGIN`, `X-Content-Type-Options: nosniff`,
+  `Referrer-Policy`, `Permissions-Policy` (sin cámara/micrófono/geolocalización,
+  el sitio no los usa). El CSP usa `'unsafe-inline'` en `script-src` a
+  propósito: se intentó el patrón de nonce por request de Next.js (que lo
+  evitaría), pero Turbopack no timbra sus propios scripts de hidratación con
+  el nonce — probado con un build de producción real, rompía toda la
+  interactividad del sitio. La defensa real contra inyección de scripts está
+  en escapar el contenido de usuario antes de volcarlo en HTML crudo (ver el
+  siguiente punto).
+- **XSS**: el único lugar del código que usa `dangerouslySetInnerHTML` es el
+  JSON-LD de `/hacks/[slug]` — `JSON.stringify(jsonLd).replace(/</g,
+  "\\u003c")`, para que un `title`/`description` con `</script><script>...`
+  (controlados por cualquier usuario que publica un hack) no pueda romper el
+  tag e inyectar JS. Verificado con un payload real.
+- **Rate limiting** (`src/lib/rateLimit.ts`): usa Upstash Redis
+  (`@upstash/ratelimit` + `@upstash/redis`, ventana deslizante) cuando están
+  configuradas `UPSTASH_REDIS_REST_URL` y `UPSTASH_REDIS_REST_TOKEN`; si no,
+  cae a un contador en memoria por instancia (suficiente para dev local, pero
+  no para un ataque real distribuido entre las múltiples instancias
+  serverless de Vercel). Para activarlo en producción: en el dashboard de
+  Vercel, **Storage → Marketplace Database Providers → Upstash** (o
+  directamente en upstash.com, plan gratis), crear una base Redis y conectar
+  el proyecto — Vercel inyecta esas dos variables automáticamente.
+  - Login / registro / verificación TOTP: 5–10 intentos por 15 min por IP
+    (o por usuario en el caso de desactivar 2FA).
+  - Creación de hacks/comunidades/chats: 10–20 por hora por usuario.
+  - Publicaciones en comunidad, reportes, solicitudes de amistad: 20–30 por
+    hora por usuario.
+  - Mensajes de chat: 60 por minuto por usuario (throughput normal de chat,
+    no pensado para frenar spam sino abuso automatizado).
+
 ## Desplegar gratis en Vercel
 
 1. Sube el repo a GitHub y [importa el proyecto en Vercel](https://vercel.com/new)

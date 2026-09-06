@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { headObject } from "@/lib/storage";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 const MAX_IMAGE_BYTES = 8_000_000;
 
@@ -27,6 +28,9 @@ const createSchema = z.object({
 export async function POST(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Debes iniciar sesión" }, { status: 401 });
+  if (!(await checkRateLimit(`community-post:${user.id}`, 30, 60 * 60 * 1000))) {
+    return NextResponse.json({ error: "Demasiadas publicaciones, espera un rato" }, { status: 429 });
+  }
 
   const { slug } = await params;
   const result = await requireMembership(slug, user.id);

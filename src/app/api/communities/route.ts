@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { slugify, uniqueSlug } from "@/lib/slug";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export async function GET() {
   const communities = await prisma.community.findMany({
@@ -28,6 +29,9 @@ const createSchema = z.object({
 export async function POST(request: Request) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Debes iniciar sesión" }, { status: 401 });
+  if (!(await checkRateLimit(`community-create:${user.id}`, 10, 60 * 60 * 1000))) {
+    return NextResponse.json({ error: "Demasiadas comunidades, espera un rato" }, { status: 429 });
+  }
 
   const parsed = createSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {

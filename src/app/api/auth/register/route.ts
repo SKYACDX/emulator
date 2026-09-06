@@ -5,7 +5,7 @@ import { registerSchema } from "@/lib/validation";
 import { checkRateLimit, clientIp } from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
-  if (!checkRateLimit(`register:${clientIp(request)}`, 5, 15 * 60 * 1000)) {
+  if (!(await checkRateLimit(`register:${clientIp(request)}`, 5, 15 * 60 * 1000))) {
     return NextResponse.json(
       { error: "Demasiados intentos, espera unos minutos" },
       { status: 429 }

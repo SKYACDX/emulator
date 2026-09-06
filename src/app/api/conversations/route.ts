@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export async function GET() {
   const user = await getCurrentUser();
@@ -43,6 +44,9 @@ const createSchema = z.union([
 export async function POST(request: Request) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Debes iniciar sesión" }, { status: 401 });
+  if (!(await checkRateLimit(`conversation-create:${user.id}`, 20, 60 * 60 * 1000))) {
+    return NextResponse.json({ error: "Demasiados chats nuevos, espera un rato" }, { status: 429 });
+  }
 
   const parsed = createSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {

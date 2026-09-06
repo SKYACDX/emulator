@@ -11,7 +11,7 @@ const schema = z.object({
 });
 
 export async function POST(request: Request) {
-  if (!checkRateLimit(`totp-login:${clientIp(request)}`, 10, 15 * 60 * 1000)) {
+  if (!(await checkRateLimit(`totp-login:${clientIp(request)}`, 10, 15 * 60 * 1000))) {
     return NextResponse.json(
       { error: "Demasiados intentos, espera unos minutos" },
       { status: 429 }

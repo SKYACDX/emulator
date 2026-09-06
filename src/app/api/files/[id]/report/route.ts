@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { reportFileSchema } from "@/lib/validation";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export async function POST(
   request: Request,
@@ -10,6 +11,9 @@ export async function POST(
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Debes iniciar sesión" }, { status: 401 });
+  }
+  if (!(await checkRateLimit(`file-report:${user.id}`, 20, 60 * 60 * 1000))) {
+    return NextResponse.json({ error: "Demasiados reportes, espera un rato" }, { status: 429 });
   }
 
   const { id } = await params;

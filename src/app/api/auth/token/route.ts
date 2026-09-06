@@ -18,7 +18,7 @@ const schema = loginSchema.extend({
  * POST /api/auth/token/verify.
  */
 export async function POST(request: Request) {
-  if (!checkRateLimit(`token-login:${clientIp(request)}`, 10, 15 * 60 * 1000)) {
+  if (!(await checkRateLimit(`token-login:${clientIp(request)}`, 10, 15 * 60 * 1000))) {
     return NextResponse.json(
       { error: "Demasiados intentos, espera unos minutos" },
       { status: 429 }

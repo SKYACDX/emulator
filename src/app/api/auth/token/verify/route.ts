@@ -14,7 +14,7 @@ const schema = z.object({
 
 /** Finishes POST /api/auth/token when the account has 2FA enabled. */
 export async function POST(request: Request) {
-  if (!checkRateLimit(`token-totp:${clientIp(request)}`, 10, 15 * 60 * 1000)) {
+  if (!(await checkRateLimit(`token-totp:${clientIp(request)}`, 10, 15 * 60 * 1000))) {
     return NextResponse.json(
       { error: "Demasiados intentos, espera unos minutos" },
       { status: 429 }
