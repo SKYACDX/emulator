@@ -77,6 +77,14 @@ export async function DELETE(
   await Promise.all(
     user.sharedFiles.map((file) => deleteSharedFile(file.storedName).catch(() => {}))
   );
+  await prisma.fileReport.deleteMany({
+    where: {
+      OR: [
+        { reporterId: user.id },
+        { sharedFileId: { in: user.sharedFiles.map((f) => f.id) } },
+      ],
+    },
+  });
   await prisma.sharedFile.deleteMany({ where: { uploaderId: user.id } });
 
   await prisma.user.delete({ where: { id: user.id } });

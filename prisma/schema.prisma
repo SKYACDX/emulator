@@ -38,6 +38,7 @@ model User {
 
   hacks       Hack[]
   sharedFiles SharedFile[]
+  fileReports FileReport[]
 }
 
 model Platform {
@@ -102,8 +103,24 @@ model SharedFile {
   uploaderId String
   uploader   User   @relation(fields: [uploaderId], references: [id])
 
+  reports FileReport[]
+
   @@index([uploaderId])
   @@index([platformId])
+}
+
+model FileReport {
+  id        String   @id @default(cuid())
+  reason    String
+  createdAt DateTime @default(now())
+
+  sharedFileId String
+  sharedFile   SharedFile @relation(fields: [sharedFileId], references: [id])
+  reporterId   String
+  reporter     User       @relation(fields: [reporterId], references: [id])
+
+  @@unique([sharedFileId, reporterId])
+  @@index([sharedFileId])
 }
 
 model Patch {

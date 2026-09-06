@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { REPORT_REASONS } from "@/lib/fileReports";
 
 export const registerSchema = z.object({
   email: z.string().trim().toLowerCase().email("Correo inválido"),
@@ -47,3 +48,13 @@ export const createSharedFileSchema = z.object({
   gameTitle: z.string().trim().max(120).optional(),
   coverImageUrl: z.string().trim().url().max(500).optional(),
 });
+
+export const reportFileSchema = z
+  .object({
+    reason: z.enum(REPORT_REASONS),
+    details: z.string().trim().max(500).optional().default(""),
+  })
+  .refine((data) => data.reason !== "Otro" || data.details.length > 0, {
+    message: "Describe el motivo",
+    path: ["details"],
+  });

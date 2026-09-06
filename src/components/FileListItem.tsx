@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { REPORT_REASONS } from "@/lib/fileReports";
 
 type SharedFile = {
   id: string;
@@ -26,13 +27,19 @@ function formatBytes(bytes: number): string {
 export default function FileListItem({
   file,
   canDelete,
+  canReport,
 }: {
   file: SharedFile;
   canDelete: boolean;
+  canReport: boolean;
 }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [reporting, setReporting] = useState(false);
+  const [reportSent, setReportSent] = useState(false);
+  const [reason, setReason] = useState<string>(REPORT_REASONS[0]);
+  const [details, setDetails] = useState("");
 
   async function handleDelete() {
     if (!confirm(`¿Eliminar "${file.title}"? Esta acción no se puede deshacer.`)) return;
@@ -46,6 +53,27 @@ export default function FileListItem({
         return;
       }
       router.refresh();
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function handleReport() {
+    setError(null);
+    setPending(true);
+    try {
+      const res = await fetch(`/api/files/${file.id}/report`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason, details }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "No se pudo enviar el reporte");
+        return;
+      }
+      setReportSent(true);
+      setReporting(false);
     } finally {
       setPending(false);
     }
@@ -94,6 +122,17 @@ export default function FileListItem({
           >
             Descargar
           </a>
+          {canReport && !reportSent && (
+            <button
+              onClick={() => setReporting((v) => !v)}
+              className="rounded bg-neutral-800 px-3 py-1.5 text-sm text-white hover:bg-neutral-700"
+            >
+              Reportar
+            </button>
+          )}
+          {reportSent && (
+            <span className="self-center text-sm text-neutral-500">Reportado</span>
+          )}
           {canDelete && (
             <button
               onClick={handleDelete}
@@ -110,6 +149,50 @@ export default function FileListItem({
           {file.description}
         </p>
       )}
+
+      {reporting && (
+        <div className="mt-3 flex flex-col gap-2 rounded border border-neutral-800 bg-neutral-950 p-3">
+          <label className="flex flex-col gap-1 text-sm text-neutral-300">
+            Motivo del reporte
+            <select
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white"
+            >
+              {REPORT_REASONS.map((r) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
+            </select>
+          </label>
+          {reason === "Otro" && (
+            <input
+              value={details}
+              onChange={(e) => setDetails(e.target.value)}
+              placeholder="Describe el motivo"
+              maxLength={500}
+              className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white"
+            />
+          )}
+          <div className="flex gap-2">
+            <button
+              onClick={handleReport}
+              disabled={pending}
+              className="rounded bg-red-700 px-3 py-1.5 text-sm text-white hover:bg-red-600 disabled:opacity-60"
+            >
+              {pending ? "Enviando..." : "Enviar reporte"}
+            </button>
+            <button
+              onClick={() => setReporting(false)}
+              className="rounded bg-neutral-800 px-3 py-1.5 text-sm text-white hover:bg-neutral-700"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
+
       {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
     </li>
   );

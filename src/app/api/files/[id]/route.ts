@@ -24,6 +24,7 @@ export async function DELETE(
   }
 
   await deleteSharedFile(file.storedName).catch(() => {});
+  await prisma.fileReport.deleteMany({ where: { sharedFileId: file.id } });
   await prisma.sharedFile.delete({ where: { id: file.id } });
 
   return NextResponse.json({ ok: true });

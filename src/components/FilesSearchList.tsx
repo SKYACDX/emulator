@@ -16,16 +16,30 @@ type SharedFile = {
   uploader: string;
   createdAt: string;
   canDelete: boolean;
+  canReport: boolean;
 };
 
-export default function FilesSearchList({ files }: { files: SharedFile[] }) {
+const OTHER_PLATFORM = "Otros";
+
+export default function FilesSearchList({
+  files,
+  platforms,
+}: {
+  files: SharedFile[];
+  platforms: string[];
+}) {
   const [query, setQuery] = useState("");
+  const [platformFilter, setPlatformFilter] = useState("");
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return files;
-    return files.filter((file) =>
-      [
+    return files.filter((file) => {
+      if (platformFilter) {
+        const effectivePlatform = file.platformName ?? OTHER_PLATFORM;
+        if (effectivePlatform !== platformFilter) return false;
+      }
+      if (!q) return true;
+      return [
         file.title,
         file.description,
         file.originalName,
@@ -36,19 +50,34 @@ export default function FilesSearchList({ files }: { files: SharedFile[] }) {
         .filter(Boolean)
         .join(" ")
         .toLowerCase()
-        .includes(q)
-    );
-  }, [files, query]);
+        .includes(q);
+    });
+  }, [files, query, platformFilter]);
 
   return (
     <div className="flex flex-col gap-4">
-      <input
-        type="search"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Buscar por título, juego, plataforma, archivo o usuario..."
-        className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white"
-      />
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Buscar por título, juego, plataforma, archivo o usuario..."
+          className="flex-1 rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white"
+        />
+        <select
+          value={platformFilter}
+          onChange={(e) => setPlatformFilter(e.target.value)}
+          className="rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-white sm:w-56"
+        >
+          <option value="">Todas las plataformas</option>
+          {platforms.map((name) => (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          ))}
+          <option value={OTHER_PLATFORM}>{OTHER_PLATFORM}</option>
+        </select>
+      </div>
 
       {filtered.length === 0 ? (
         <p className="text-neutral-500">
@@ -59,7 +88,12 @@ export default function FilesSearchList({ files }: { files: SharedFile[] }) {
       ) : (
         <ul className="flex flex-col gap-3">
           {filtered.map((file) => (
-            <FileListItem key={file.id} file={file} canDelete={file.canDelete} />
+            <FileListItem
+              key={file.id}
+              file={file}
+              canDelete={file.canDelete}
+              canReport={file.canReport}
+            />
           ))}
         </ul>
       )}

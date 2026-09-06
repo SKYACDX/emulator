@@ -36,8 +36,23 @@ sin importar el tipo de archivo que se declare):
   "de tipo libre".
 
 Todo lo demás se permite sin filtro. La moderación de lo que sí se sube es
-manual: cualquier admin puede eliminar cualquier archivo desde `/files` (el
-botón "Eliminar" aparece para el dueño del archivo y para admins).
+manual, con dos capas:
+
+1. **Admin puede eliminar directamente** — el botón "Eliminar" en `/files`
+   aparece para el dueño del archivo y para admins.
+2. **Reportes de la comunidad** — cualquier usuario (que no sea el dueño)
+   puede darle "Reportar" a un archivo y elegir un motivo de una lista
+   (contenido para adultos, copyright, violento, spam, malware, u "Otro"
+   con texto libre). Los admins ven todos los archivos reportados en
+   `/admin`, con el motivo y quién reportó, y pueden eliminar el archivo o
+   descartar los reportes si no aplica. Un mismo usuario solo puede tener
+   un reporte activo por archivo (reportar de nuevo actualiza el motivo,
+   no duplica la fila).
+
+No hay moderación automática de contenido (por ejemplo, detección de
+imágenes explícitas) — es una decisión consciente por ahora: se optó por
+reportes de comunidad en vez de integrar un servicio de terceros de
+moderación de imágenes.
 
 La subida va **directo del navegador a R2** (URL prefirmada vía
 `POST /api/files/presign`), sin pasar por la función serverless de Vercel —

@@ -4,6 +4,7 @@ import { getCurrentAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import AdminHacksTable from "@/components/AdminHacksTable";
 import AdminUsersTable from "@/components/AdminUsersTable";
+import AdminReportsTable from "@/components/AdminReportsTable";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +12,7 @@ export default async function AdminPage() {
   const admin = await getCurrentAdmin();
   if (!admin) redirect("/");
 
-  const [hacks, users, sharedFileCount] = await Promise.all([
+  const [hacks, users, sharedFileCount, reportedFiles] = await Promise.all([
     prisma.hack.findMany({
       orderBy: { createdAt: "desc" },
       include: {
@@ -32,6 +33,17 @@ export default async function AdminPage() {
       },
     }),
     prisma.sharedFile.count(),
+    prisma.sharedFile.findMany({
+      where: { reports: { some: {} } },
+      include: {
+        uploader: { select: { username: true } },
+        reports: {
+          orderBy: { createdAt: "desc" },
+          include: { reporter: { select: { username: true } } },
+        },
+      },
+      orderBy: { reports: { _count: "desc" } },
+    }),
   ]);
 
   return (
@@ -57,6 +69,25 @@ export default async function AdminPage() {
             game: h.game.title,
             patchCount: h.patches.length,
             createdAt: h.createdAt.toISOString(),
+          }))}
+        />
+      </section>
+
+      <section>
+        <h2 className="mb-3 text-lg font-semibold text-white">
+          Archivos reportados ({reportedFiles.length})
+        </h2>
+        <AdminReportsTable
+          files={reportedFiles.map((f) => ({
+            id: f.id,
+            title: f.title,
+            uploader: f.uploader.username,
+            reports: f.reports.map((r) => ({
+              id: r.id,
+              reason: r.reason,
+              reporter: r.reporter.username,
+              createdAt: r.createdAt.toISOString(),
+            })),
           }))}
         />
       </section>

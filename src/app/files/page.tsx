@@ -26,12 +26,15 @@ export default async function FilesPage() {
           ],
         };
 
-  const files = await prisma.sharedFile.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    take: 100,
-    include: { uploader: { select: { username: true } }, platform: true },
-  });
+  const [files, platforms] = await Promise.all([
+    prisma.sharedFile.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      take: 100,
+      include: { uploader: { select: { username: true } }, platform: true },
+    }),
+    prisma.platform.findMany({ orderBy: { name: "asc" } }),
+  ]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -55,6 +58,7 @@ export default async function FilesPage() {
       </div>
 
       <FilesSearchList
+        platforms={platforms.map((p) => p.name)}
         files={files.map((file) => ({
           id: file.id,
           title: file.title,
@@ -70,6 +74,7 @@ export default async function FilesPage() {
           canDelete:
             !!currentUser &&
             (currentUser.id === file.uploaderId || currentUser.role === "ADMIN"),
+          canReport: !!currentUser && currentUser.id !== file.uploaderId,
         }))}
       />
     </div>
