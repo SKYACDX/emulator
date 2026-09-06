@@ -314,6 +314,20 @@ usuarios/hacks/guardados de la base de datos principal), migrarlo a otra
 cosa en el futuro —si hiciera falta— sería reescribir solo esta carpeta,
 no una migración del resto del sitio.
 
+## Mensajes (DMs y grupos)
+
+`/messages`: solo texto, sin adjuntos — el modelo `Message` ni siquiera
+tiene un campo de archivo, así que no hay forma de reintroducirlo por
+accidente. Los links (a una comunidad, a la página, o cualquier http/https)
+se detectan y se muestran como enlace clicable, nunca como HTML crudo.
+
+- **DM**: requiere amistad aceptada (sección "Comunidades y amigos" más abajo).
+- **Grupo**: cualquier usuario elige un nombre y arma el grupo con amigos;
+  ya dentro, cualquier miembro puede agregar a alguien más por username.
+- Actualización cada 3s por polling (no websocket) — consistente con el
+  resto del sitio, que es serverless; el relay de multijugador es la única
+  excepción porque necesita conexión persistente.
+
 ## Comunidades y amigos
 
 `/communities`: cualquier usuario crea un grupo (nombre único → slug), se
