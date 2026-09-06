@@ -1,7 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Plataformas",
+  description:
+    "Explora ROM hacks por consola: NES, SNES, Game Boy, GBA, Nintendo DS, 3DS, N64 y Switch.",
+  alternates: { canonical: "/platforms" },
+};
 
 export default async function PlatformsPage() {
   const platforms = await prisma.platform.findMany({

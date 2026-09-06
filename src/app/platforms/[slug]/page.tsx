@@ -1,17 +1,13 @@
+import { cache } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export default async function PlatformPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-
-  const platform = await prisma.platform.findUnique({
+const getPlatform = cache(async (slug: string) => {
+  return prisma.platform.findUnique({
     where: { slug },
     include: {
       games: {
@@ -20,6 +16,36 @@ export default async function PlatformPage({
       },
     },
   });
+});
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const platform = await getPlatform(slug);
+  if (!platform) return {};
+
+  const hackCount = platform.games.reduce((sum, g) => sum + g.hacks.length, 0);
+  const title = `Hacks para ${platform.name}`;
+  const description = `${hackCount} hack(s) de ROM disponibles para ${platform.name} en RomHack Hub: parches IPS/BPS/UPS listos para descargar.`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/platforms/${platform.slug}` },
+    openGraph: { title, description },
+  };
+}
+
+export default async function PlatformPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const platform = await getPlatform(slug);
 
   if (!platform) notFound();
 

@@ -1,9 +1,17 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import FilesSearchList from "@/components/FilesSearchList";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Archivos de la comunidad",
+  description:
+    "Capturas, guías, savestates y otros archivos relacionados con ROM hacks, compartidos por la comunidad.",
+  alternates: { canonical: "/files" },
+};
 
 export default async function FilesPage() {
   const currentUser = await getCurrentUser();

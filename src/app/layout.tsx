@@ -14,8 +14,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RomHack Hub",
-  description: "Publica y descubre parches de ROM hacks para consolas retro",
+  // The apex domain 308-redirects here — www is what's actually served.
+  metadataBase: new URL("https://www.emulatornds.online"),
+  title: {
+    default: "RomHack Hub",
+    template: "%s — RomHack Hub",
+  },
+  description:
+    "Publica y descubre parches de ROM hacks para consolas retro (NES, SNES, N64, Game Boy, GBA, DS, 3DS, Switch). Solo parches, nunca ROMs.",
+  openGraph: {
+    siteName: "RomHack Hub",
+    type: "website",
+    locale: "es_ES",
+  },
+  twitter: {
+    card: "summary",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

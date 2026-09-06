@@ -228,6 +228,42 @@ bytes → aplicar el parche (mismo algoritmo IPS/BPS/UPS que hay en
 sobre la ROM que el usuario ya tiene cargada, todo en memoria, sin que este
 servidor vea la ROM en ningún momento.
 
+## SEO
+
+Para que Google (y otros buscadores) indexen el sitio y muestren buenos
+snippets:
+
+- **Metadatos por página** (`generateMetadata` en `/hacks/[slug]` y
+  `/platforms/[slug]`, `metadata` estático en el resto): título,
+  descripción (tomada del texto real del hack, recortada a 160
+  caracteres), URL canónica, y Open Graph/Twitter con la portada del
+  juego como imagen si existe.
+- **Datos estructurados (JSON-LD)** en cada página de hack, tipo
+  `SoftwareApplication`, para que Google pueda mostrar resultados
+  enriquecidos (rich results).
+- **`/sitemap.xml`** (`src/app/sitemap.ts`) generado dinámicamente desde
+  la base de datos: incluye cada plataforma y cada hack. Como es
+  dinámico, no hay que regenerarlo a mano al publicar contenido nuevo.
+- **`/robots.txt`** (`src/app/robots.ts`) permite indexar todo excepto
+  `/admin`, `/me`, `/login`, `/register` y `/api/`.
+
+Esto es todo lo que se puede hacer desde el código. Para que realmente
+aparezca en resultados de búsqueda, falta un paso que solo tú puedes
+hacer (requiere verificar que eres dueño del dominio):
+
+1. Entra a [Google Search Console](https://search.google.com/search-console),
+   agrega la propiedad `https://www.emulatornds.online` (verificación por
+   DNS o subiendo un archivo HTML — Vercel deja hacer ambas).
+2. Envía `https://www.emulatornds.online/sitemap.xml` en la sección
+   "Sitemaps" — así Google encuentra y rastrea todas las páginas de una
+   vez, en vez de esperar a encontrarlas solo.
+3. (Opcional) Repite el proceso en [Bing Webmaster Tools](https://www.bing.com/webmasters).
+
+No hay forma de "forzar" que algo aparezca como sugerencia de autocompletado
+del buscador — eso lo decide el buscador según qué tan indexado y buscado
+esté el sitio con el tiempo; lo de arriba es lo que maximiza esa
+probabilidad.
+
 ## Estructura relevante
 
 ```

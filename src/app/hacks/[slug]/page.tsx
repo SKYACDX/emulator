@@ -1,3 +1,5 @@
+import { cache } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
@@ -13,14 +15,8 @@ function formatBytes(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export default async function HackPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-
-  const hack = await prisma.hack.findUnique({
+const getHack = cache(async (slug: string) => {
+  return prisma.hack.findUnique({
     where: { slug },
     include: {
       game: { include: { platform: true } },
@@ -28,14 +24,72 @@ export default async function HackPage({
       patches: { orderBy: { createdAt: "desc" } },
     },
   });
+});
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const hack = await getHack(slug);
+  if (!hack) return {};
+
+  const title = `${hack.title} — hack de ${hack.game.title} (${hack.game.platform.name})`;
+  const description = hack.description.slice(0, 160);
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/hacks/${hack.slug}` },
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      images: hack.game.coverImageUrl ? [hack.game.coverImageUrl] : undefined,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+      images: hack.game.coverImageUrl ? [hack.game.coverImageUrl] : undefined,
+    },
+  };
+}
+
+export default async function HackPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const hack = await getHack(slug);
 
   if (!hack) notFound();
 
   const currentUser = await getCurrentUser();
   const isOwner = currentUser?.id === hack.authorId;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: hack.title,
+    description: hack.description,
+    applicationCategory: "GameApplication",
+    operatingSystem: hack.game.platform.name,
+    datePublished: hack.createdAt.toISOString(),
+    author: { "@type": "Person", name: hack.author.username },
+    image: hack.game.coverImageUrl ?? undefined,
+    about: { "@type": "VideoGame", name: hack.game.title },
+  };
+
   return (
     <div className="flex flex-col gap-8">
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="flex gap-4">
         {hack.game.coverImageUrl && (
           // eslint-disable-next-line @next/next/no-img-element
