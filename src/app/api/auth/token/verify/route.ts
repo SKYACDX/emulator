@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { verifyTotpPendingToken } from "@/lib/auth";
 import { decryptSecret, verifyTotpToken } from "@/lib/totp";
 import { issueApiToken } from "@/lib/apiAuth";
+import { checkRateLimit, clientIp } from "@/lib/rateLimit";
 
 const schema = z.object({
   pendingToken: z.string().min(1),
@@ -13,6 +14,13 @@ const schema = z.object({
 
 /** Finishes POST /api/auth/token when the account has 2FA enabled. */
 export async function POST(request: Request) {
+  if (!checkRateLimit(`token-totp:${clientIp(request)}`, 10, 15 * 60 * 1000)) {
+    return NextResponse.json(
+      { error: "Demasiados intentos, espera unos minutos" },
+      { status: 429 }
+    );
+  }
+
   const body = await request.json().catch(() => null);
   const parsed = schema.safeParse(body);
   if (!parsed.success) {

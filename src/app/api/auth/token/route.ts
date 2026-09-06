@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { verifyPassword, signTotpPendingToken } from "@/lib/auth";
 import { issueApiToken } from "@/lib/apiAuth";
 import { loginSchema } from "@/lib/validation";
+import { checkRateLimit, clientIp } from "@/lib/rateLimit";
 
 const schema = loginSchema.extend({
   label: z.string().trim().max(100).optional(),
@@ -17,6 +18,13 @@ const schema = loginSchema.extend({
  * POST /api/auth/token/verify.
  */
 export async function POST(request: Request) {
+  if (!checkRateLimit(`token-login:${clientIp(request)}`, 10, 15 * 60 * 1000)) {
+    return NextResponse.json(
+      { error: "Demasiados intentos, espera unos minutos" },
+      { status: 429 }
+    );
+  }
+
   const body = await request.json().catch(() => null);
   const parsed = schema.safeParse(body);
   if (!parsed.success) {

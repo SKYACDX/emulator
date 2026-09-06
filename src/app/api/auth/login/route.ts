@@ -2,8 +2,16 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword, createSessionCookie, signTotpPendingToken } from "@/lib/auth";
 import { loginSchema } from "@/lib/validation";
+import { checkRateLimit, clientIp } from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
+  if (!checkRateLimit(`login:${clientIp(request)}`, 10, 15 * 60 * 1000)) {
+    return NextResponse.json(
+      { error: "Demasiados intentos, espera unos minutos" },
+      { status: 429 }
+    );
+  }
+
   const body = await request.json().catch(() => null);
   const parsed = loginSchema.safeParse(body);
   if (!parsed.success) {

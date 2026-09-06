@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, verifyPassword } from "@/lib/auth";
 import { decryptSecret, verifyTotpToken } from "@/lib/totp";
+import { checkRateLimit, clientIp } from "@/lib/rateLimit";
 
 const schema = z.object({
   password: z.string().min(1),
@@ -13,6 +14,13 @@ export async function POST(request: Request) {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Debes iniciar sesión" }, { status: 401 });
+  }
+
+  if (!checkRateLimit(`totp-disable:${user.id}`, 10, 15 * 60 * 1000)) {
+    return NextResponse.json(
+      { error: "Demasiados intentos, espera unos minutos" },
+      { status: 429 }
+    );
   }
 
   const body = await request.json().catch(() => null);
