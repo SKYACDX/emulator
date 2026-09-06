@@ -120,6 +120,11 @@ model SharedFile {
   isPublic     Boolean  @default(true)
   createdAt    DateTime @default(now())
 
+  // "clean" | "malicious" (never actually stored — rejected outright) |
+  // "pending" | "error" | "skipped" (no scanner configured, or file too
+  // big for the free-tier scan). See src/lib/virustotal.ts.
+  virusScanStatus String @default("skipped")
+
   // Optional tagging so a general-purpose file can say what it's about:
   // a platform (Game Boy, NDS, ...) and/or a free-text game name, without
   // requiring it to be linked to an actual Game/Hack record.

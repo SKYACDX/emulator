@@ -155,3 +155,17 @@ export function maxSaveFileSizeBytes(): number {
   // embedded screenshot can run a few MB — direct-to-R2 upload either way.
   return Number(process.env.MAX_SAVE_FILE_SIZE_BYTES ?? 20_000_000); // 20 MB
 }
+
+/**
+ * Reads an object back out of R2 into memory — used to hand a
+ * direct-to-R2-uploaded file to VirusTotal for scanning, since our server
+ * never sees the bytes during the upload itself. Only call this for files
+ * already confirmed to be under a scanning-appropriate size.
+ */
+export async function getObjectBuffer(storedName: string): Promise<Buffer> {
+  const result = await s3Client().send(
+    new GetObjectCommand({ Bucket: bucketName(), Key: storedName })
+  );
+  const bytes = await result.Body!.transformToByteArray();
+  return Buffer.from(bytes);
+}

@@ -13,6 +13,7 @@ type SharedFile = {
   platformName: string | null;
   gameTitle: string | null;
   coverImageUrl: string | null;
+  virusScanStatus: string;
   uploader: string;
   createdAt: string;
   canDelete: boolean;

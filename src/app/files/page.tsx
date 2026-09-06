@@ -43,7 +43,8 @@ export default async function FilesPage() {
           <h1 className="text-2xl font-bold text-base">Archivos de la comunidad</h1>
           <p className="mt-1 max-w-2xl text-sm text-muted">
             Capturas, guías, savestates y otros archivos relacionados con los
-            hacks. No se permiten videos ni volcados de ROM/ISO. Los archivos
+            hacks. No se permiten videos, ejecutables ni volcados de
+            ROM/ISO, y cada archivo se escanea con VirusTotal. Los archivos
             privados solo los ve su dueño (y los admins).
           </p>
         </div>
@@ -69,6 +70,7 @@ export default async function FilesPage() {
           platformName: file.platform?.name ?? null,
           gameTitle: file.gameTitle,
           coverImageUrl: file.coverImageUrl,
+          virusScanStatus: file.virusScanStatus,
           uploader: file.uploader.username,
           createdAt: file.createdAt.toISOString(),
           canDelete:

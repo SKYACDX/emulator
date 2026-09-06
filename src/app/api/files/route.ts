@@ -1,10 +1,17 @@
+import { createHash } from "crypto";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { createSharedFileSchema } from "@/lib/validation";
 import { isBlockedUploadExtension } from "@/lib/fileTypes";
-import { headObject, maxSharedFileSizeBytes, deleteSharedFile } from "@/lib/storage";
+import {
+  headObject,
+  maxSharedFileSizeBytes,
+  deleteSharedFile,
+  getObjectBuffer,
+} from "@/lib/storage";
 import { isAllowedCoverUrl } from "@/lib/thegamesdb";
+import { scanFile, virusScanningEnabled, maxScannableSizeBytes } from "@/lib/virustotal";
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
@@ -57,6 +64,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "El archivo es demasiado grande" }, { status: 400 });
   }
 
+  let virusScanStatus = "skipped";
+  if (virusScanningEnabled() && info.size <= maxScannableSizeBytes()) {
+    const buffer = await getObjectBuffer(storedName);
+    const sha256 = createHash("sha256").update(buffer).digest("hex");
+    virusScanStatus = await scanFile(buffer, sha256, originalName);
+
+    if (virusScanStatus === "malicious") {
+      await deleteSharedFile(storedName).catch(() => {});
+      return NextResponse.json(
+        { error: "El archivo fue marcado como malicioso por el escaneo antivirus." },
+        { status: 400 }
+      );
+    }
+  }
+
   const file = await prisma.sharedFile.create({
     data: {
       title,
@@ -70,6 +92,7 @@ export async function POST(request: Request) {
       gameTitle: gameTitle || null,
       coverImageUrl: coverImageUrl && isAllowedCoverUrl(coverImageUrl) ? coverImageUrl : null,
       uploaderId: user.id,
+      virusScanStatus,
     },
   });
 

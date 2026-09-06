@@ -49,10 +49,35 @@ manual, con dos capas:
    un reporte activo por archivo (reportar de nuevo actualiza el motivo,
    no duplica la fila).
 
-No hay moderación automática de contenido (por ejemplo, detección de
-imágenes explícitas) — es una decisión consciente por ahora: se optó por
-reportes de comunidad en vez de integrar un servicio de terceros de
-moderación de imágenes.
+No hay moderación automática de contenido explícito (por ejemplo,
+detección de imágenes para adultos) — es una decisión consciente por
+ahora: se optó por reportes de comunidad en vez de integrar un servicio
+de terceros de moderación de imágenes.
+
+### Bloqueo de malware
+
+Dos capas, en `src/lib/fileTypes.ts` y `src/lib/virustotal.ts`:
+
+1. **Extensiones de ejecutables/scripts bloqueadas** (`.exe`, `.msi`,
+   `.bat`, `.cmd`, `.scr`, `.ps1`, `.vbs`, `.js`, `.jar`, `.sh`, `.dll`,
+   `.apk`, etc.) — igual que el bloqueo de video/ROM, sin excepción y sin
+   costo de latencia.
+2. **Escaneo real con [VirusTotal](https://www.virustotal.com)** (variable
+   `VIRUSTOTAL_API_KEY`, opcional — sin ella, el escaneo simplemente se
+   salta): antes de aceptar el archivo, se busca su SHA-256 en la base de
+   VirusTotal (~70 motores antivirus); si es desconocido, se sube para
+   análisis y se espera hasta ~12s a que termine. Si algún motor lo marca
+   como malicioso, el archivo se borra de R2 y la subida se rechaza con
+   400. Si el análisis no termina a tiempo (típico en archivos nuevos y
+   únicos), el archivo se acepta igual con `virusScanStatus: "pending"` —
+   se muestra una insignia "Escaneo pendiente" en `/files` para que
+   cualquiera lo note. Esto es defensa en profundidad, no la única capa:
+   el bloqueo de extensiones y los reportes de comunidad (motivo "Malware
+   o archivo dañino") siguen aplicando siempre.
+
+   Límite del nivel gratis de VirusTotal: solo escanea archivos de hasta
+   32 MB (`maxScannableSizeBytes()`) — los más grandes se aceptan sin
+   escanear (`virusScanStatus: "skipped"`).
 
 La subida va **directo del navegador a R2** (URL prefirmada vía
 `POST /api/files/presign`), sin pasar por la función serverless de Vercel —

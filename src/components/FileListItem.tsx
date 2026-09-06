@@ -14,6 +14,7 @@ type SharedFile = {
   platformName: string | null;
   gameTitle: string | null;
   coverImageUrl: string | null;
+  virusScanStatus: string;
   uploader: string;
   createdAt: string;
 };
@@ -106,6 +107,22 @@ export default function FileListItem({
               {(file.platformName || file.gameTitle) && (
                 <span className="rounded bg-sky-900 px-2 py-0.5 text-xs text-sky-300">
                   {[file.platformName, file.gameTitle].filter(Boolean).join(" · ")}
+                </span>
+              )}
+              {file.virusScanStatus === "pending" && (
+                <span
+                  className="rounded bg-amber-900 px-2 py-0.5 text-xs text-amber-300"
+                  title="El escaneo antivirus de VirusTotal todavía no terminó cuando se subió"
+                >
+                  Escaneo pendiente
+                </span>
+              )}
+              {file.virusScanStatus === "error" && (
+                <span
+                  className="rounded bg-amber-900 px-2 py-0.5 text-xs text-amber-300"
+                  title="No se pudo completar el escaneo antivirus"
+                >
+                  Sin escanear
                 </span>
               )}
             </div>

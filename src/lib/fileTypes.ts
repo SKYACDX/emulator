@@ -54,9 +54,49 @@ const BLOCKED_ROM_EXTENSIONS = [
   "cdi",
 ];
 
+// Executables and scripts — the most common way malware gets distributed
+// as a direct file download. Blocked regardless of the VirusTotal scan
+// (see src/lib/virustotal.ts), as a zero-latency first line of defense.
+const BLOCKED_EXECUTABLE_EXTENSIONS = [
+  "exe",
+  "msi",
+  "msix",
+  "msp",
+  "bat",
+  "cmd",
+  "com",
+  "scr",
+  "pif",
+  "ps1",
+  "psm1",
+  "vbs",
+  "vbe",
+  "js",
+  "jse",
+  "wsf",
+  "wsh",
+  "jar",
+  "app",
+  "dmg",
+  "pkg",
+  "deb",
+  "rpm",
+  "run",
+  "sh",
+  "dll",
+  "sys",
+  "gadget",
+  "hta",
+  "reg",
+  "scf",
+  "lnk",
+  "apk",
+];
+
 export const BLOCKED_UPLOAD_EXTENSIONS = [
   ...BLOCKED_VIDEO_EXTENSIONS,
   ...BLOCKED_ROM_EXTENSIONS,
+  ...BLOCKED_EXECUTABLE_EXTENSIONS,
 ];
 
 export function getExtension(filename: string): string | null {

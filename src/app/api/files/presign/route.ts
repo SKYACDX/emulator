@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          "Ese tipo de archivo no está permitido (videos y volcados de ROM/ISO están bloqueados).",
+          "Ese tipo de archivo no está permitido (videos, ejecutables/scripts y volcados de ROM/ISO están bloqueados).",
       },
       { status: 400 }
     );
