@@ -314,6 +314,18 @@ usuarios/hacks/guardados de la base de datos principal), migrarlo a otra
 cosa en el futuro —si hiciera falta— sería reescribir solo esta carpeta,
 no una migración del resto del sitio.
 
+## Comunidades y amigos
+
+`/communities`: cualquier usuario crea un grupo (nombre único → slug), se
+une o sale libremente; el creador es "owner" y no puede salir (debe
+eliminar la comunidad). Sin feed, solo lista de miembros.
+
+`/me/friends`: solicitudes de amistad simples — `POST /api/friends` con
+`{username}` envía la solicitud (si el otro ya te la envió, se acepta
+automáticamente en vez de duplicarla); `POST /api/friends/[id]` acepta,
+`DELETE /api/friends/[id]` rechaza/cancela/elimina según el estado. El
+botón "Agregar amigo" vive en `/u/[username]`.
+
 ## Vincular la app del emulador (guardado en la nube)
 
 Endpoints con **Bearer token**, no cookies — pensados para que la app nativa
