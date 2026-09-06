@@ -280,6 +280,40 @@ tema personalizado (`theme=custom` + sus propios `customTheme*`), totalmente
 editable después, desligado del original. El creador (o un admin) puede
 borrar el tema de la galería.
 
+## Multijugador (link cable) — `relay/`
+
+Carpeta aparte, proyecto propio (no Next.js, no Vercel): un relay de
+[PartyKit](https://www.partykit.io) para que dos jugadores intercambien o
+combatan vía link cable emulado (ej. Pokémon), desplegado en
+`wss://romhack-relay.skyacdx.partykit.dev`.
+
+- Deliberadamente sin lógica de "crear sala" del lado del servidor: el
+  código de sala es cualquier string que el cliente elija (ej. 6
+  caracteres al azar) y comparta con el otro jugador por fuera — ambos se
+  conectan al mismo WebSocket `wss://romhack-relay.skyacdx.partykit.dev/parties/main/<código>`.
+- El servidor (`relay/party/server.ts`, ~20 líneas) no interpreta los
+  bytes en absoluto: reenvía cada mensaje tal cual al otro conector en la
+  sala — la semántica del protocolo de link cable la resuelve el núcleo
+  del emulador de cada lado (mGBA, etc.), igual que ya hacen para
+  multijugador por TCP/IP.
+- Máximo 2 conexiones por sala (un cable link solo tiene dos puntas); un
+  tercer intento de conexión se cierra con código `4000`.
+- Sin autenticación ni base de datos — no depende de una cuenta de
+  RomHack Hub, a propósito (YAGNI: nada lo pedía).
+
+Desplegar cambios: `cd relay && npx partykit deploy`. Correr local:
+`cd relay && npx partykit dev`.
+
+### Por qué PartyKit y no algo en Vercel
+
+Vercel Functions son de petición/respuesta corta — no sirven para una
+conexión WebSocket persistente de baja latencia. PartyKit corre sobre la
+red edge de Cloudflare (Durable Objects), escala sola según demanda sin
+tocar código, y como el relay es un módulo autocontenido (no toca
+usuarios/hacks/guardados de la base de datos principal), migrarlo a otra
+cosa en el futuro —si hiciera falta— sería reescribir solo esta carpeta,
+no una migración del resto del sitio.
+
 ## Vincular la app del emulador (guardado en la nube)
 
 Endpoints con **Bearer token**, no cookies — pensados para que la app nativa
