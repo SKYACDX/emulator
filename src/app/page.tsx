@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import AdSlot from "@/components/AdSlot";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +26,8 @@ export default async function HomePage() {
           , que corre enteramente en tu navegador.
         </p>
       </section>
+
+      <AdSlot />
 
       <section>
         <h2 className="mb-4 text-lg font-semibold text-white">

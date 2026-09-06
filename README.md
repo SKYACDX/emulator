@@ -186,14 +186,33 @@ implementado todavía).
 
 ### Anuncios no invasivos
 
-Si quieres monetizar sin ser intrusivo, dos opciones que encajan con un sitio
-de comunidad/desarrolladores:
+Implementado en `src/components/AdSlot.tsx`, con dos redes en cascada:
 
-- [Google AdSense](https://adsense.google.com) — banners está­ticos discretos
-  (sidebar, entre la lista de hacks). Requiere aprobación y contenido real.
-- [EthicalAds](https://www.ethicalads.io) / [Carbon Ads](https://www.carbonads.net) —
-  anuncios de texto pequeños sin tracking agresivo, pensados para sitios de
-  developers.
+1. **[EthicalAds](https://www.ethicalads.io)** primero — anuncios de texto
+   pequeños, sin tracking agresivo, pensados para sitios de comunidad.
+2. **[Google AdSense](https://www.google.com/adsense)** como respaldo —
+   solo se muestra si EthicalAds no tiene inventario para esa carga (se le
+   da ~2s a EthicalAds para llenar su div; si no lo hace, se activa AdSense).
+
+Ambas son opcionales de forma independiente vía variables de entorno — si
+ninguna está configurada, `<AdSlot />` no renderiza nada:
+
+| Variable | Descripción |
+| --- | --- |
+| `NEXT_PUBLIC_ETHICALADS_PUBLISHER_ID` | Publisher ID que da EthicalAds al aprobar tu sitio |
+| `NEXT_PUBLIC_ADSENSE_CLIENT_ID` | Tu ID de cliente de AdSense (`ca-pub-...`) |
+| `NEXT_PUBLIC_ADSENSE_SLOT_ID` | ID del bloque de anuncio específico (se crea dentro de AdSense, después de la aprobación del sitio) |
+
+El script de carga de AdSense (`adsbygoogle.js`) se inyecta en el `<head>`
+de **todas** las páginas desde `src/app/layout.tsx` en cuanto
+`NEXT_PUBLIC_ADSENSE_CLIENT_ID` está configurado — es el requisito de Google
+para verificar el sitio, independiente de si `<AdSlot />` termina mostrando
+un anuncio de AdSense o no. `src/app/ads.txt/route.ts` genera el
+`ads.txt` requerido automáticamente a partir del mismo ID.
+
+`<AdSlot />` está colocado en dos sitios poco intrusivos: la página de
+inicio (debajo de la intro) y el detalle de cada hack (debajo de la
+descripción, antes de la lista de versiones).
 
 ## API pública (para el emulador u otros clientes)
 

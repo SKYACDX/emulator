@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { formatLabel } from "@/lib/patchFormats";
 import AddPatchForm from "@/components/AddPatchForm";
+import AdSlot from "@/components/AdSlot";
 
 export const dynamic = "force-dynamic";
 
@@ -116,6 +117,8 @@ export default async function HackPage({
           </p>
         </div>
       </div>
+
+      <AdSlot />
 
       <section>
         <h2 className="mb-3 text-lg font-semibold text-white">
