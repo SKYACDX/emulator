@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import NavBar from "@/components/NavBar";
@@ -43,11 +42,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       {ADSENSE_CLIENT_ID && (
         <head>
-          <Script
+          {/*
+            Deliberately a raw <script> tag, not next/script: Google's
+            AdSense site-verification check looks for this exact literal
+            snippet in the server-rendered HTML. next/script's
+            beforeInteractive strategy instead injects the tag via a JS
+            bootstrap call, so the literal snippet never appears in the raw
+            HTML and verification fails even though the script does load.
+          */}
+          <script
             async
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
             crossOrigin="anonymous"
-            strategy="beforeInteractive"
           />
         </head>
       )}
