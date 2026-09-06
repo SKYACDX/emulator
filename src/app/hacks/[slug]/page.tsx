@@ -110,7 +110,10 @@ export default async function HackPage({
           </div>
           <h1 className="mt-1 text-2xl font-bold text-base">{hack.title}</h1>
           <p className="mt-1 text-sm text-muted">
-            Publicado por {hack.author.username}
+            Publicado por{" "}
+            <Link href={`/u/${hack.author.username}`} className="hover-text-accent">
+              {hack.author.username}
+            </Link>
           </p>
           <p className="mt-4 whitespace-pre-wrap text-muted">
             {hack.description}

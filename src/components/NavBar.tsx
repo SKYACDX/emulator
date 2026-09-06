@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
+import { getAvatarUrl } from "@/lib/storage";
 import LogoutButton from "./LogoutButton";
 
 export default async function NavBar() {
   const user = await getCurrentUser();
+  const avatarUrl = user?.avatarKey ? await getAvatarUrl(user.avatarKey) : null;
 
   return (
     <header className="border-b border-base bg-page">
@@ -29,7 +31,13 @@ export default async function NavBar() {
               <Link href="/hacks/new" className="text-accent hover:opacity-80">
                 Publicar hack
               </Link>
-              <Link href="/me" className="text-muted hover-text-accent">
+              <Link href="/me" className="text-muted hover-text-accent flex items-center gap-1.5">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={avatarUrl ?? "/default-avatar.svg"}
+                  alt=""
+                  className="h-5 w-5 rounded-full object-cover"
+                />
                 {user.username}
               </Link>
               {user.role === "ADMIN" && (

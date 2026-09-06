@@ -70,6 +70,7 @@ export async function getCurrentUser() {
       email: true,
       username: true,
       role: true,
+      avatarKey: true,
       totpEnabled: true,
       theme: true,
       customThemeBg: true,

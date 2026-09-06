@@ -132,6 +132,13 @@ export async function headObject(
   }
 }
 
+/** Signed URL for an inline <img>, not a download — no attachment header,
+ * longer expiry since it's regenerated fresh on every render anyway. */
+export async function getAvatarUrl(storedName: string): Promise<string> {
+  const command = new GetObjectCommand({ Bucket: bucketName(), Key: storedName });
+  return getSignedUrl(s3Client(), command, { expiresIn: 3600 });
+}
+
 export async function getFileDownloadUrl(
   storedName: string,
   downloadFilename: string

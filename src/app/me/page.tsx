@@ -3,11 +3,15 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import ThemePicker from "@/components/ThemePicker";
+import AvatarUpload from "@/components/AvatarUpload";
 import { DEFAULT_CUSTOM_COLORS } from "@/lib/themes";
+import { getAvatarUrl } from "@/lib/storage";
 
 export default async function MyHacksPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+
+  const avatarUrl = user.avatarKey ? await getAvatarUrl(user.avatarKey) : null;
 
   const hacks = await prisma.hack.findMany({
     where: { authorId: user.id },
@@ -37,6 +41,14 @@ export default async function MyHacksPage() {
           </Link>
         </div>
       </div>
+
+      <section>
+        <h2 className="mb-3 text-lg font-semibold text-base">Foto de perfil</h2>
+        <AvatarUpload initialUrl={avatarUrl} />
+        <Link href={`/u/${user.username}`} className="text-accent mt-2 inline-block text-sm underline">
+          Ver mi perfil público
+        </Link>
+      </section>
 
       <section>
         <h2 className="mb-3 text-lg font-semibold text-base">Tema</h2>

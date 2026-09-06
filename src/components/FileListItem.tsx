@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { REPORT_REASONS } from "@/lib/fileReports";
 
 type SharedFile = {
@@ -170,7 +171,9 @@ export default function FileListItem({
             </div>
             <p className="text-xs text-muted">
               {file.originalName} · {formatBytes(file.fileSize)} · subido por{" "}
-              {file.uploader}
+              <Link href={`/u/${file.uploader}`} className="hover-text-accent">
+                {file.uploader}
+              </Link>
             </p>
           </div>
         </div>
