@@ -12,9 +12,12 @@ export async function GET(request: Request) {
   const platformSlug = searchParams.get("platform") ?? undefined;
   const { limit, offset } = parsePagination(searchParams);
 
-  // Public API, no session concept — only ever exposes public files.
+  // Public API, no session concept — only ever exposes public files whose
+  // VirusTotal scan came back clean (or was skipped, e.g. no scanner
+  // configured) — never anything still "pending" or that errored out.
   const where: Prisma.SharedFileWhereInput = {
     isPublic: true,
+    virusScanStatus: { in: ["clean", "skipped"] },
     platform: platformSlug ? { slug: platformSlug } : undefined,
     OR: query
       ? [

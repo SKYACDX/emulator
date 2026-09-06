@@ -16,9 +16,11 @@ export async function GET(
     include: { uploader: { select: { username: true } }, platform: true },
   });
 
-  // Never expose a private file through the public API, and 404 either way
-  // so its existence isn't leaked.
-  if (!file || !file.isPublic) {
+  // Never expose a private or not-yet-confirmed-clean file through the
+  // public API, and 404 either way so its existence isn't leaked.
+  const scanCleared =
+    file?.virusScanStatus === "clean" || file?.virusScanStatus === "skipped";
+  if (!file || !file.isPublic || !scanCleared) {
     return corsJson({ error: "Archivo no encontrado" }, { status: 404 });
   }
 

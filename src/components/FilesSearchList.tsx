@@ -18,6 +18,7 @@ type SharedFile = {
   createdAt: string;
   canDelete: boolean;
   canReport: boolean;
+  canRescan: boolean;
 };
 
 const OTHER_PLATFORM = "Otros";
@@ -94,6 +95,7 @@ export default function FilesSearchList({
               file={file}
               canDelete={file.canDelete}
               canReport={file.canReport}
+              canRescan={file.canRescan}
             />
           ))}
         </ul>

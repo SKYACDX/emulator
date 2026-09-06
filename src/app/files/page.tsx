@@ -79,6 +79,8 @@ export default async function FilesPage() {
               currentUser.role === "ADMIN" ||
               currentUser.role === "MODERATOR"),
           canReport: !!currentUser && currentUser.id !== file.uploaderId,
+          canRescan:
+            currentUser?.role === "ADMIN" || currentUser?.role === "MODERATOR",
         }))}
       />
     </div>

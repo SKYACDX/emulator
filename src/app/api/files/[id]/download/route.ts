@@ -14,11 +14,16 @@ export async function GET(
     return NextResponse.json({ error: "Archivo no encontrado" }, { status: 404 });
   }
 
-  if (!file.isPublic) {
+  const scanCleared = file.virusScanStatus === "clean" || file.virusScanStatus === "skipped";
+
+  if (!file.isPublic || !scanCleared) {
     const user = await getCurrentUser();
-    const allowed = user && (user.id === file.uploaderId || user.role === "ADMIN");
-    if (!allowed) {
-      // 404 instead of 403 so a private file's existence isn't revealed.
+    const isOwnerOrStaff =
+      user &&
+      (user.id === file.uploaderId || user.role === "ADMIN" || user.role === "MODERATOR");
+    if (!isOwnerOrStaff) {
+      // 404 instead of 403 so a private/not-yet-cleared file's existence
+      // isn't revealed to anyone but its owner and staff.
       return NextResponse.json({ error: "Archivo no encontrado" }, { status: 404 });
     }
   }

@@ -75,6 +75,20 @@ Dos capas, en `src/lib/fileTypes.ts` y `src/lib/virustotal.ts`:
    el bloqueo de extensiones y los reportes de comunidad (motivo "Malware
    o archivo dañino") siguen aplicando siempre.
 
+   Mientras un archivo está en `"pending"` o `"error"`, **la API pública
+   (`/api/v1/files`) lo excluye por completo** (ni aparece en el listado ni
+   en el detalle) y `GET /api/files/<id>/download` responde 404 para
+   cualquiera que no sea el dueño o un admin/moderador — igual que con los
+   archivos privados. El sitio web (`/files`) sí lo sigue mostrando a
+   todos con la insignia, para que la comunidad pueda ver/moderar mientras
+   tanto.
+
+   Nada vuelve a consultar un `"pending"` por su cuenta — admins/moderadores
+   tienen un botón "Reescanear" junto a la insignia (`POST
+   /api/admin/files/<id>/rescan`) que repite la búsqueda por hash; si sigue
+   pendiente hay que reintentar más tarde, y si VirusTotal ya lo marcó
+   malicioso lo borra en el acto.
+
    Límite del nivel gratis de VirusTotal: solo escanea archivos de hasta
    32 MB (`maxScannableSizeBytes()`) — los más grandes se aceptan sin
    escanear (`virusScanStatus: "skipped"`).

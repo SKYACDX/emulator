@@ -29,10 +29,12 @@ export default function FileListItem({
   file,
   canDelete,
   canReport,
+  canRescan,
 }: {
   file: SharedFile;
   canDelete: boolean;
   canReport: boolean;
+  canRescan: boolean;
 }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
@@ -41,6 +43,33 @@ export default function FileListItem({
   const [reportSent, setReportSent] = useState(false);
   const [reason, setReason] = useState<string>(REPORT_REASONS[0]);
   const [details, setDetails] = useState("");
+  const [rescanning, setRescanning] = useState(false);
+  const [rescanResult, setRescanResult] = useState<string | null>(null);
+
+  async function handleRescan() {
+    setError(null);
+    setRescanning(true);
+    setRescanResult(null);
+    try {
+      const res = await fetch(`/api/admin/files/${file.id}/rescan`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "No se pudo reescanear");
+        return;
+      }
+      if (data.deleted) {
+        setRescanResult("Detectado como malicioso — eliminado.");
+        router.refresh();
+        return;
+      }
+      setRescanResult(
+        data.verdict === "clean" ? "Limpio confirmado." : `Sigue en: ${data.verdict}`
+      );
+      router.refresh();
+    } finally {
+      setRescanning(false);
+    }
+  }
 
   async function handleDelete() {
     if (!confirm(`¿Eliminar "${file.title}"? Esta acción no se puede deshacer.`)) return;
@@ -124,6 +153,19 @@ export default function FileListItem({
                 >
                   Sin escanear
                 </span>
+              )}
+              {canRescan &&
+                (file.virusScanStatus === "pending" || file.virusScanStatus === "error") && (
+                  <button
+                    onClick={handleRescan}
+                    disabled={rescanning}
+                    className="rounded bg-surface px-2 py-0.5 text-xs text-base hover-surface disabled:opacity-60"
+                  >
+                    {rescanning ? "Reescaneando..." : "Reescanear"}
+                  </button>
+                )}
+              {rescanResult && (
+                <span className="text-xs text-muted">{rescanResult}</span>
               )}
             </div>
             <p className="text-xs text-muted">
