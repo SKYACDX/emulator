@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import NavBar from "@/components/NavBar";
@@ -88,6 +89,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           Este sitio distribuye únicamente parches (IPS/BPS/UPS), nunca ROMs completas.
           Necesitas tu propia copia legal del juego original para aplicar un parche.
         </footer>
+        <Analytics />
       </body>
     </html>
   );
