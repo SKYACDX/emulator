@@ -49,12 +49,40 @@ model User {
   customThemeAccent   String?
   customThemeText     String?
 
-  hacks           Hack[]
-  sharedFiles     SharedFile[]
-  fileReports     FileReport[]
-  communityThemes CommunityTheme[]
-  apiTokens       ApiToken[]
-  gameSaves       GameSave[]
+  hacks               Hack[]
+  sharedFiles         SharedFile[]
+  fileReports         FileReport[]
+  communityThemes     CommunityTheme[]
+  apiTokens           ApiToken[]
+  gameSaves           GameSave[]
+  createdCommunities  Community[]
+  communityMemberships CommunityMembership[]
+}
+
+model Community {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String
+  createdAt   DateTime @default(now())
+
+  creatorId String
+  creator   User   @relation(fields: [creatorId], references: [id])
+  members   CommunityMembership[]
+}
+
+model CommunityMembership {
+  id       String   @id @default(cuid())
+  role     String   @default("member") // "owner" | "member"
+  joinedAt DateTime @default(now())
+
+  communityId String
+  community   Community @relation(fields: [communityId], references: [id])
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@unique([communityId, userId])
+  @@index([userId])
 }
 
 model CommunityTheme {

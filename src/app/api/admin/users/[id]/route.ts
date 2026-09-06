@@ -94,6 +94,12 @@ export async function DELETE(
   await prisma.apiToken.deleteMany({ where: { userId: user.id } });
   await prisma.communityTheme.deleteMany({ where: { creatorId: user.id } });
 
+  const ownedCommunities = await prisma.community.findMany({ where: { creatorId: user.id } });
+  await prisma.communityMembership.deleteMany({
+    where: { OR: [{ userId: user.id }, { communityId: { in: ownedCommunities.map((c) => c.id) } }] },
+  });
+  await prisma.community.deleteMany({ where: { creatorId: user.id } });
+
   await prisma.user.delete({ where: { id: user.id } });
 
   return NextResponse.json({ ok: true });

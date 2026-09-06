@@ -26,6 +26,9 @@ export default async function NavBar() {
           <Link href="/themes" className="hover-text-accent">
             Temas
           </Link>
+          <Link href="/communities" className="hover-text-accent">
+            Comunidades
+          </Link>
           {user ? (
             <>
               <Link href="/hacks/new" className="text-accent hover:opacity-80">
