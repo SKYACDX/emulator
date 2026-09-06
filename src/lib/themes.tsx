@@ -208,3 +208,45 @@ export const DEFAULT_CUSTOM_COLORS: CustomThemeColors = {
   accent: "#10b981",
   text: "#f5f5f5",
 };
+
+/**
+ * Applies colors straight to <html> for an unsaved live preview (used by
+ * the theme editor and the community theme gallery). Client-only — never
+ * called during server rendering.
+ */
+export function applyLivePreview(colors: CustomThemeColors): void {
+  const style = buildCustomThemeStyle(colors);
+  const root = document.documentElement;
+  for (const [key, value] of Object.entries(style)) {
+    root.style.setProperty(key, value as string);
+  }
+}
+
+const PREVIEW_CSS_VARS = [
+  "--color-bg",
+  "--color-surface",
+  "--color-surface-hover",
+  "--color-border",
+  "--color-border-hover",
+  "--color-text",
+  "--color-text-muted",
+  "--color-accent",
+  "--color-accent-hover",
+  "--color-accent-text",
+];
+
+/**
+ * Undoes applyLivePreview(). Needed because these properties were set via
+ * direct DOM manipulation, outside React's own style-prop bookkeeping — if
+ * the resting layout has no inline style at all (style={undefined}, e.g.
+ * anonymous visitors or any non-custom theme), React's diffing sees
+ * "undefined before and after" and never touches the style attribute on
+ * its own, so a plain re-render/refresh would otherwise leave the preview
+ * colors stuck.
+ */
+export function clearLivePreview(): void {
+  const root = document.documentElement;
+  for (const key of PREVIEW_CSS_VARS) {
+    root.style.removeProperty(key);
+  }
+}

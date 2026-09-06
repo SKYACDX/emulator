@@ -149,3 +149,9 @@ export async function deleteSharedFile(storedName: string): Promise<void> {
     new DeleteObjectCommand({ Bucket: bucketName(), Key: storedName })
   );
 }
+
+export function maxSaveFileSizeBytes(): number {
+  // Save states/SRAM saves are usually small, but a savestate with an
+  // embedded screenshot can run a few MB — direct-to-R2 upload either way.
+  return Number(process.env.MAX_SAVE_FILE_SIZE_BYTES ?? 20_000_000); // 20 MB
+}

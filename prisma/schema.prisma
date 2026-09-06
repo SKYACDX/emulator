@@ -46,9 +46,27 @@ model User {
   customThemeAccent   String?
   customThemeText     String?
 
-  hacks       Hack[]
-  sharedFiles SharedFile[]
-  fileReports FileReport[]
+  hacks           Hack[]
+  sharedFiles     SharedFile[]
+  fileReports     FileReport[]
+  communityThemes CommunityTheme[]
+  apiTokens       ApiToken[]
+  gameSaves       GameSave[]
+}
+
+model CommunityTheme {
+  id        String   @id @default(cuid())
+  name      String
+  bg        String
+  surface   String
+  accent    String
+  text      String
+  createdAt DateTime @default(now())
+
+  creatorId String
+  creator   User   @relation(fields: [creatorId], references: [id])
+
+  @@index([creatorId])
 }
 
 model Platform {
@@ -148,4 +166,41 @@ model Patch {
   hack   Hack   @relation(fields: [hackId], references: [id])
 
   @@index([hackId])
+}
+
+/// Long-lived bearer tokens for the companion emulator app — a native app
+/// can't use the browser session cookie, so it logs in once via
+/// POST /api/auth/token and stores this instead.
+model ApiToken {
+  id         String    @id @default(cuid())
+  tokenHash  String    @unique
+  label      String?
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+/// Cloud save sync for the emulator app. `gameKey` is a client-chosen
+/// identifier for which game a save belongs to (the app decides the
+/// scheme, e.g. platform+title or a ROM hash) — this API only stores
+/// save data, never ROMs.
+model GameSave {
+  id           String   @id @default(cuid())
+  gameKey      String
+  slot         Int      @default(0)
+  originalName String
+  storedName   String
+  fileSize     Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([userId, gameKey, slot])
+  @@index([userId])
 }

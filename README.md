@@ -220,6 +220,61 @@ inyectan como `style` inline sobre `<html>` (`buildCustomThemeStyle()` en
 `src/lib/themes.tsx`), validados en el servidor como hex de 6 dígitos antes
 de guardarse (`PATCH /api/me/theme`).
 
+Mientras se editan los 4 colores, se ven **aplicados al instante en toda la
+página** (`applyLivePreview()` los escribe directo en `<html>` vía
+`element.style.setProperty`) — nada se guarda hasta darle a "Guardar tema
+personalizado". "Cancelar" (o salir de una vista previa) llama a
+`clearLivePreview()` antes de refrescar: como esos estilos se escriben por
+fuera del control de React, un simple re-render no basta para quitarlos si
+el estado de reposo no tiene `style` inline (por ejemplo, cualquier tema
+no-personalizado) — React solo limpia las propiedades que él mismo recuerda
+haber puesto.
+
+### Galería de temas de la comunidad (`/themes`)
+
+Cualquier usuario con un tema personalizado activo puede compartirlo con un
+nombre (`POST /api/community-themes`, tabla `CommunityTheme`). Otros
+usuarios navegan `/themes`, hacen clic en una tarjeta para verla **aplicada
+de inmediato como vista previa sin guardar** (mismo mecanismo de arriba), y
+si les gusta le dan "Usar este tema" — eso copia esos 4 colores a su propio
+tema personalizado (`theme=custom` + sus propios `customTheme*`), totalmente
+editable después, desligado del original. El creador (o un admin) puede
+borrar el tema de la galería.
+
+## Vincular la app del emulador (guardado en la nube)
+
+Endpoints con **Bearer token**, no cookies — pensados para que la app nativa
+del emulador (`multiemu`) vincule la cuenta y sincronice partidas guardadas
+entre dispositivos:
+
+1. **Login**: `POST /api/auth/token` con `{ email, password, label? }`
+   (`label` es el nombre del dispositivo, ej. "Pixel 8 de Juan"). Si la
+   cuenta no tiene 2FA, responde `{ token, username }` — ese `token` va en
+   `Authorization: Bearer <token>` en cada request siguiente. Si tiene 2FA,
+   responde `{ requiresTotp: true, pendingToken }`; se completa con
+   `POST /api/auth/token/verify` (`{ pendingToken, code, label? }`) para
+   obtener el `token` real.
+2. **Subir un guardado**: primero `POST /api/saves/presign` (Bearer,
+   `{ filename, fileSize, contentType }`) da una URL prefirmada de R2 —
+   `PUT` los bytes del guardado ahí directo (nunca pasan por nuestro
+   servidor). Luego `POST /api/saves` (Bearer,
+   `{ gameKey, slot?, storedName, originalName }`) confirma la subida y crea
+   o **sobreescribe** el guardado para ese `(gameKey, slot)` — `gameKey` lo
+   define la app (ej. `"gba:pokemon-emerald"` o un hash de la ROM), `slot`
+   es un número opcional (default `0`) para varios espacios de guardado por
+   juego.
+3. **Listar / descargar / borrar**: `GET /api/saves` (Bearer) devuelve todos
+   los guardados de la cuenta con su `downloadUrl`; `GET
+   /api/saves/<id>/download` (Bearer) da `{ downloadUrl }` (URL firmada de
+   R2, válida 5 min); `DELETE /api/saves/<id>` (Bearer) borra uno.
+
+Los tokens son de un solo uso por dispositivo y de larga duración (no
+expiran solos). El usuario puede ver y revocar cada dispositivo vinculado
+desde `/me/security` → "Dispositivos vinculados" (`GET`/`DELETE
+/api/me/tokens/<id>`, con cookie de sesión normal, no Bearer). Revocar
+borra el token de la base de datos — la próxima request de esa app con ese
+token da 401.
+
 ## Desplegar gratis en Vercel
 
 1. Sube el repo a GitHub y [importa el proyecto en Vercel](https://vercel.com/new)

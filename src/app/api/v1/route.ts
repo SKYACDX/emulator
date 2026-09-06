@@ -24,5 +24,18 @@ export async function GET(request: Request) {
       fileDetail: `${origin}/api/v1/files/<id>`,
       fileDownload: `${origin}/api/files/<id>/download`,
     },
+    accountLinking: {
+      description:
+        "Endpoints autenticados con Bearer token (no cookies) para que la " +
+        "app del emulador vincule la cuenta del usuario y sincronice sus " +
+        "partidas guardadas en la nube.",
+      login: `${origin}/api/auth/token`,
+      loginVerifyTotp: `${origin}/api/auth/token/verify`,
+      savesPresign: `${origin}/api/saves/presign`,
+      savesCreate: `${origin}/api/saves`,
+      savesList: `${origin}/api/saves`,
+      saveDownload: `${origin}/api/saves/<id>/download`,
+      saveDelete: `${origin}/api/saves/<id>`,
+    },
   });
 }

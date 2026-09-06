@@ -60,7 +60,7 @@ export async function DELETE(
 
   const user = await prisma.user.findUnique({
     where: { id },
-    include: { hacks: { include: { patches: true } }, sharedFiles: true },
+    include: { hacks: { include: { patches: true } }, sharedFiles: true, gameSaves: true },
   });
   if (!user) {
     return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
@@ -86,6 +86,13 @@ export async function DELETE(
     },
   });
   await prisma.sharedFile.deleteMany({ where: { uploaderId: user.id } });
+
+  await Promise.all(
+    user.gameSaves.map((save) => deleteSharedFile(save.storedName).catch(() => {}))
+  );
+  await prisma.gameSave.deleteMany({ where: { userId: user.id } });
+  await prisma.apiToken.deleteMany({ where: { userId: user.id } });
+  await prisma.communityTheme.deleteMany({ where: { creatorId: user.id } });
 
   await prisma.user.delete({ where: { id: user.id } });
 

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { REPORT_REASONS } from "@/lib/fileReports";
+import { isValidHexColor } from "@/lib/themes";
 
 export const registerSchema = z.object({
   email: z.string().trim().toLowerCase().email("Correo inválido"),
@@ -58,3 +59,26 @@ export const reportFileSchema = z
     message: "Describe el motivo",
     path: ["details"],
   });
+
+const hexColorSchema = z.string().refine(isValidHexColor, "Color inválido");
+
+export const presignSaveSchema = z.object({
+  filename: z.string().trim().min(1).max(255),
+  fileSize: z.number().int().positive(),
+  contentType: z.string().trim().min(1).max(255),
+});
+
+export const createSaveSchema = z.object({
+  gameKey: z.string().trim().min(1, "Falta el identificador del juego").max(200),
+  slot: z.number().int().min(0).max(99).optional().default(0),
+  storedName: z.string().trim().min(1),
+  originalName: z.string().trim().min(1).max(255),
+});
+
+export const createCommunityThemeSchema = z.object({
+  name: z.string().trim().min(1, "Ponle un nombre al tema").max(60),
+  bg: hexColorSchema,
+  surface: hexColorSchema,
+  accent: hexColorSchema,
+  text: hexColorSchema,
+});

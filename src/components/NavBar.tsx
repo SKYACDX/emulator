@@ -21,6 +21,9 @@ export default async function NavBar() {
           <Link href="/files" className="hover-text-accent">
             Archivos
           </Link>
+          <Link href="/themes" className="hover-text-accent">
+            Temas
+          </Link>
           {user ? (
             <>
               <Link href="/hacks/new" className="text-accent hover:opacity-80">
