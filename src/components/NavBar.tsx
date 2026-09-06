@@ -34,6 +34,9 @@ export default async function NavBar() {
               <Link href="/hacks/new" className="text-accent hover:opacity-80">
                 Publicar hack
               </Link>
+              <Link href="/messages" className="hover-text-accent">
+                Mensajes
+              </Link>
               <Link href="/me" className="text-muted hover-text-accent flex items-center gap-1.5">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img

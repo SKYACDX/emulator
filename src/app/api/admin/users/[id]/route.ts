@@ -114,6 +114,9 @@ export async function DELETE(
     where: { OR: [{ requesterId: user.id }, { addresseeId: user.id }] },
   });
 
+  await prisma.message.deleteMany({ where: { senderId: user.id } });
+  await prisma.conversationParticipant.deleteMany({ where: { userId: user.id } });
+
   await prisma.user.delete({ where: { id: user.id } });
 
   return NextResponse.json({ ok: true });
