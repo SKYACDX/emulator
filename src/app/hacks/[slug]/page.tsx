@@ -89,7 +89,12 @@ export default async function HackPage({
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{
+          // Escape "<" so a title/description containing "</script>" can't
+          // break out of this tag and inject arbitrary script (stored XSS —
+          // title/description are attacker-controlled by any hack author).
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
       />
       <div className="flex gap-4">
         {hack.game.coverImageUrl && (
