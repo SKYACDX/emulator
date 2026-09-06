@@ -95,8 +95,18 @@ export async function DELETE(
   await prisma.communityTheme.deleteMany({ where: { creatorId: user.id } });
 
   const ownedCommunities = await prisma.community.findMany({ where: { creatorId: user.id } });
+  const ownedCommunityIds = ownedCommunities.map((c) => c.id);
+
+  const posts = await prisma.communityPost.findMany({
+    where: { OR: [{ authorId: user.id }, { communityId: { in: ownedCommunityIds } }] },
+  });
+  await Promise.all(posts.filter((p) => p.imageKey).map((p) => deleteSharedFile(p.imageKey!).catch(() => {})));
+  await prisma.communityPost.deleteMany({
+    where: { OR: [{ authorId: user.id }, { communityId: { in: ownedCommunityIds } }] },
+  });
+
   await prisma.communityMembership.deleteMany({
-    where: { OR: [{ userId: user.id }, { communityId: { in: ownedCommunities.map((c) => c.id) } }] },
+    where: { OR: [{ userId: user.id }, { communityId: { in: ownedCommunityIds } }] },
   });
   await prisma.community.deleteMany({ where: { creatorId: user.id } });
 

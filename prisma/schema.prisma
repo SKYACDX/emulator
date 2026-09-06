@@ -59,6 +59,7 @@ model User {
   communityMemberships CommunityMembership[]
   sentFriendRequests     Friendship[] @relation("FriendshipRequester")
   receivedFriendRequests Friendship[] @relation("FriendshipAddressee")
+  communityPosts         CommunityPost[]
 }
 
 model Friendship {
@@ -85,6 +86,23 @@ model Community {
   creatorId String
   creator   User   @relation(fields: [creatorId], references: [id])
   members   CommunityMembership[]
+  posts     CommunityPost[]
+}
+
+model CommunityPost {
+  id        String   @id @default(cuid())
+  body      String
+  // R2 object key for an optional attached image, same pattern as
+  // User.avatarKey — a fresh signed URL is generated at render time.
+  imageKey  String?
+  createdAt DateTime @default(now())
+
+  communityId String
+  community   Community @relation(fields: [communityId], references: [id])
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id])
+
+  @@index([communityId])
 }
 
 model CommunityMembership {

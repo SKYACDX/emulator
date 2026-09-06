@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { deleteSharedFile } from "@/lib/storage";
 
 export async function DELETE(
   _request: Request,
@@ -16,6 +17,9 @@ export async function DELETE(
     return NextResponse.json({ error: "No autorizado" }, { status: 403 });
   }
 
+  const posts = await prisma.communityPost.findMany({ where: { communityId: community.id } });
+  await Promise.all(posts.filter((p) => p.imageKey).map((p) => deleteSharedFile(p.imageKey!).catch(() => {})));
+  await prisma.communityPost.deleteMany({ where: { communityId: community.id } });
   await prisma.communityMembership.deleteMany({ where: { communityId: community.id } });
   await prisma.community.delete({ where: { id: community.id } });
   return NextResponse.json({ ok: true });

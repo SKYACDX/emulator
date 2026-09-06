@@ -3,7 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { getAvatarUrl } from "@/lib/storage";
 import CommunityActions from "@/components/CommunityActions";
+import CommunityFeed from "@/components/CommunityFeed";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +14,10 @@ async function getCommunity(slug: string) {
     where: { slug },
     include: {
       members: { include: { user: { select: { username: true } } }, orderBy: { joinedAt: "asc" } },
+      posts: {
+        include: { author: { select: { username: true } } },
+        orderBy: { createdAt: "desc" },
+      },
     },
   });
 }
@@ -38,6 +44,17 @@ export default async function CommunityPage({
 
   const user = await getCurrentUser();
   const membership = user ? community.members.find((m) => m.userId === user.id) : undefined;
+
+  const posts = await Promise.all(
+    community.posts.map(async (post) => ({
+      id: post.id,
+      body: post.body,
+      imageUrl: post.imageKey ? await getAvatarUrl(post.imageKey) : null,
+      createdAt: post.createdAt.toISOString(),
+      author: post.author,
+      canDelete: !!user && (user.id === post.authorId || user.id === community.creatorId || user.role === "ADMIN"),
+    }))
+  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -70,6 +87,11 @@ export default async function CommunityPage({
             </li>
           ))}
         </ul>
+      </section>
+
+      <section>
+        <h2 className="mb-2 text-lg font-semibold text-base">Publicaciones</h2>
+        <CommunityFeed slug={community.slug} isMember={!!membership} posts={posts} />
       </section>
     </div>
   );
