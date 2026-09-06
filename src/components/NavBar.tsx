@@ -23,7 +23,7 @@ export default async function NavBar() {
           </Link>
           {user ? (
             <>
-              <Link href="/hacks/new" className="hover:text-white">
+              <Link href="/hacks/new" className="text-accent hover:opacity-80">
                 Publicar hack
               </Link>
               <Link href="/me" className="text-neutral-400 hover:text-white">

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import NavBar from "@/components/NavBar";
+import { getCurrentUser } from "@/lib/auth";
+import { DEFAULT_THEME_ID } from "@/lib/themes";
 
 const ADSENSE_CLIENT_ID = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
 
@@ -34,10 +36,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const user = await getCurrentUser();
+  const themeId = user?.theme ?? DEFAULT_THEME_ID;
+
   return (
     <html
       lang="es"
+      data-theme={themeId}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       {ADSENSE_CLIENT_ID && (

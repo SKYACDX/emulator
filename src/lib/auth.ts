@@ -71,6 +71,7 @@ export async function getCurrentUser() {
       username: true,
       role: true,
       totpEnabled: true,
+      theme: true,
       createdAt: true,
     },
   });

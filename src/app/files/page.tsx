@@ -50,7 +50,7 @@ export default async function FilesPage() {
         {currentUser && (
           <Link
             href="/files/new"
-            className="shrink-0 rounded bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500"
+            className="btn-accent shrink-0 rounded px-4 py-2 text-sm font-medium"
           >
             Subir archivo
           </Link>

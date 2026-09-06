@@ -174,7 +174,7 @@ export default function UploadFileForm({ platforms }: { platforms: Platform[] })
       <button
         type="submit"
         disabled={loading}
-        className="self-start rounded bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-500 disabled:opacity-60"
+        className="btn-accent self-start rounded px-4 py-2 font-medium disabled:opacity-60"
       >
         {loading ? "Subiendo..." : "Subir archivo"}
       </button>

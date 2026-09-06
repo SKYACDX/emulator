@@ -4,3 +4,54 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
+
+/*
+ * Per-user visual themes (see src/lib/themes.tsx for the matching registry
+ * used by the picker UI). Swaps a small set of "accent" variables based on
+ * [data-theme] on <html> — the rest of the site's dark neutral chrome stays
+ * the same for consistency/readability, only primary CTAs and highlights
+ * pick up the theme color.
+ */
+:root {
+  --color-accent: #10b981;
+  --color-accent-hover: #34d399;
+  --color-accent-text: #ffffff;
+}
+
+[data-theme="mushroom"] {
+  --color-accent: #dc2626;
+  --color-accent-hover: #ef4444;
+  --color-accent-text: #ffffff;
+}
+
+[data-theme="forest"] {
+  --color-accent: #16a34a;
+  --color-accent-hover: #22c55e;
+  --color-accent-text: #ffffff;
+}
+
+[data-theme="cosmic"] {
+  --color-accent: #9333ea;
+  --color-accent-hover: #a855f7;
+  --color-accent-text: #ffffff;
+}
+
+[data-theme="speedway"] {
+  --color-accent: #eab308;
+  --color-accent-hover: #facc15;
+  --color-accent-text: #1c1917;
+}
+
+.btn-accent {
+  background-color: var(--color-accent);
+  color: var(--color-accent-text);
+}
+.btn-accent:hover {
+  background-color: var(--color-accent-hover);
+}
+.text-accent {
+  color: var(--color-accent);
+}
+.border-accent {
+  border-color: var(--color-accent);
+}

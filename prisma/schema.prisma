@@ -37,6 +37,10 @@ model User {
   totpSecret        String?
   totpPendingSecret String?
 
+  // Visual theme id from src/lib/themes.ts (validated server-side against
+  // that registry, not a free-text field).
+  theme String @default("default")
+
   hacks       Hack[]
   sharedFiles SharedFile[]
   fileReports FileReport[]

@@ -192,6 +192,19 @@ Google Authenticator, Authy, 1Password, etc.):
 - Desactivar 2FA (`/api/auth/totp/disable`) exige contraseña **y** un
   código válido, para que no baste con robar solo la sesión activa.
 
+## Temas por usuario
+
+Cada usuario logueado puede elegir un tema visual desde `/me` (persistido en
+`User.theme`, sincronizado entre dispositivos). Los temas están inspirados
+en géneros de juegos de Nintendo (aventura, plataformas, espacial, carreras)
+pero **usan solo colores e íconos originales dibujados a mano en
+`src/lib/themes.tsx`** — ninguna imagen, sprite o logo oficial. El sitio no
+se re-diseña por completo: solo cambia el color de acento (botones
+primarios, enlaces destacados) vía variables CSS en `globals.css`
+(`[data-theme="..."]` sobre `<html>`), manteniendo el resto del look oscuro
+neutro para legibilidad. Agregar un tema nuevo es agregar una entrada al
+arreglo `THEMES` + su bloque `[data-theme="id"]` correspondiente en CSS.
+
 ## Desplegar gratis en Vercel
 
 1. Sube el repo a GitHub y [importa el proyecto en Vercel](https://vercel.com/new)

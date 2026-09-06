@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import ThemePicker from "@/components/ThemePicker";
 
 export default async function MyHacksPage() {
   const user = await getCurrentUser();
@@ -29,12 +30,17 @@ export default async function MyHacksPage() {
           </Link>
           <Link
             href="/hacks/new"
-            className="rounded bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500"
+            className="btn-accent rounded px-4 py-2 text-sm font-medium"
           >
             Publicar nuevo hack
           </Link>
         </div>
       </div>
+
+      <section>
+        <h2 className="mb-3 text-lg font-semibold text-white">Tema</h2>
+        <ThemePicker currentTheme={user.theme} />
+      </section>
 
       {hacks.length === 0 ? (
         <p className="text-neutral-500">
