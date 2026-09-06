@@ -21,7 +21,7 @@ export default async function NavBar() {
             Aplicar parche
           </Link>
           <Link href="/files" className="hover-text-accent">
-            Archivos
+            Juegos
           </Link>
           <Link href="/themes" className="hover-text-accent">
             Temas

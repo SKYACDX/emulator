@@ -152,6 +152,9 @@ export default async function HackPage({
               <p className="mt-2 font-mono text-xs text-muted">
                 SHA-256: {patch.sha256}
               </p>
+              <p className="mt-1 text-xs text-muted">
+                {patch.downloadCount} descarga{patch.downloadCount === 1 ? "" : "s"}
+              </p>
             </li>
           ))}
         </ul>

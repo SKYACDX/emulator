@@ -9,6 +9,7 @@ type SharedFile = {
   description: string;
   originalName: string;
   fileSize: number;
+  downloadCount: number;
   isPublic: boolean;
   platformName: string | null;
   gameTitle: string | null;

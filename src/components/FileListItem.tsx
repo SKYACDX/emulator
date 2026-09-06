@@ -11,6 +11,7 @@ type SharedFile = {
   description: string;
   originalName: string;
   fileSize: number;
+  downloadCount: number;
   isPublic: boolean;
   platformName: string | null;
   gameTitle: string | null;
@@ -170,7 +171,8 @@ export default function FileListItem({
               )}
             </div>
             <p className="text-xs text-muted">
-              {file.originalName} · {formatBytes(file.fileSize)} · subido por{" "}
+              {file.originalName} · {formatBytes(file.fileSize)} ·{" "}
+              {file.downloadCount} descarga{file.downloadCount === 1 ? "" : "s"} · subido por{" "}
               <Link href={`/u/${file.uploader}`} className="hover-text-accent">
                 {file.uploader}
               </Link>

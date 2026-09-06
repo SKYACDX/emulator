@@ -66,6 +66,7 @@ export default async function FilesPage() {
           description: file.description,
           originalName: file.originalName,
           fileSize: file.fileSize,
+          downloadCount: file.downloadCount,
           isPublic: file.isPublic,
           platformName: file.platform?.name ?? null,
           gameTitle: file.gameTitle,

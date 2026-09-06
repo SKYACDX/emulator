@@ -183,6 +183,7 @@ model SharedFile {
   fileSize     Int
   mimeType     String
   isPublic     Boolean  @default(true)
+  downloadCount Int     @default(0)
   createdAt    DateTime @default(now())
 
   // "clean" | "malicious" (never actually stored — rejected outright) |
@@ -230,6 +231,7 @@ model Patch {
   fileSize     Int
   sha256       String
   releaseNotes String
+  downloadCount Int        @default(0)
   createdAt    DateTime    @default(now())
 
   hackId String

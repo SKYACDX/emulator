@@ -35,5 +35,7 @@ export async function GET(
     return NextResponse.json({ error: "Archivo no disponible" }, { status: 404 });
   }
 
+  await prisma.sharedFile.update({ where: { id }, data: { downloadCount: { increment: 1 } } });
+
   return NextResponse.redirect(url);
 }
