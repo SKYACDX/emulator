@@ -14,6 +14,9 @@ export default async function NavBar() {
           RomHack Hub
         </Link>
         <nav className="flex items-center gap-4 text-sm text-muted">
+          <Link href="/app" className="hover-text-accent">
+            App
+          </Link>
           <Link href="/platforms" className="hover-text-accent">
             Plataformas
           </Link>
