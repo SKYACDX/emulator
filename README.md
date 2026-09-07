@@ -462,6 +462,27 @@ un anuncio de AdSense o no. `src/app/ads.txt/route.ts` genera el
 inicio (debajo de la intro) y el detalle de cada hack (debajo de la
 descripción, antes de la lista de versiones).
 
+## Temas del emulador (`EmulatorTheme`)
+
+No confundir con `CommunityTheme` (el tema de colores de esta web) — este es
+el modelo de temas visuales para los controles del emulador de la app
+(`docs/themes-api.md` en el repo de la app tiene el contrato completo).
+
+- **v1 = presets + color, sin imágenes propias.** `palette` son 6 colores
+  hex; `presets` son IDs de forma de botón que la app resuelve del lado del
+  cliente (el servidor solo guarda el string, nunca sabe qué dibuja cada
+  uno). El campo `assets` del JSON de respuesta siempre va con todo `null`
+  en v1 — no hay columna para eso todavía a propósito; se agrega en v2 sin
+  romper el contrato actual.
+- `system` valida contra los slugs ya existentes de `Platform` (`gb`,
+  `gbc`, `gba`, `nds`, ...) — reusa esa tabla en vez de duplicar un enum.
+- Lectura pública sin auth: `GET /api/v1/themes` (lista) y `GET
+  /api/v1/themes/<id>` (detalle, 404 si no es público).
+- Escritura con **Bearer token** (mismo esquema que `/api/saves`):
+  `POST /api/themes` (crea, `slug` elegido por el cliente, 409 si ya
+  existe), `PATCH /api/themes/<id>` y `DELETE /api/themes/<id>` (403 si el
+  token no es del autor).
+
 ## API pública (para el emulador u otros clientes)
 
 Endpoints de solo lectura, sin autenticación, pensados para que una app
@@ -477,8 +498,11 @@ nativas/React Native (que no aplican CORS) como desde el navegador.
 | `GET /api/v1/hacks?game=<slug>&platform=<slug>&q=<texto>&limit=&offset=` | Hacks (con sus parches y `downloadUrl` listo para usar), filtrables por juego, plataforma y/o texto en el título |
 | `GET /api/v1/hacks/<slug>` | Detalle de un hack específico |
 | `GET /api/patches/<id>/download` | Redirige (307) a una URL firmada de R2 válida por 5 minutos — descarga el archivo de parche directo |
+| `GET /api/v1/themes?system=&q=&sort=downloads\|newest&limit=&offset=` | Temas visuales del emulador (ver más abajo) |
+| `GET /api/v1/themes/<id>` | Detalle de un tema, solo si es público |
+| `POST /api/v1/themes/<id>/downloads` | Incrementa el contador de descargas en 1 (sin auth, es solo telemetría) → `204` |
 
-`games` y `hacks` devuelven paginación: `{ ..., pagination: { limit, offset, total, hasMore } }`.
+`games`, `hacks` y `themes` devuelven paginación: `{ ..., pagination: { limit, offset, total, hasMore } }`.
 `limit` por defecto es 20 (máximo 50); usa `offset` para pedir la siguiente página.
 Las respuestas exitosas llevan `Cache-Control: public, s-maxage=60, stale-while-revalidate=300`
 (cacheables por CDN/cliente ~1 min); los errores van con `no-store`.

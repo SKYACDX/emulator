@@ -62,6 +62,7 @@ model User {
   communityPosts         CommunityPost[]
   conversations          ConversationParticipant[]
   messages               Message[]
+  emulatorThemes         EmulatorTheme[]
 }
 
 // A conversation is a DM (isGroup=false, exactly 2 participants) or a group
@@ -174,6 +175,43 @@ model CommunityTheme {
   creator   User   @relation(fields: [creatorId], references: [id])
 
   @@index([creatorId])
+}
+
+// Visual theme for the companion emulator app's on-screen controls — not
+// to be confused with CommunityTheme above (this site's own color scheme).
+// v1 is presets + color only, per docs/themes-api.md from the app repo:
+// `assets` (per-piece custom images) is a v2 feature and deliberately has
+// no column here yet — the API layer fills it with nulls to match the
+// documented response shape without the site needing to store/serve it.
+model EmulatorTheme {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  system    String // Platform.slug this theme is for (gb, gbc, gba, nds, ...)
+  isPublic  Boolean  @default(true)
+  downloads Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shellBackground     String
+  shellBorder         String
+  screenBezel         String
+  dpadColor           String
+  actionButtonColor   String
+  shoulderButtonColor String
+
+  // Preset IDs the app resolves client-side — the server never interprets
+  // these, just stores and returns the string (see the doc's "Catálogo de
+  // presets" section).
+  dpadPreset            String
+  actionButtonsPreset   String
+  shoulderButtonsPreset String
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  @@index([system])
+  @@index([authorId])
 }
 
 model Platform {

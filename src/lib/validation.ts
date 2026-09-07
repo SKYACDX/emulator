@@ -82,3 +82,39 @@ export const createCommunityThemeSchema = z.object({
   accent: hexColorSchema,
   text: hexColorSchema,
 });
+
+const emulatorThemePaletteSchema = z.object({
+  shellBackground: hexColorSchema,
+  shellBorder: hexColorSchema,
+  screenBezel: hexColorSchema,
+  dpadColor: hexColorSchema,
+  actionButtonColor: hexColorSchema,
+  shoulderButtonColor: hexColorSchema,
+});
+
+const emulatorThemePresetsSchema = z.object({
+  dpad: z.string().trim().min(1).max(60),
+  actionButtons: z.string().trim().min(1).max(60),
+  shoulderButtons: z.string().trim().min(1).max(60),
+});
+
+export const createEmulatorThemeSchema = z.object({
+  slug: z
+    .string()
+    .trim()
+    .min(1, "Falta el slug")
+    .max(60)
+    .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "El slug solo puede tener minúsculas, números y guiones"),
+  name: z.string().trim().min(1, "Ponle un nombre al tema").max(80),
+  system: z.string().trim().min(1, "Falta el sistema"),
+  palette: emulatorThemePaletteSchema,
+  presets: emulatorThemePresetsSchema,
+  public: z.boolean().optional().default(true),
+});
+
+export const updateEmulatorThemeSchema = z.object({
+  name: z.string().trim().min(1).max(80).optional(),
+  palette: emulatorThemePaletteSchema.optional(),
+  presets: emulatorThemePresetsSchema.optional(),
+  public: z.boolean().optional(),
+});
