@@ -462,6 +462,30 @@ un anuncio de AdSense o no. `src/app/ads.txt/route.ts` genera el
 inicio (debajo de la intro) y el detalle de cada hack (debajo de la
 descripción, antes de la lista de versiones).
 
+## Ficha pública de la app (`AppListing` / `AppRelease`)
+
+A diferencia de todo lo demás en este proyecto, esto **no es una colección
+de contenido de usuarios** — hay una sola app (multiemu), con un historial
+de versiones. `AppListing` es la ficha (texto/ícono/capturas, cambia poco);
+`AppRelease` es cada versión publicada, con su propio APK. Contrato
+completo en `docs/applistingapi.md` del repo de la app.
+
+- Lectura pública sin auth: `GET /api/v1/app` → `{ listing, latestRelease }`
+  (404 si nadie ha creado la ficha todavía), `GET /api/v1/app/releases`
+  (historial paginado), `POST /api/v1/app/releases/<id>/downloads` (solo
+  telemetría, `204`).
+- Escritura solo para **ADMIN** (no cualquier cuenta logueada, ni
+  MODERATOR — esto no es contenido de usuario): `PUT /api/app` (crea o
+  actualiza la ficha; la primera vez exige `tagline` y `description`),
+  `POST /api/app/releases` (nueva versión, 409 si el `versionCode` ya
+  existe).
+- Subir ícono/capturas/APK: mismo patrón presign→PUT→registrar que
+  `/api/saves` y `/api/themes` reservan para su v2 — `POST
+  /api/app/assets/presign` con `slot: "icon" | "screenshot" |
+  "apk:<releaseId>"`, el cliente hace `PUT` a la URL firmada, y `POST
+  /api/app/assets` registra la pieza. Límites: ícono ≤2MB, captura ≤5MB,
+  APK sin límite propio (usa el mismo tope que `/files`, 200MB).
+
 ## Temas del emulador (`EmulatorTheme`)
 
 No confundir con `CommunityTheme` (el tema de colores de esta web) — este es

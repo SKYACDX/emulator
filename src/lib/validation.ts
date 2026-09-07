@@ -118,3 +118,29 @@ export const updateEmulatorThemeSchema = z.object({
   presets: emulatorThemePresetsSchema.optional(),
   public: z.boolean().optional(),
 });
+
+export const updateAppListingSchema = z.object({
+  tagline: z.string().trim().min(1).max(200).optional(),
+  description: z.string().trim().min(1).max(20000).optional(),
+  features: z.array(z.string().trim().min(1).max(300)).max(50).optional(),
+});
+
+export const createAppReleaseSchema = z.object({
+  version: z.string().trim().min(1).max(30),
+  versionCode: z.number().int().positive(),
+  changelog: z.string().trim().max(10000).optional().default(""),
+  minAndroidSdk: z.number().int().positive(),
+});
+
+export const presignAppAssetSchema = z.object({
+  slot: z.string().trim().min(1).max(60), // "icon" | "screenshot" | "apk:<releaseId>"
+  filename: z.string().trim().min(1).max(255),
+  fileSize: z.number().int().positive(),
+  contentType: z.string().trim().min(1).max(255),
+});
+
+export const registerAppAssetSchema = z.object({
+  slot: z.string().trim().min(1).max(60),
+  storedName: z.string().trim().min(1),
+  originalName: z.string().trim().min(1).max(255),
+});

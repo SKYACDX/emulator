@@ -214,6 +214,54 @@ model EmulatorTheme {
   @@index([authorId])
 }
 
+// Public listing page for the companion app (multiemu) — not a user
+// collection like Hack/SharedFile/EmulatorTheme, there's exactly one of
+// these. Editable only by staff (see /api/app), unlike everything else a
+// regular account can create. Per docs/applistingapi.md from the app repo.
+model AppListing {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  tagline     String
+  description String
+  features    String[]
+  // R2 object key for the icon — same pattern as User.avatarKey, a fresh
+  // signed URL is generated at render time instead of storing one.
+  iconKey     String?
+  updatedAt   DateTime @updatedAt
+
+  screenshots AppScreenshot[]
+  releases    AppRelease[]
+}
+
+model AppScreenshot {
+  id         String   @id @default(cuid())
+  storedName String
+  createdAt  DateTime @default(now())
+
+  listingId String
+  listing   AppListing @relation(fields: [listingId], references: [id])
+
+  @@index([listingId])
+}
+
+model AppRelease {
+  id            String   @id @default(cuid())
+  version       String
+  versionCode   Int      @unique
+  changelog     String
+  minAndroidSdk Int
+  apkKey        String?
+  apkSize       Int      @default(0)
+  downloads     Int      @default(0)
+  publishedAt   DateTime @default(now())
+
+  listingId String
+  listing   AppListing @relation(fields: [listingId], references: [id])
+
+  @@index([listingId])
+}
+
 model Platform {
   id   String @id @default(cuid())
   slug String @unique

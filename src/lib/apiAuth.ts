@@ -35,3 +35,12 @@ export async function getUserFromBearerToken(request: Request) {
 
   return apiToken.user;
 }
+
+/** Like getUserFromBearerToken, but only for admin-managed content (the
+ * app listing) that isn't a regular user's own data — any logged-in
+ * account can get a token, but only ADMIN can edit this. */
+export async function getAdminFromBearerToken(request: Request) {
+  const user = await getUserFromBearerToken(request);
+  if (!user || user.role !== "ADMIN") return null;
+  return user;
+}
