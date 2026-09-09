@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Analytics } from "@vercel/analytics/next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -86,8 +87,18 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           {children}
         </main>
         <footer className="border-base text-muted border-t px-4 py-6 text-center text-xs">
-          Este sitio distribuye únicamente parches (IPS/BPS/UPS), nunca ROMs completas.
-          Necesitas tu propia copia legal del juego original para aplicar un parche.
+          <p>
+            Este sitio distribuye únicamente parches (IPS/BPS/UPS), nunca ROMs completas.
+            Necesitas tu propia copia legal del juego original para aplicar un parche.
+          </p>
+          <nav className="mt-2 flex justify-center gap-4">
+            <Link href="/about" className="hover-text-accent">
+              Acerca de
+            </Link>
+            <Link href="/contact" className="hover-text-accent">
+              Contacto
+            </Link>
+          </nav>
         </footer>
         <Analytics />
       </body>

@@ -94,6 +94,7 @@ export async function DELETE(
   await prisma.apiToken.deleteMany({ where: { userId: user.id } });
   await prisma.communityTheme.deleteMany({ where: { creatorId: user.id } });
   await prisma.emulatorTheme.deleteMany({ where: { authorId: user.id } });
+  await prisma.appFeedback.deleteMany({ where: { authorId: user.id } });
 
   const ownedCommunities = await prisma.community.findMany({ where: { creatorId: user.id } });
   const ownedCommunityIds = ownedCommunities.map((c) => c.id);

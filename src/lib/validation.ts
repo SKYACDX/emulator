@@ -144,3 +144,14 @@ export const registerAppAssetSchema = z.object({
   storedName: z.string().trim().min(1),
   originalName: z.string().trim().min(1).max(255),
 });
+
+export const createAppFeedbackSchema = z.object({
+  body: z.string().trim().min(1, "Escribe algo").max(2000),
+});
+
+export const createContactMessageSchema = z.object({
+  name: z.string().trim().min(1, "Falta tu nombre").max(120),
+  email: z.string().trim().toLowerCase().email("Correo inválido"),
+  subject: z.string().trim().min(1, "Falta el asunto").max(200),
+  body: z.string().trim().min(1, "Escribe tu mensaje").max(5000),
+});

@@ -462,6 +462,18 @@ un anuncio de AdSense o no. `src/app/ads.txt/route.ts` genera el
 inicio (debajo de la intro) y el detalle de cada hack (debajo de la
 descripción, antes de la lista de versiones).
 
+## Acerca de, Contacto y retroalimentación
+
+- `/about`: qué es el sitio, el modelo de solo-parches, y qué más hay
+  (archivos, comunidades, temas, la app). Contenido estático.
+- `/contact`: formulario público (sin login) → `POST /api/contact`,
+  guarda en `ContactMessage`. No se muestra ningún correo públicamente —
+  el admin lee los mensajes desde el panel de admin (`/admin`), que
+  también permite borrarlos. Rate-limited por IP (5/hora) para frenar spam.
+- Comentarios de retroalimentación en `/app` (`AppFeedback`): requiere
+  cuenta, igual que el resto del contenido de usuarios del sitio. Cualquiera
+  puede leerlos; solo el autor o un admin puede borrar uno.
+
 ## Ficha pública de la app (`AppListing` / `AppRelease`)
 
 A diferencia de todo lo demás en este proyecto, esto **no es una colección

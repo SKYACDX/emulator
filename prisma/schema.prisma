@@ -63,6 +63,7 @@ model User {
   conversations          ConversationParticipant[]
   messages               Message[]
   emulatorThemes         EmulatorTheme[]
+  appFeedback            AppFeedback[]
 }
 
 // A conversation is a DM (isGroup=false, exactly 2 participants) or a group
@@ -260,6 +261,33 @@ model AppRelease {
   listing   AppListing @relation(fields: [listingId], references: [id])
 
   @@index([listingId])
+}
+
+// Feedback on the multiemu app, shown publicly on /app. Requires an
+// account, same as every other piece of user-generated content on the
+// site — keeps it consistent with community posts/reports instead of
+// allowing anonymous spam.
+model AppFeedback {
+  id        String   @id @default(cuid())
+  body      String
+  createdAt DateTime @default(now())
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  @@index([authorId])
+}
+
+// The public "Contacto" form — deliberately no auth required (a visitor
+// without an account should still be able to reach the team) and no
+// relation to User; just a message with a reply-to email the sender types.
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  body      String
+  createdAt DateTime @default(now())
 }
 
 model Platform {

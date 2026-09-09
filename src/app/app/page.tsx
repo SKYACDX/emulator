@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { serializeAppListing, serializeAppRelease } from "@/lib/appListing";
+import { getCurrentUser } from "@/lib/auth";
 import AppDescription from "@/components/AppDescription";
+import AppFeedback from "@/components/AppFeedback";
 
 export const dynamic = "force-dynamic";
 
@@ -40,6 +42,15 @@ export default async function AppPage() {
   const data = await getData();
   if (!data) notFound();
   const { listing, latestRelease } = data;
+
+  const [user, feedback] = await Promise.all([
+    getCurrentUser(),
+    prisma.appFeedback.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 100,
+      include: { author: { select: { username: true, id: true } } },
+    }),
+  ]);
 
   return (
     <div className="flex flex-col gap-8">
@@ -116,6 +127,20 @@ export default async function AppPage() {
           <p className="text-muted whitespace-pre-wrap text-sm">{latestRelease.changelog}</p>
         </section>
       )}
+
+      <section>
+        <h2 className="mb-3 text-lg font-semibold text-base">Comentarios y retroalimentación</h2>
+        <AppFeedback
+          isLoggedIn={!!user}
+          feedback={feedback.map((f) => ({
+            id: f.id,
+            body: f.body,
+            author: f.author.username,
+            createdAt: f.createdAt.toISOString(),
+            canDelete: !!user && (user.id === f.author.id || user.role === "ADMIN"),
+          }))}
+        />
+      </section>
     </div>
   );
 }

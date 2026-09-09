@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import AdminHacksTable from "@/components/AdminHacksTable";
 import AdminUsersTable from "@/components/AdminUsersTable";
 import AdminReportsTable from "@/components/AdminReportsTable";
+import AdminContactTable from "@/components/AdminContactTable";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +13,7 @@ export default async function AdminPage() {
   const admin = await getCurrentAdmin();
   if (!admin) redirect("/");
 
-  const [hacks, users, sharedFileCount, reportedFiles] = await Promise.all([
+  const [hacks, users, sharedFileCount, reportedFiles, contactMessages] = await Promise.all([
     prisma.hack.findMany({
       orderBy: { createdAt: "desc" },
       include: {
@@ -44,6 +45,7 @@ export default async function AdminPage() {
       },
       orderBy: { reports: { _count: "desc" } },
     }),
+    prisma.contactMessage.findMany({ orderBy: { createdAt: "desc" } }),
   ]);
 
   return (
@@ -104,6 +106,22 @@ export default async function AdminPage() {
           : como admin puedes eliminar cualquier archivo de cualquier usuario
           directamente desde esa página.
         </p>
+      </section>
+
+      <section>
+        <h2 className="mb-3 text-lg font-semibold text-base">
+          Mensajes de contacto ({contactMessages.length})
+        </h2>
+        <AdminContactTable
+          messages={contactMessages.map((m) => ({
+            id: m.id,
+            name: m.name,
+            email: m.email,
+            subject: m.subject,
+            body: m.body,
+            createdAt: m.createdAt.toISOString(),
+          }))}
+        />
       </section>
 
       <section>
