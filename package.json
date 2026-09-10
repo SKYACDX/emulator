@@ -9,7 +9,9 @@
     "lint": "eslint",
     "seed": "tsx prisma/seed.ts",
     "make-admin": "tsx prisma/make-admin.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "migrate:dev": "prisma migrate dev --config prisma7.config.ts",
+    "migrate:prod": "cross-env PRISMA_TARGET=production prisma migrate deploy --config prisma7.config.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1126.0",
@@ -38,6 +40,7 @@
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^10.1.0",
     "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.3.4",

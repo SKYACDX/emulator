@@ -199,6 +199,31 @@ local persistente ni base de datos con estado en el propio servidor.
    sus archivos de R2) y gestionar usuarios (promover/degradar roles,
    eliminar cuentas junto con sus hacks).
 
+## Base de datos de desarrollo (evita tocar producción)
+
+`.env` tiene las credenciales de **producción** (la base real). `.env.local`
+(gitignored, no se commitea) tiene las de un **branch de Neon aparte**
+llamado `development` — mismo esquema, datos separados. Next.js carga
+`.env.local` por encima de `.env` automáticamente, así que:
+
+- `pnpm dev` y cualquier prueba manual en el navegador ya usan el branch de
+  desarrollo sin hacer nada extra.
+- `pnpm run migrate:dev` (= `prisma migrate dev`) también apunta ahí por
+  defecto — crear y probar una migración nueva nunca toca producción.
+- Cuando una migración ya está lista para producción: `pnpm run
+  migrate:prod` (`PRISMA_TARGET=production prisma migrate deploy`) —
+  requiere el flag explícito a propósito, para que aplicar un cambio de
+  esquema a la base real sea una decisión consciente, no un accidente de
+  usar el comando por defecto.
+- Scripts sueltos de prueba/limpieza (`npx tsx --env-file=.env.local
+  algo.mts`) deberían apuntar a `.env.local` salvo que la tarea sea
+  explícitamente sobre datos de producción (ej. `make-admin`, `seed`, o
+  verificar algo que solo existe en la base real).
+
+Para crear el branch de desarrollo: Neon dashboard → tu proyecto → pestaña
+**Branches** → **Create branch** (origen: producción) → copia las cadenas
+de conexión pooled/direct de ese branch nuevo a `.env.local`.
+
 ### Rol `MODERATOR`
 
 Un tercer rol, más limitado que `ADMIN`, pensado para delegar la
