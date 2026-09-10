@@ -26,9 +26,17 @@ export async function POST(request: Request) {
     );
   }
 
+  // Carry the running total forward instead of starting a new version at
+  // 0 — "downloads" on the page reads as overall app popularity, not
+  // per-APK-file hits, so publishing an update shouldn't visibly reset it.
+  const { _sum } = await prisma.appRelease.aggregate({
+    where: { listingId: listing.id },
+    _sum: { downloads: true },
+  });
+
   const release = await prisma.appRelease
     .create({
-      data: { ...parsed.data, listingId: listing.id },
+      data: { ...parsed.data, listingId: listing.id, downloads: _sum.downloads ?? 0 },
     })
     .catch(() => null);
 
