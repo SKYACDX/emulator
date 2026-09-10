@@ -268,12 +268,24 @@ model AppRelease {
 // site — keeps it consistent with community posts/reports instead of
 // allowing anonymous spam.
 model AppFeedback {
-  id        String   @id @default(cuid())
-  body      String
-  createdAt DateTime @default(now())
+  id         String  @id @default(cuid())
+  body       String
+  // Free text the sender types, e.g. "Samsung Galaxy S21, Android 13" —
+  // deliberately not a structured device/OS pair, since the exact wording
+  // varies by platform and this is just a bug-report aid, not queried on.
+  deviceInfo String?
+  appVersion String?
+  // R2 object key for an optional screenshot — same pattern as
+  // CommunityPost.imageKey (signed URL generated at render time).
+  imageKey   String?
+  createdAt  DateTime @default(now())
 
-  authorId String
-  author   User   @relation(fields: [authorId], references: [id])
+  // Guests can leave feedback too (no account required, just nudged to
+  // create one) — authorId is null and guestName holds whatever name they
+  // typed, or nothing at all.
+  authorId  String?
+  author    User?   @relation(fields: [authorId], references: [id])
+  guestName String?
 
   @@index([authorId])
 }

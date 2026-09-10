@@ -1,5 +1,6 @@
 import { randomBytes, createHash } from "crypto";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 
 function hashToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
@@ -34,6 +35,15 @@ export async function getUserFromBearerToken(request: Request) {
   });
 
   return apiToken.user;
+}
+
+/** For endpoints reachable from both the website (session cookie) and the
+ * native app (Bearer token) — checks the cookie first since it's free
+ * (no DB round-trip needed to fail), falls back to the token. */
+export async function getUserFromRequest(request: Request) {
+  const cookieUser = await getCurrentUser();
+  if (cookieUser) return cookieUser;
+  return getUserFromBearerToken(request);
 }
 
 /** Like getUserFromBearerToken, but only for admin-managed content (the

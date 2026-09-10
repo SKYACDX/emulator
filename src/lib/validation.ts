@@ -147,6 +147,10 @@ export const registerAppAssetSchema = z.object({
 
 export const createAppFeedbackSchema = z.object({
   body: z.string().trim().min(1, "Escribe algo").max(2000),
+  deviceInfo: z.string().trim().max(200).optional(),
+  appVersion: z.string().trim().max(50).optional(),
+  imageKey: z.string().trim().min(1).optional(),
+  guestName: z.string().trim().max(60).optional(),
 });
 
 export const createContactMessageSchema = z.object({

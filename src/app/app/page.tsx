@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { serializeAppListing, serializeAppRelease } from "@/lib/appListing";
 import { getCurrentUser } from "@/lib/auth";
+import { getAvatarUrl } from "@/lib/storage";
 import AppDescription from "@/components/AppDescription";
 import AppFeedback from "@/components/AppFeedback";
 
@@ -132,13 +133,18 @@ export default async function AppPage() {
         <h2 className="mb-3 text-lg font-semibold text-base">Comentarios y retroalimentación</h2>
         <AppFeedback
           isLoggedIn={!!user}
-          feedback={feedback.map((f) => ({
-            id: f.id,
-            body: f.body,
-            author: f.author.username,
-            createdAt: f.createdAt.toISOString(),
-            canDelete: !!user && (user.id === f.author.id || user.role === "ADMIN"),
-          }))}
+          feedback={await Promise.all(
+            feedback.map(async (f) => ({
+              id: f.id,
+              body: f.body,
+              deviceInfo: f.deviceInfo,
+              appVersion: f.appVersion,
+              imageUrl: f.imageKey ? await getAvatarUrl(f.imageKey) : null,
+              author: f.author?.username ?? f.guestName ?? "Invitado",
+              createdAt: f.createdAt.toISOString(),
+              canDelete: !!user && (user.id === f.author?.id || user.role === "ADMIN"),
+            }))
+          )}
         />
       </section>
     </div>

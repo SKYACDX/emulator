@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getUserFromRequest } from "@/lib/apiAuth";
 
 export async function DELETE(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const user = await getCurrentUser();
+  const user = await getUserFromRequest(request);
   if (!user) return NextResponse.json({ error: "Debes iniciar sesión" }, { status: 401 });
 
   const { id } = await params;
