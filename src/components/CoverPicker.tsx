@@ -20,19 +20,20 @@ export default function CoverPicker({
   value: string | null;
   onChange: (url: string | null) => void;
 }) {
+  const [query, setQuery] = useState(gameTitle);
   const [results, setResults] = useState<CoverResult[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSearch() {
-    if (!gameTitle.trim()) {
+    if (!query.trim()) {
       setError("Escribe primero el nombre del juego");
       return;
     }
     setError(null);
     setLoading(true);
     try {
-      const params = new URLSearchParams({ q: gameTitle });
+      const params = new URLSearchParams({ q: query });
       if (platformSlug) params.set("platform", platformSlug);
       const res = await fetch(`/api/games/search-cover?${params}`);
       const data = await res.json();
@@ -57,19 +58,33 @@ export default function CoverPicker({
             className="h-16 w-auto rounded border border-base"
           />
         )}
+        <div className="flex flex-1 flex-col gap-1">
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleSearch();
+              }
+            }}
+            placeholder="Nombre del juego a buscar (en inglés suele dar más resultados)"
+            className="border-base bg-surface rounded border px-3 py-1.5 text-sm text-base"
+          />
+        </div>
         <button
           type="button"
           onClick={handleSearch}
           disabled={loading}
-          className="rounded bg-surface px-3 py-1.5 text-sm text-base hover-surface disabled:opacity-60"
+          className="shrink-0 rounded bg-surface px-3 py-1.5 text-sm text-base hover-surface disabled:opacity-60"
         >
-          {loading ? "Buscando..." : value ? "Cambiar portada" : "Buscar portada"}
+          {loading ? "Buscando..." : "Buscar"}
         </button>
         {value && (
           <button
             type="button"
             onClick={() => onChange(null)}
-            className="text-sm text-muted hover:text-base"
+            className="shrink-0 text-sm text-muted hover:text-base"
           >
             Quitar
           </button>
