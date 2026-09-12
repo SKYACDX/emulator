@@ -89,7 +89,7 @@ export default function FilesSearchList({
             : "Ningún archivo coincide con tu búsqueda."}
         </p>
       ) : (
-        <ul className="flex flex-col gap-3">
+        <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
           {filtered.map((file) => (
             <FileListItem
               key={file.id}

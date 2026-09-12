@@ -112,91 +112,98 @@ export default function FileListItem({
   }
 
   return (
-    <li className="game-card p-4">
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div className="flex gap-3">
-          {file.coverImageUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={file.coverImageUrl}
-              alt={file.gameTitle ?? file.title}
-              className="h-14 w-auto shrink-0 rounded border border-base"
-            />
-          )}
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="font-medium text-base">{file.title}</h2>
-              <span
-                className={
-                  file.isPublic
-                    ? "rounded bg-surface px-2 py-0.5 text-xs text-muted"
-                    : "rounded bg-amber-900 px-2 py-0.5 text-xs text-amber-300"
-                }
-              >
-                {file.isPublic ? "Público" : "Privado"}
-              </span>
-              {(file.platformName || file.gameTitle) && (
-                <span className="rounded bg-sky-900 px-2 py-0.5 text-xs text-sky-300">
-                  {[file.platformName, file.gameTitle].filter(Boolean).join(" · ")}
-                </span>
-              )}
-              {file.virusScanStatus === "pending" && (
-                <span
-                  className="rounded bg-amber-900 px-2 py-0.5 text-xs text-amber-300"
-                  title="El escaneo antivirus de VirusTotal todavía no terminó cuando se subió"
-                >
-                  Escaneo pendiente
-                </span>
-              )}
-              {file.virusScanStatus === "error" && (
-                <span
-                  className="rounded bg-amber-900 px-2 py-0.5 text-xs text-amber-300"
-                  title="No se pudo completar el escaneo antivirus"
-                >
-                  Sin escanear
-                </span>
-              )}
-              {canRescan &&
-                (file.virusScanStatus === "pending" || file.virusScanStatus === "error") && (
-                  <button
-                    onClick={handleRescan}
-                    disabled={rescanning}
-                    className="rounded bg-surface px-2 py-0.5 text-xs text-base hover-surface disabled:opacity-60"
-                  >
-                    {rescanning ? "Reescaneando..." : "Reescanear"}
-                  </button>
-                )}
-              {rescanResult && (
-                <span className="text-xs text-muted">{rescanResult}</span>
-              )}
-            </div>
-            <p className="text-xs text-muted">
-              {file.originalName} · {formatBytes(file.fileSize)} ·{" "}
-              {file.downloadCount} descarga{file.downloadCount === 1 ? "" : "s"} · subido por{" "}
-              <Link href={`/u/${file.uploader}`} className="hover-text-accent">
-                {file.uploader}
-              </Link>
-            </p>
+    <li className="game-card flex h-full flex-col overflow-hidden">
+      <div className="border-base bg-page relative aspect-[3/4] w-full border-b">
+        {file.coverImageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={file.coverImageUrl}
+            alt={file.gameTitle ?? file.title}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="text-muted flex h-full w-full items-center justify-center text-xs">
+            Sin portada
           </div>
+        )}
+        <span
+          className={
+            file.isPublic
+              ? "absolute top-1.5 left-1.5 rounded bg-black/70 px-1.5 py-0.5 text-[10px] text-muted"
+              : "absolute top-1.5 left-1.5 rounded bg-amber-900/90 px-1.5 py-0.5 text-[10px] text-amber-300"
+          }
+        >
+          {file.isPublic ? "Público" : "Privado"}
+        </span>
+        {(file.platformName || file.gameTitle) && (
+          <span className="badge-accent absolute top-1.5 right-1.5 rounded px-1.5 py-0.5 text-[10px] font-medium">
+            {[file.platformName, file.gameTitle].filter(Boolean).join(" · ")}
+          </span>
+        )}
+      </div>
+
+      <div className="flex flex-1 flex-col gap-2 p-3">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <h2 className="text-base text-sm font-medium">{file.title}</h2>
+          {file.virusScanStatus === "pending" && (
+            <span
+              className="rounded bg-amber-900 px-1.5 py-0.5 text-[10px] text-amber-300"
+              title="El escaneo antivirus de VirusTotal todavía no terminó cuando se subió"
+            >
+              Escaneo pendiente
+            </span>
+          )}
+          {file.virusScanStatus === "error" && (
+            <span
+              className="rounded bg-amber-900 px-1.5 py-0.5 text-[10px] text-amber-300"
+              title="No se pudo completar el escaneo antivirus"
+            >
+              Sin escanear
+            </span>
+          )}
+          {canRescan && (file.virusScanStatus === "pending" || file.virusScanStatus === "error") && (
+            <button
+              onClick={handleRescan}
+              disabled={rescanning}
+              className="hover-surface bg-surface rounded px-1.5 py-0.5 text-[10px] text-base disabled:opacity-60"
+            >
+              {rescanning ? "Reescaneando..." : "Reescanear"}
+            </button>
+          )}
+          {rescanResult && <span className="text-muted text-[10px]">{rescanResult}</span>}
         </div>
-        <div className="flex shrink-0 gap-2">
+
+        {file.description && (
+          <p className="text-muted line-clamp-2 text-xs">{file.description}</p>
+        )}
+
+        <p className="text-muted mt-auto text-xs">
+          {file.originalName} · {formatBytes(file.fileSize)} · {file.downloadCount} descarga
+          {file.downloadCount === 1 ? "" : "s"}
+        </p>
+        <p className="text-muted text-xs">
+          subido por{" "}
+          <Link href={`/u/${file.uploader}`} className="hover-text-accent">
+            {file.uploader}
+          </Link>
+        </p>
+
+        <div className="flex flex-wrap gap-2 pt-1">
           <a
             href={`/api/files/${file.id}/download`}
-            className="btn-accent rounded px-3 py-1.5 text-sm"
+            className="btn-accent flex-1 rounded px-3 py-1.5 text-center text-sm"
           >
             Descargar
           </a>
           {canReport && !reportSent && (
             <button
               onClick={() => setReporting((v) => !v)}
-              className="rounded bg-surface px-3 py-1.5 text-sm text-base hover-surface"
+              className="bg-surface hover-surface rounded px-3 py-1.5 text-sm text-base"
             >
               Reportar
             </button>
           )}
-          {reportSent && (
-            <span className="self-center text-sm text-muted">Reportado</span>
-          )}
+          {reportSent && <span className="text-muted self-center text-xs">Reportado</span>}
           {canDelete && (
             <button
               onClick={handleDelete}
@@ -207,57 +214,52 @@ export default function FileListItem({
             </button>
           )}
         </div>
-      </div>
-      {file.description && (
-        <p className="mt-2 whitespace-pre-wrap text-sm text-muted">
-          {file.description}
-        </p>
-      )}
 
-      {reporting && (
-        <div className="mt-3 flex flex-col gap-2 rounded border border-base bg-page p-3">
-          <label className="flex flex-col gap-1 text-sm text-muted">
-            Motivo del reporte
-            <select
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              className="rounded border border-base bg-surface px-3 py-2 text-base"
-            >
-              {REPORT_REASONS.map((r) => (
-                <option key={r} value={r}>
-                  {r}
-                </option>
-              ))}
-            </select>
-          </label>
-          {reason === "Otro" && (
-            <input
-              value={details}
-              onChange={(e) => setDetails(e.target.value)}
-              placeholder="Describe el motivo"
-              maxLength={500}
-              className="rounded border border-base bg-surface px-3 py-2 text-base"
-            />
-          )}
-          <div className="flex gap-2">
-            <button
-              onClick={handleReport}
-              disabled={pending}
-              className="rounded bg-red-700 px-3 py-1.5 text-sm text-white hover:bg-red-600 disabled:opacity-60"
-            >
-              {pending ? "Enviando..." : "Enviar reporte"}
-            </button>
-            <button
-              onClick={() => setReporting(false)}
-              className="rounded bg-surface px-3 py-1.5 text-sm text-base hover-surface"
-            >
-              Cancelar
-            </button>
+        {reporting && (
+          <div className="border-base bg-page flex flex-col gap-2 rounded border p-3">
+            <label className="text-muted flex flex-col gap-1 text-sm">
+              Motivo del reporte
+              <select
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                className="border-base bg-surface rounded border px-3 py-2 text-base"
+              >
+                {REPORT_REASONS.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {reason === "Otro" && (
+              <input
+                value={details}
+                onChange={(e) => setDetails(e.target.value)}
+                placeholder="Describe el motivo"
+                maxLength={500}
+                className="border-base bg-surface rounded border px-3 py-2 text-base"
+              />
+            )}
+            <div className="flex gap-2">
+              <button
+                onClick={handleReport}
+                disabled={pending}
+                className="rounded bg-red-700 px-3 py-1.5 text-sm text-white hover:bg-red-600 disabled:opacity-60"
+              >
+                {pending ? "Enviando..." : "Enviar reporte"}
+              </button>
+              <button
+                onClick={() => setReporting(false)}
+                className="bg-surface hover-surface rounded px-3 py-1.5 text-sm text-base"
+              >
+                Cancelar
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
+        {error && <p className="text-sm text-red-400">{error}</p>}
+      </div>
     </li>
   );
 }
