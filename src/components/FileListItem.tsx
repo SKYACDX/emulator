@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { REPORT_REASONS } from "@/lib/fileReports";
+import CoverPicker from "./CoverPicker";
 
 type SharedFile = {
   id: string;
@@ -47,6 +48,34 @@ export default function FileListItem({
   const [details, setDetails] = useState("");
   const [rescanning, setRescanning] = useState(false);
   const [rescanResult, setRescanResult] = useState<string | null>(null);
+  const [editingCover, setEditingCover] = useState(false);
+  const [cover, setCover] = useState(file.coverImageUrl);
+
+  // The uploader (or staff) can change the cover — same permission as
+  // deleting the file, so it reuses canDelete rather than a new prop.
+  const canEditCover = canDelete;
+
+  async function handleCoverChange(url: string | null) {
+    setError(null);
+    setPending(true);
+    try {
+      const res = await fetch(`/api/files/${file.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ coverImageUrl: url }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "No se pudo actualizar la portada");
+        return;
+      }
+      setCover(data.coverImageUrl);
+      setEditingCover(false);
+      router.refresh();
+    } finally {
+      setPending(false);
+    }
+  }
 
   async function handleRescan() {
     setError(null);
@@ -114,10 +143,10 @@ export default function FileListItem({
   return (
     <li className="game-card flex h-full flex-col overflow-hidden">
       <div className="border-base bg-page relative aspect-[3/4] w-full border-b">
-        {file.coverImageUrl ? (
+        {cover ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={file.coverImageUrl}
+            src={cover}
             alt={file.gameTitle ?? file.title}
             className="h-full w-full object-cover"
           />
@@ -140,7 +169,27 @@ export default function FileListItem({
             {[file.platformName, file.gameTitle].filter(Boolean).join(" · ")}
           </span>
         )}
+        {canEditCover && (
+          <button
+            type="button"
+            onClick={() => setEditingCover((v) => !v)}
+            className="absolute right-1.5 bottom-1.5 rounded bg-black/70 px-1.5 py-0.5 text-[10px] text-white hover:bg-black/90"
+          >
+            {editingCover ? "Cancelar" : "Editar portada"}
+          </button>
+        )}
       </div>
+
+      {editingCover && (
+        <div className="border-base bg-page border-b p-3">
+          <CoverPicker
+            gameTitle={file.gameTitle ?? file.title}
+            value={cover}
+            onChange={handleCoverChange}
+          />
+          {pending && <p className="text-muted mt-1 text-xs">Guardando...</p>}
+        </div>
+      )}
 
       <div className="flex flex-1 flex-col gap-2 p-3">
         <div className="flex flex-wrap items-center gap-1.5">
