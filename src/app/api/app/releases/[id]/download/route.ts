@@ -17,7 +17,8 @@ export async function GET(
     return NextResponse.json({ error: "APK no disponible" }, { status: 404 });
   }
 
-  const url = await getFileDownloadUrl(release.apkKey, `multiemu-${release.version}.apk`).catch(
+  const ext = release.platform === "WINDOWS" ? "exe" : "apk";
+  const url = await getFileDownloadUrl(release.apkKey, `multiemu-${release.version}.${ext}`).catch(
     () => null
   );
   if (!url) {

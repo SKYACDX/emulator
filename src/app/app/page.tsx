@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getAvatarUrl } from "@/lib/storage";
 import AppDescription from "@/components/AppDescription";
 import AppFeedback from "@/components/AppFeedback";
+import AppDownloadTabs from "@/components/AppDownloadTabs";
 
 export const dynamic = "force-dynamic";
 
@@ -13,14 +14,23 @@ async function getData() {
   const listing = await prisma.appListing.findFirst({ include: { screenshots: true } });
   if (!listing) return null;
 
-  const latestRelease = await prisma.appRelease.findFirst({
-    where: { listingId: listing.id },
-    orderBy: { versionCode: "desc" },
-  });
+  const [latestAndroid, latestWindows] = await Promise.all([
+    prisma.appRelease.findFirst({
+      where: { listingId: listing.id, platform: "ANDROID" },
+      orderBy: { versionCode: "desc" },
+    }),
+    prisma.appRelease.findFirst({
+      where: { listingId: listing.id, platform: "WINDOWS" },
+      orderBy: { versionCode: "desc" },
+    }),
+  ]);
 
   return {
     listing: await serializeAppListing(listing),
-    latestRelease: latestRelease ? await serializeAppRelease(latestRelease) : null,
+    releases: {
+      ANDROID: latestAndroid ? await serializeAppRelease(latestAndroid) : null,
+      WINDOWS: latestWindows ? await serializeAppRelease(latestWindows) : null,
+    },
   };
 }
 
@@ -34,15 +44,10 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-function formatBytes(bytes: number): string {
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
 export default async function AppPage() {
   const data = await getData();
   if (!data) notFound();
-  const { listing, latestRelease } = data;
+  const { listing, releases } = data;
 
   const [user, feedback] = await Promise.all([
     getCurrentUser(),
@@ -70,25 +75,7 @@ export default async function AppPage() {
         </div>
       </div>
 
-      {latestRelease && (
-        <div className="game-card flex flex-wrap items-center justify-between gap-3 p-4">
-          <div>
-            <p className="text-base font-medium">
-              Versión {latestRelease.version} · requiere Android API {latestRelease.minAndroidSdk}+
-            </p>
-            <p className="text-muted text-sm">
-              {formatBytes(latestRelease.apkSize)} · {latestRelease.downloads} descarga
-              {latestRelease.downloads === 1 ? "" : "s"}
-            </p>
-          </div>
-          <a
-            href={`/api/app/releases/${latestRelease.id}/download`}
-            className="btn-accent glow-accent rounded px-5 py-2.5 text-sm font-medium"
-          >
-            Descargar APK
-          </a>
-        </div>
-      )}
+      <AppDownloadTabs releases={releases} />
 
       {listing.screenshots.length > 0 && (
         <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2">
@@ -119,15 +106,6 @@ export default async function AppPage() {
         <h2 className="font-pixel mb-3 text-[13px] tracking-wide text-base">Acerca de</h2>
         <AppDescription text={listing.description} />
       </section>
-
-      {latestRelease?.changelog && (
-        <section>
-          <h2 className="font-pixel mb-3 text-[13px] tracking-wide text-base">
-            Novedades de la versión {latestRelease.version}
-          </h2>
-          <p className="text-muted whitespace-pre-wrap text-sm">{latestRelease.changelog}</p>
-        </section>
-      )}
 
       <section>
         <h2 className="font-pixel mb-3 text-[13px] tracking-wide text-base">Comentarios y retroalimentación</h2>

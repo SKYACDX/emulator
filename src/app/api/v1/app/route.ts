@@ -12,8 +12,11 @@ export async function GET() {
     return corsJson({ error: "Todavía no hay ficha publicada" }, { status: 404, cache: false });
   }
 
+  // Filtered to ANDROID specifically: this is the update-check endpoint the
+  // native Android app polls, so a published WINDOWS release must never
+  // show up here as "the latest version".
   const latestRelease = await prisma.appRelease.findFirst({
-    where: { listingId: listing.id },
+    where: { listingId: listing.id, platform: "ANDROID" },
     orderBy: { versionCode: "desc" },
   });
 

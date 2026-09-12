@@ -296,20 +296,28 @@ model AppScreenshot {
 }
 
 model AppRelease {
-  id            String   @id @default(cuid())
+  id            String      @id @default(cuid())
   version       String
-  versionCode   Int      @unique
+  versionCode   Int         @unique
   changelog     String
-  minAndroidSdk Int
+  // Null for WINDOWS releases — only ANDROID builds have an SDK floor.
+  minAndroidSdk Int?
+  platform      AppPlatform @default(ANDROID)
   apkKey        String?
-  apkSize       Int      @default(0)
-  downloads     Int      @default(0)
-  publishedAt   DateTime @default(now())
+  apkSize       Int         @default(0)
+  downloads     Int         @default(0)
+  publishedAt   DateTime    @default(now())
 
   listingId String
   listing   AppListing @relation(fields: [listingId], references: [id])
 
   @@index([listingId])
+  @@index([listingId, platform])
+}
+
+enum AppPlatform {
+  ANDROID
+  WINDOWS
 }
 
 // Feedback on the multiemu app, shown publicly on /app. Requires an

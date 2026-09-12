@@ -9,20 +9,24 @@ export async function OPTIONS() {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const { limit, offset } = parsePagination(searchParams);
+  const platformParam = searchParams.get("platform")?.toUpperCase();
+  const platform: "ANDROID" | "WINDOWS" | undefined =
+    platformParam === "ANDROID" || platformParam === "WINDOWS" ? platformParam : undefined;
 
   const listing = await prisma.appListing.findFirst({ select: { id: true } });
   if (!listing) {
     return corsJson({ releases: [], pagination: { limit, offset, total: 0, hasMore: false } });
   }
 
+  const where = { listingId: listing.id, ...(platform ? { platform } : {}) };
   const [releases, total] = await Promise.all([
     prisma.appRelease.findMany({
-      where: { listingId: listing.id },
+      where,
       orderBy: { versionCode: "desc" },
       take: limit,
       skip: offset,
     }),
-    prisma.appRelease.count({ where: { listingId: listing.id } }),
+    prisma.appRelease.count({ where }),
   ]);
 
   return corsJson({

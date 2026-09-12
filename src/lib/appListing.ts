@@ -17,14 +17,16 @@ export async function serializeAppListing(listing: ListingWithScreenshots) {
 }
 
 export async function serializeAppRelease(release: AppRelease) {
+  const ext = release.platform === "WINDOWS" ? "exe" : "apk";
   return {
     id: release.id,
     version: release.version,
     versionCode: release.versionCode,
     changelog: release.changelog,
+    platform: release.platform,
     minAndroidSdk: release.minAndroidSdk,
     apkUrl: release.apkKey
-      ? await getFileDownloadUrl(release.apkKey, `multiemu-${release.version}.apk`)
+      ? await getFileDownloadUrl(release.apkKey, `multiemu-${release.version}.${ext}`)
       : null,
     apkSize: release.apkSize,
     downloads: release.downloads,

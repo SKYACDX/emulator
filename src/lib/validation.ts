@@ -125,12 +125,19 @@ export const updateAppListingSchema = z.object({
   features: z.array(z.string().trim().min(1).max(300)).max(50).optional(),
 });
 
-export const createAppReleaseSchema = z.object({
-  version: z.string().trim().min(1).max(30),
-  versionCode: z.number().int().positive(),
-  changelog: z.string().trim().max(10000).optional().default(""),
-  minAndroidSdk: z.number().int().positive(),
-});
+export const createAppReleaseSchema = z
+  .object({
+    version: z.string().trim().min(1).max(30),
+    versionCode: z.number().int().positive(),
+    changelog: z.string().trim().max(10000).optional().default(""),
+    platform: z.enum(["android", "windows"]).optional().default("android"),
+    minAndroidSdk: z.number().int().positive().optional(),
+  })
+  .transform((data) => ({ ...data, platform: data.platform.toUpperCase() as "ANDROID" | "WINDOWS" }))
+  .refine((data) => data.platform !== "ANDROID" || data.minAndroidSdk !== undefined, {
+    message: "minAndroidSdk es obligatorio para releases de Android",
+    path: ["minAndroidSdk"],
+  });
 
 export const presignAppAssetSchema = z.object({
   slot: z.string().trim().min(1).max(60), // "icon" | "screenshot" | "apk:<releaseId>"
