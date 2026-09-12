@@ -49,87 +49,79 @@ export default function CoverPicker({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-3">
-        {value && (
-          // eslint-disable-next-line @next/next/no-img-element
+      {value && (
+        <div className="flex items-center gap-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={value}
             alt="Portada seleccionada"
-            className="h-16 w-auto rounded border border-base"
+            className="border-base h-16 w-auto rounded border"
           />
-        )}
-        <div className="flex flex-1 flex-col gap-1">
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleSearch();
-              }
-            }}
-            placeholder="Nombre del juego a buscar (en inglés suele dar más resultados)"
-            className="border-base bg-surface rounded border px-3 py-1.5 text-sm text-base"
-          />
-        </div>
-        <button
-          type="button"
-          onClick={handleSearch}
-          disabled={loading}
-          className="shrink-0 rounded bg-surface px-3 py-1.5 text-sm text-base hover-surface disabled:opacity-60"
-        >
-          {loading ? "Buscando..." : "Buscar"}
-        </button>
-        {value && (
           <button
             type="button"
             onClick={() => onChange(null)}
-            className="shrink-0 text-sm text-muted hover:text-base"
+            className="text-muted hover:text-base text-sm"
           >
             Quitar
           </button>
-        )}
-      </div>
+        </div>
+      )}
+
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            handleSearch();
+          }
+        }}
+        placeholder="Nombre del juego (en inglés suele dar más resultados)"
+        className="border-base bg-surface w-full rounded border px-3 py-1.5 text-sm text-base"
+      />
+      <button
+        type="button"
+        onClick={handleSearch}
+        disabled={loading}
+        className="bg-surface hover-surface self-start rounded px-3 py-1.5 text-sm text-base disabled:opacity-60"
+      >
+        {loading ? "Buscando..." : "Buscar portada"}
+      </button>
 
       {error && <p className="text-sm text-red-400">{error}</p>}
 
       {results && (
-        <div className="flex flex-wrap gap-2 rounded border border-base bg-page p-2">
+        <div className="border-base bg-page max-h-72 overflow-y-auto rounded border p-2">
           {results.length === 0 ? (
-            <p className="text-sm text-muted">
-              Sin resultados con portada para ese nombre.
-            </p>
+            <p className="text-muted text-sm">Sin resultados con portada para ese nombre.</p>
           ) : (
-            results.map((r) => (
-              <button
-                type="button"
-                key={r.id}
-                onClick={() => {
-                  onChange(r.coverUrl);
-                  setResults(null);
-                }}
-                title={r.title}
-                className="flex flex-col items-center gap-1 rounded border border-base p-1 hover-border-accent"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={r.coverUrl!} alt={r.title} className="h-24 w-auto" />
-                <span className="max-w-20 truncate text-xs text-muted">
-                  {r.title}
-                </span>
-              </button>
-            ))
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {results.map((r) => (
+                <button
+                  type="button"
+                  key={r.id}
+                  onClick={() => {
+                    onChange(r.coverUrl);
+                    setResults(null);
+                  }}
+                  title={r.title}
+                  className="border-base hover-border-accent flex flex-col gap-1 overflow-hidden rounded border text-left"
+                >
+                  <div className="bg-surface aspect-[3/4] w-full">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={r.coverUrl!} alt={r.title} className="h-full w-full object-cover" />
+                  </div>
+                  <span className="text-muted line-clamp-2 px-1 pb-1 text-xs">{r.title}</span>
+                </button>
+              ))}
+            </div>
           )}
         </div>
       )}
 
-      <p className="text-xs text-muted">
+      <p className="text-muted text-xs">
         Portadas cortesía de{" "}
-        <a
-          href="https://thegamesdb.net"
-          target="_blank"
-          rel="noreferrer"
-          className="underline"
-        >
+        <a href="https://thegamesdb.net" target="_blank" rel="noreferrer" className="underline">
           TheGamesDB
         </a>
         .
