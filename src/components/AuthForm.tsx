@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { generateSecurePassword } from "@/lib/passwordGenerator";
+import { startAuthentication, browserSupportsWebAuthn } from "@simplewebauthn/browser";
 
 type Mode = "login" | "register";
 
@@ -11,6 +13,52 @@ export default function AuthForm({ mode }: { mode: Mode }) {
   const [loading, setLoading] = useState(false);
   const [pendingToken, setPendingToken] = useState<string | null>(null);
   const [totpCode, setTotpCode] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  // Feature-detected client-side only — checking at render time would
+  // differ between the server's HTML (no `window`) and the client's first
+  // render, causing a hydration mismatch.
+  const [supportsPasskey, setSupportsPasskey] = useState(false);
+
+  useEffect(() => {
+    setSupportsPasskey(browserSupportsWebAuthn());
+  }, []);
+
+  function handleGeneratePassword() {
+    setPassword(generateSecurePassword());
+    setShowPassword(true);
+  }
+
+  async function handlePasskeyLogin() {
+    setError(null);
+    setLoading(true);
+    try {
+      const optionsRes = await fetch("/api/auth/passkey/login-options", { method: "POST" });
+      const optionsJSON = await optionsRes.json();
+      if (!optionsRes.ok) {
+        setError(optionsJSON.error ?? "No se pudo iniciar");
+        return;
+      }
+      const response = await startAuthentication({ optionsJSON });
+      const verifyRes = await fetch("/api/auth/passkey/login-verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ response }),
+      });
+      const verifyData = await verifyRes.json();
+      if (!verifyRes.ok) {
+        setError(verifyData.error ?? "No se pudo verificar la passkey");
+        return;
+      }
+      router.push("/");
+      router.refresh();
+    } catch {
+      // User cancelled the browser's passkey prompt, or no passkey is
+      // registered on this device — not worth surfacing as an error.
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -130,13 +178,33 @@ export default function AuthForm({ mode }: { mode: Mode }) {
       </label>
       <label className="flex flex-col gap-1 text-sm text-muted">
         Contraseña
-        <input
-          type="password"
-          name="password"
-          required
-          minLength={8}
-          className="rounded border border-base bg-surface px-3 py-2 text-base"
-        />
+        <div className="flex gap-2">
+          <input
+            type={showPassword ? "text" : "password"}
+            name="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={8}
+            className="rounded border border-base bg-surface px-3 py-2 text-base flex-1"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            className="shrink-0 rounded bg-surface px-3 py-2 text-sm text-base hover-surface"
+          >
+            {showPassword ? "Ocultar" : "Mostrar"}
+          </button>
+        </div>
+        {mode === "register" && (
+          <button
+            type="button"
+            onClick={handleGeneratePassword}
+            className="text-accent mt-1 self-start text-xs underline"
+          >
+            Generar contraseña segura
+          </button>
+        )}
       </label>
       {error && <p className="text-sm text-red-400">{error}</p>}
       <button
@@ -150,6 +218,16 @@ export default function AuthForm({ mode }: { mode: Mode }) {
           ? "Iniciar sesión"
           : "Crear cuenta"}
       </button>
+      {mode === "login" && supportsPasskey && (
+        <button
+          type="button"
+          onClick={handlePasskeyLogin}
+          disabled={loading}
+          className="rounded bg-surface px-4 py-2 font-medium text-base hover-surface disabled:opacity-60"
+        >
+          Iniciar sesión con passkey
+        </button>
+      )}
     </form>
   );
 }

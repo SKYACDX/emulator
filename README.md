@@ -239,6 +239,32 @@ lista completa de hacks/archivos:
 Solo un `ADMIN` puede asignar el rol `MODERATOR` (desde el selector de rol
 en la tabla de usuarios de `/admin`) — no hay forma de auto-promoverse.
 
+## Passkeys (WebAuthn) y actividad de inicio de sesión
+
+`@simplewebauthn/server` + `@simplewebauthn/browser`. Login con huella,
+Face ID o llave física — sin contraseña ni TOTP, el autenticador ya es en
+sí mismo el segundo factor.
+
+- **Registrar una passkey** (`/me/security`, autenticado): `POST
+  /api/auth/passkey/register-options` genera el challenge (guardado en una
+  cookie httpOnly de 5 min) → `startRegistration()` en el navegador →
+  `POST /api/auth/passkey/register-verify` guarda `credentialId`,
+  `publicKey` y `counter` en `Passkey`.
+- **Login con passkey** (usernameless/discoverable, sin pedir correo):
+  `POST /api/auth/passkey/login-options` → `startAuthentication()` →
+  `POST /api/auth/passkey/login-verify`, que identifica al usuario por el
+  `credentialId` que regresa el navegador.
+- `RP_ID`/`ORIGIN` en `src/lib/webauthn.ts` cambian entre `localhost` (dev)
+  y `emulatornds.online` (prod, sin `www` — WebAuthn permite un RP ID que
+  sea sufijo registrable del origen real).
+- `LoginAttempt` registra cada intento (password, TOTP, passkey, o login
+  de la app) con éxito/fallo, IP y user-agent — visible en `/me/security`
+  bajo "Actividad reciente de inicio de sesión", para que cada quien note
+  si alguien intentó entrar a su cuenta.
+- El registro (`/register`) tiene un botón "Generar contraseña segura"
+  (`src/lib/passwordGenerator.ts`, `crypto.getRandomValues`, 20
+  caracteres) que llena el campo y lo muestra en claro para copiarlo.
+
 ## Verificación en dos pasos (2FA / TOTP)
 
 Cualquier usuario puede activar 2FA desde `/me/security` (compatible con

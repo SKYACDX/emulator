@@ -97,6 +97,8 @@ export async function DELETE(
   const ownFeedback = await prisma.appFeedback.findMany({ where: { authorId: user.id } });
   await Promise.all(ownFeedback.filter((f) => f.imageKey).map((f) => deleteSharedFile(f.imageKey!).catch(() => {})));
   await prisma.appFeedback.deleteMany({ where: { authorId: user.id } });
+  await prisma.passkey.deleteMany({ where: { userId: user.id } });
+  await prisma.loginAttempt.deleteMany({ where: { userId: user.id } });
 
   const ownedCommunities = await prisma.community.findMany({ where: { creatorId: user.id } });
   const ownedCommunityIds = ownedCommunities.map((c) => c.id);

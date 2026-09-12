@@ -64,6 +64,54 @@ model User {
   messages               Message[]
   emulatorThemes         EmulatorTheme[]
   appFeedback            AppFeedback[]
+  passkeys               Passkey[]
+  loginAttempts          LoginAttempt[]
+}
+
+// A registered WebAuthn credential (Face ID, fingerprint, or a physical
+// security key). Login with one skips the password AND TOTP entirely —
+// the authenticator itself is already phishing-resistant multi-factor.
+model Passkey {
+  id           String   @id @default(cuid())
+  // Base64url-encoded credential ID from the authenticator — how we look
+  // up which user is signing in for a discoverable ("usernameless") login.
+  credentialId String   @unique
+  publicKey    Bytes
+  // Signature counter for clone detection: must strictly increase on every
+  // use, or a cloned authenticator is signing in instead of the real one.
+  counter      BigInt
+  deviceType   String
+  backedUp     Boolean
+  transports   String[]
+  name         String? // user-given label, e.g. "iPhone de Juan"
+  createdAt    DateTime  @default(now())
+  lastUsedAt   DateTime?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+// Every login attempt (password, TOTP step, passkey, or the native app's
+// token endpoint), success or failure, shown back to the user on
+// /me/security so they can notice if someone's been trying their account.
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  email     String
+  success   Boolean
+  method    String // "password" | "totp" | "passkey" | "app-token"
+  ip        String
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  // Null when the email didn't match any account — still worth recording,
+  // just not linkable to a user's own security page.
+  userId String?
+  user   User?  @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([email])
 }
 
 // A conversation is a DM (isGroup=false, exactly 2 participants) or a group

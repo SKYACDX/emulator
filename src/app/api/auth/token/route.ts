@@ -5,6 +5,7 @@ import { verifyPassword, signTotpPendingToken } from "@/lib/auth";
 import { issueApiToken } from "@/lib/apiAuth";
 import { loginSchema } from "@/lib/validation";
 import { checkRateLimit, clientIp } from "@/lib/rateLimit";
+import { recordLoginAttempt } from "@/lib/loginAttempts";
 
 const schema = loginSchema.extend({
   label: z.string().trim().max(100).optional(),
@@ -18,7 +19,10 @@ const schema = loginSchema.extend({
  * POST /api/auth/token/verify.
  */
 export async function POST(request: Request) {
-  if (!(await checkRateLimit(`token-login:${clientIp(request)}`, 10, 15 * 60 * 1000))) {
+  const ip = clientIp(request);
+  const userAgent = request.headers.get("user-agent");
+
+  if (!(await checkRateLimit(`token-login:${ip}`, 10, 15 * 60 * 1000))) {
     return NextResponse.json(
       { error: "Demasiados intentos, espera unos minutos" },
       { status: 429 }
@@ -38,6 +42,14 @@ export async function POST(request: Request) {
 
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user || !(await verifyPassword(password, user.passwordHash))) {
+    await recordLoginAttempt({
+      email,
+      success: false,
+      method: "app-token",
+      ip,
+      userAgent,
+      userId: user?.id,
+    });
     return NextResponse.json({ error: "Correo o contraseña incorrectos" }, { status: 401 });
   }
 
@@ -47,5 +59,6 @@ export async function POST(request: Request) {
   }
 
   const token = await issueApiToken(user.id, label);
+  await recordLoginAttempt({ email, success: true, method: "app-token", ip, userAgent, userId: user.id });
   return NextResponse.json({ ok: true, token, username: user.username });
 }

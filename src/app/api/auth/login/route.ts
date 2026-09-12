@@ -3,9 +3,13 @@ import { prisma } from "@/lib/prisma";
 import { verifyPassword, createSessionCookie, signTotpPendingToken } from "@/lib/auth";
 import { loginSchema } from "@/lib/validation";
 import { checkRateLimit, clientIp } from "@/lib/rateLimit";
+import { recordLoginAttempt } from "@/lib/loginAttempts";
 
 export async function POST(request: Request) {
-  if (!(await checkRateLimit(`login:${clientIp(request)}`, 10, 15 * 60 * 1000))) {
+  const ip = clientIp(request);
+  const userAgent = request.headers.get("user-agent");
+
+  if (!(await checkRateLimit(`login:${ip}`, 10, 15 * 60 * 1000))) {
     return NextResponse.json(
       { error: "Demasiados intentos, espera unos minutos" },
       { status: 429 }
@@ -25,6 +29,14 @@ export async function POST(request: Request) {
 
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user || !(await verifyPassword(password, user.passwordHash))) {
+    await recordLoginAttempt({
+      email,
+      success: false,
+      method: "password",
+      ip,
+      userAgent,
+      userId: user?.id,
+    });
     return NextResponse.json(
       { error: "Correo o contraseña incorrectos" },
       { status: 401 }
@@ -32,11 +44,14 @@ export async function POST(request: Request) {
   }
 
   if (user.totpEnabled) {
+    // Not a full login yet — /api/auth/totp/verify-login records the
+    // actual outcome once the second factor is checked.
     const pendingToken = signTotpPendingToken(user.id);
     return NextResponse.json({ ok: true, requiresTotp: true, pendingToken });
   }
 
   await createSessionCookie(user.id);
+  await recordLoginAttempt({ email, success: true, method: "password", ip, userAgent, userId: user.id });
 
   return NextResponse.json({ ok: true });
 }
