@@ -4,7 +4,7 @@ export default function PatchPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold text-base">
+        <h1 className="font-pixel text-base">
           Aplicar un parche
         </h1>
         <p className="mt-2 max-w-2xl text-muted">

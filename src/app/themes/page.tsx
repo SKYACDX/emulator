@@ -23,7 +23,7 @@ export default async function ThemesPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold text-base">Galería de temas</h1>
+        <h1 className="font-pixel text-base text-lg">Galería de temas</h1>
         <p className="text-muted mt-1 max-w-2xl text-sm">
           Temas creados por la comunidad. Haz clic en uno para verlo aplicado
           al instante (sin guardar nada), y en "Usar este tema" para

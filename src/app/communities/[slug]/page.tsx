@@ -59,8 +59,8 @@ export default async function CommunityPage({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold text-base">{community.name}</h1>
-        {community.description && <p className="text-muted mt-1">{community.description}</p>}
+        <h1 className="font-pixel text-base text-lg">{community.name}</h1>
+        {community.description && <p className="text-muted mt-2">{community.description}</p>}
       </div>
 
       <CommunityActions

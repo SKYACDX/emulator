@@ -25,7 +25,7 @@ export default async function MyHacksPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-base">Mis hacks</h1>
+        <h1 className="font-pixel text-base text-lg">Mis hacks</h1>
         <div className="flex gap-2">
           <Link
             href="/me/friends"

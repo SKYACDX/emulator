@@ -12,7 +12,7 @@ export default async function NewFilePage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold text-base">Subir archivo</h1>
+        <h1 className="font-pixel text-base text-lg">Subir archivo</h1>
         <p className="mt-1 max-w-2xl text-sm text-muted">
           No se permiten videos, ejecutables/scripts (.exe, .apk, .sh, etc.)
           ni volcados de ROM/ISO (.nds, .gba, .sfc, .nsp, .xci, .iso, etc.)

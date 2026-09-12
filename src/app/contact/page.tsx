@@ -11,7 +11,7 @@ export default function ContactPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold text-base">Contacto</h1>
+        <h1 className="font-pixel text-base text-lg">Contacto</h1>
         <p className="text-muted mt-1">
           ¿Preguntas, un reporte que no encaja en el botón de la página de
           archivos, o algo sobre la app multiemu? Escríbenos.

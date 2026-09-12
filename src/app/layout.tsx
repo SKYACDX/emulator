@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Press_Start_2P } from "next/font/google";
 import "./globals.css";
 import NavBar from "@/components/NavBar";
 import { getCurrentUser } from "@/lib/auth";
@@ -21,6 +21,14 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+// Used sparingly — logo + hero titles only. Legible enough at large sizes,
+// but a pixel font kills readability fast on body copy or long headings.
+const pixelFont = Press_Start_2P({
+  variable: "--font-pixel",
+  weight: "400",
   subsets: ["latin"],
 });
 
@@ -62,7 +70,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       lang="es"
       data-theme={themeId}
       style={customStyle}
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${pixelFont.variable} h-full antialiased`}
     >
       {ADSENSE_CLIENT_ID && (
         <head>

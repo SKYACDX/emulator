@@ -112,7 +112,7 @@ export default function FileListItem({
   }
 
   return (
-    <li className="rounded-lg border border-base bg-surface p-4">
+    <li className="game-card p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="flex gap-3">
           {file.coverImageUrl && (

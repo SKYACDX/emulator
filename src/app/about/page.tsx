@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold text-base">Acerca de RomHack Hub</h1>
+      <h1 className="font-pixel text-base">Acerca de RomHack Hub</h1>
 
       <p className="text-muted">
         RomHack Hub es un sitio para publicar y descubrir ROM hacks de consolas

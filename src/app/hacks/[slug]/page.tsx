@@ -102,11 +102,11 @@ export default async function HackPage({
           <img
             src={hack.game.coverImageUrl}
             alt={hack.game.title}
-            className="h-32 w-auto shrink-0 rounded border border-base"
+            className="border-accent glow-accent h-32 w-auto shrink-0 rounded border-2"
           />
         )}
         <div className="min-w-0">
-          <div className="flex items-center gap-2 text-sm text-muted">
+          <div className="text-muted flex items-center gap-2 text-sm">
             <Link href={`/platforms/${hack.game.platform.slug}`} className="hover:underline">
               {hack.game.platform.name}
             </Link>
@@ -129,15 +129,12 @@ export default async function HackPage({
       <AdSlot />
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-base">
+        <h2 className="font-pixel mb-4 text-[13px] tracking-wide text-base">
           Versiones del parche
         </h2>
         <ul className="flex flex-col gap-3">
           {hack.patches.map((patch) => (
-            <li
-              key={patch.id}
-              className="rounded-lg border border-base bg-surface p-4"
-            >
+            <li key={patch.id} className="game-card p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="font-medium text-base">
                   v{patch.version} · {formatLabel(patch.format)}

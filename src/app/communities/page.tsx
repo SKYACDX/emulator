@@ -21,25 +21,25 @@ export default async function CommunitiesPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold text-base">Comunidades</h1>
+      <h1 className="font-pixel text-base text-lg">Comunidades</h1>
 
       {user && <NewCommunityForm />}
 
       {communities.length === 0 ? (
         <p className="text-muted">Todavía no hay comunidades. ¡Crea la primera!</p>
       ) : (
-        <ul className="flex flex-col gap-3">
+        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {communities.map((c) => (
             <li key={c.id}>
-              <Link
-                href={`/communities/${c.slug}`}
-                className="border-base bg-surface hover-border block rounded-lg border p-4"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-medium text-base">{c.name}</span>
-                  <span className="text-muted text-xs">{c._count.members} miembro(s)</span>
+              <Link href={`/communities/${c.slug}`} className="game-card block overflow-hidden">
+                <div className="bg-accent h-1.5 w-full" />
+                <div className="p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-base font-medium">{c.name}</span>
+                    <span className="text-muted text-xs">{c._count.members} miembro(s)</span>
+                  </div>
+                  {c.description && <p className="text-muted mt-1 text-sm">{c.description}</p>}
                 </div>
-                {c.description && <p className="text-muted mt-1 text-sm">{c.description}</p>}
               </Link>
             </li>
           ))}

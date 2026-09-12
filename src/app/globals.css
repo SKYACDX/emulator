@@ -3,6 +3,7 @@
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-pixel: var(--font-pixel);
 }
 
 /*
@@ -118,6 +119,9 @@ body {
 .border-accent {
   border-color: var(--color-accent);
 }
+.bg-accent {
+  background-color: var(--color-accent);
+}
 .badge-accent {
   background-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
   color: var(--color-accent);
@@ -127,4 +131,47 @@ body {
 }
 .hover-border-accent:hover {
   border-color: var(--color-accent);
+}
+
+/*
+ * Gaming-identity layer: a pixel display font for the logo/hero only, a
+ * theme-aware glow (built from the same --color-accent every theme already
+ * defines, so it stays correct no matter which theme/custom colors a user
+ * picked), and a subtle scanline texture for hero/section backdrops.
+ */
+.font-pixel {
+  font-family: var(--font-pixel);
+}
+
+.glow-accent {
+  box-shadow: 0 0 24px 0 color-mix(in srgb, var(--color-accent) 45%, transparent);
+}
+
+.text-glow-accent {
+  text-shadow: 0 0 16px color-mix(in srgb, var(--color-accent) 70%, transparent);
+}
+
+.scanlines {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-text) 4%, transparent) 0px,
+    color-mix(in srgb, var(--color-text) 4%, transparent) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+.game-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.game-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-accent);
+  box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--color-accent) 50%, transparent);
 }

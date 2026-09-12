@@ -11,7 +11,7 @@ export default async function NewHackPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold text-base">Publicar un hack</h1>
+      <h1 className="font-pixel text-base">Publicar un hack</h1>
       <p className="max-w-2xl text-sm text-muted">
         Sube solo el archivo de parche (IPS, BPS, UPS o xdelta). Nunca subas la
         ROM completa del juego: eso viola derechos de autor y será eliminado.

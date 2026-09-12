@@ -46,7 +46,7 @@ export default async function MessagesPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold text-base">Mensajes</h1>
+      <h1 className="font-pixel text-base text-lg">Mensajes</h1>
 
       <NewConversationForm friends={friends} />
 

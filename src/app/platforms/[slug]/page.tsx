@@ -51,32 +51,32 @@ export default async function PlatformPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold text-base">{platform.name}</h1>
+      <h1 className="font-pixel text-base text-lg">{platform.name}</h1>
       {platform.games.length === 0 ? (
         <p className="text-muted">
           Todavía no hay juegos con hacks publicados para esta plataforma.
         </p>
       ) : (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-8">
           {platform.games.map((game) => (
             <div key={game.id}>
-              <div className="mb-2 flex items-center gap-3">
+              <div className="mb-3 flex items-center gap-3">
                 {game.coverImageUrl && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={game.coverImageUrl}
                     alt={game.title}
-                    className="h-10 w-auto rounded border border-base"
+                    className="border-base h-12 w-auto rounded border"
                   />
                 )}
-                <h2 className="text-lg font-semibold text-base">{game.title}</h2>
+                <h2 className="text-base text-lg font-semibold">{game.title}</h2>
               </div>
-              <ul className="flex flex-col gap-2">
+              <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
                 {game.hacks.map((hack) => (
                   <li key={hack.id}>
                     <Link
                       href={`/hacks/${hack.slug}`}
-                      className="block rounded-lg border border-base bg-surface p-3 hover-border"
+                      className="game-card block p-3 text-sm font-medium text-base"
                     >
                       {hack.title}
                     </Link>

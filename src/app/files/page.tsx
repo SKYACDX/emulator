@@ -40,7 +40,7 @@ export default async function FilesPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-base">Archivos de la comunidad</h1>
+          <h1 className="font-pixel text-base text-lg">Archivos de la comunidad</h1>
           <p className="mt-1 max-w-2xl text-sm text-muted">
             Capturas, guías, savestates y otros archivos relacionados con los
             hacks. No se permiten videos, ejecutables ni volcados de

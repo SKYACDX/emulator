@@ -61,17 +61,17 @@ export default async function AppPage() {
           <img
             src={listing.iconUrl}
             alt={listing.name}
-            className="border-base h-20 w-20 shrink-0 rounded-2xl border object-cover"
+            className="border-accent glow-accent h-20 w-20 shrink-0 rounded-2xl border-2 object-cover"
           />
         )}
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold text-base">{listing.name}</h1>
-          <p className="text-muted mt-1">{listing.tagline}</p>
+          <h1 className="font-pixel text-base text-xl">{listing.name}</h1>
+          <p className="text-muted mt-2">{listing.tagline}</p>
         </div>
       </div>
 
       {latestRelease && (
-        <div className="border-base bg-surface flex flex-wrap items-center justify-between gap-3 rounded-lg border p-4">
+        <div className="game-card flex flex-wrap items-center justify-between gap-3 p-4">
           <div>
             <p className="text-base font-medium">
               Versión {latestRelease.version} · requiere Android API {latestRelease.minAndroidSdk}+
@@ -83,7 +83,7 @@ export default async function AppPage() {
           </div>
           <a
             href={`/api/app/releases/${latestRelease.id}/download`}
-            className="btn-accent rounded px-5 py-2.5 text-sm font-medium"
+            className="btn-accent glow-accent rounded px-5 py-2.5 text-sm font-medium"
           >
             Descargar APK
           </a>
@@ -105,10 +105,10 @@ export default async function AppPage() {
       )}
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-base">Funcionalidades</h2>
+        <h2 className="font-pixel mb-4 text-[13px] tracking-wide text-base">Funcionalidades</h2>
         <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {listing.features.map((feature, i) => (
-            <li key={i} className="border-base bg-surface rounded-lg border p-3 text-sm text-base">
+            <li key={i} className="game-card p-3 text-sm text-base">
               {feature}
             </li>
           ))}
@@ -116,13 +116,13 @@ export default async function AppPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-base">Acerca de</h2>
+        <h2 className="font-pixel mb-3 text-[13px] tracking-wide text-base">Acerca de</h2>
         <AppDescription text={listing.description} />
       </section>
 
       {latestRelease?.changelog && (
         <section>
-          <h2 className="mb-3 text-lg font-semibold text-base">
+          <h2 className="font-pixel mb-3 text-[13px] tracking-wide text-base">
             Novedades de la versión {latestRelease.version}
           </h2>
           <p className="text-muted whitespace-pre-wrap text-sm">{latestRelease.changelog}</p>
@@ -130,7 +130,7 @@ export default async function AppPage() {
       )}
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-base">Comentarios y retroalimentación</h2>
+        <h2 className="font-pixel mb-3 text-[13px] tracking-wide text-base">Comentarios y retroalimentación</h2>
         <AppFeedback
           isLoggedIn={!!user}
           feedback={await Promise.all(

@@ -82,7 +82,7 @@ export default async function ProfilePage({
         <img
           src={avatarUrl ?? "/default-avatar.svg"}
           alt={user.username}
-          className="border-base h-20 w-20 rounded-full border object-cover"
+          className="border-accent glow-accent h-20 w-20 rounded-full border-2 object-cover"
         />
         <div>
           <h1 className="text-2xl font-bold text-base">{user.username}</h1>
@@ -122,10 +122,7 @@ export default async function ProfilePage({
           <ul className="flex flex-col gap-2">
             {user.hacks.map((hack) => (
               <li key={hack.id}>
-                <Link
-                  href={`/hacks/${hack.slug}`}
-                  className="border-base bg-surface hover-border block rounded-lg border p-3"
-                >
+                <Link href={`/hacks/${hack.slug}`} className="game-card block p-3">
                   <span className="text-base">{hack.title}</span>
                   <span className="text-muted ml-2 text-xs">
                     {hack.game.title} · {hack.game.platform.name}
@@ -146,10 +143,7 @@ export default async function ProfilePage({
         ) : (
           <ul className="flex flex-col gap-2">
             {user.sharedFiles.map((file) => (
-              <li
-                key={file.id}
-                className="border-base bg-surface flex items-center justify-between rounded-lg border p-3"
-              >
+              <li key={file.id} className="game-card flex items-center justify-between p-3">
                 <span className="text-base">{file.title}</span>
                 <a
                   href={`/api/files/${file.id}/download`}

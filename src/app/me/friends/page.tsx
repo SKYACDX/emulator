@@ -26,7 +26,7 @@ export default async function FriendsPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <h1 className="text-2xl font-bold text-base">Amigos</h1>
+      <h1 className="font-pixel text-base text-lg">Amigos</h1>
 
       <section>
         <h2 className="mb-2 text-lg font-semibold text-base">Buscar usuarios</h2>

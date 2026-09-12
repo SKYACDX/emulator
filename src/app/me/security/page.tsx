@@ -26,7 +26,7 @@ export default async function SecurityPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <h1 className="text-2xl font-bold text-base">Seguridad de la cuenta</h1>
+      <h1 className="font-pixel text-base">Seguridad de la cuenta</h1>
       <TotpSettings initialEnabled={user.totpEnabled} />
 
       <section>

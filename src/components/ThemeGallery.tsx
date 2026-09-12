@@ -129,7 +129,7 @@ export default function ThemeGallery({
           return (
             <div
               key={theme.id}
-              className="border-base flex flex-col overflow-hidden rounded-lg border"
+              className="game-card flex flex-col overflow-hidden"
             >
               <button
                 type="button"
