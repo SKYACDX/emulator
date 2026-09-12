@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getPatchDownloadUrl } from "@/lib/storage";
+import { getCurrentUser } from "@/lib/auth";
+import { clientIp } from "@/lib/rateLimit";
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
@@ -25,7 +27,16 @@ export async function GET(
     return NextResponse.json({ error: "Archivo no disponible" }, { status: 404 });
   }
 
+  const user = await getCurrentUser();
   await prisma.patch.update({ where: { id }, data: { downloadCount: { increment: 1 } } });
+  await prisma.downloadLog.create({
+    data: {
+      patchId: id,
+      userId: user?.id ?? null,
+      ip: clientIp(request),
+      userAgent: request.headers.get("user-agent"),
+    },
+  });
 
   return NextResponse.redirect(url);
 }

@@ -13,7 +13,7 @@ export default async function AdminPage() {
   const admin = await getCurrentAdmin();
   if (!admin) redirect("/");
 
-  const [hacks, users, sharedFileCount, reportedFiles, contactMessages] = await Promise.all([
+  const [hacks, users, sharedFileCount, reportedFiles, contactMessages, downloads] = await Promise.all([
     prisma.hack.findMany({
       orderBy: { createdAt: "desc" },
       include: {
@@ -46,6 +46,15 @@ export default async function AdminPage() {
       orderBy: { reports: { _count: "desc" } },
     }),
     prisma.contactMessage.findMany({ orderBy: { createdAt: "desc" } }),
+    prisma.downloadLog.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 100,
+      include: {
+        sharedFile: { select: { title: true } },
+        patch: { select: { version: true, hack: { select: { title: true } } } },
+        user: { select: { username: true } },
+      },
+    }),
   ]);
 
   return (
@@ -122,6 +131,42 @@ export default async function AdminPage() {
             createdAt: m.createdAt.toISOString(),
           }))}
         />
+      </section>
+
+      <section>
+        <h2 className="mb-3 text-lg font-semibold text-base">
+          Descargas recientes ({downloads.length})
+        </h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-base text-muted">
+                <th className="py-1.5 pr-3">Archivo/Parche</th>
+                <th className="py-1.5 pr-3">Usuario</th>
+                <th className="py-1.5 pr-3">IP</th>
+                <th className="py-1.5 pr-3">Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              {downloads.map((d) => (
+                <tr key={d.id} className="border-b border-base">
+                  <td className="py-1.5 pr-3 text-base">
+                    {d.sharedFile?.title ??
+                      (d.patch ? `${d.patch.hack.title} v${d.patch.version}` : "(eliminado)")}
+                  </td>
+                  <td className="py-1.5 pr-3 text-muted">{d.user?.username ?? "invitado"}</td>
+                  <td className="py-1.5 pr-3 text-muted">{d.ip}</td>
+                  <td className="py-1.5 pr-3 text-muted">
+                    {d.createdAt.toLocaleString("es")}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {downloads.length === 0 && (
+            <p className="text-sm text-muted">Todavía no hay descargas registradas.</p>
+          )}
+        </div>
       </section>
 
       <section>

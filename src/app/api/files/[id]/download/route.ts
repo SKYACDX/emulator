@@ -2,9 +2,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { getFileDownloadUrl } from "@/lib/storage";
+import { clientIp } from "@/lib/rateLimit";
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
@@ -15,9 +16,9 @@ export async function GET(
   }
 
   const scanCleared = file.virusScanStatus === "clean" || file.virusScanStatus === "skipped";
+  const user = await getCurrentUser();
 
   if (!file.isPublic || !scanCleared) {
-    const user = await getCurrentUser();
     const isOwnerOrStaff =
       user &&
       (user.id === file.uploaderId || user.role === "ADMIN" || user.role === "MODERATOR");
@@ -36,6 +37,14 @@ export async function GET(
   }
 
   await prisma.sharedFile.update({ where: { id }, data: { downloadCount: { increment: 1 } } });
+  await prisma.downloadLog.create({
+    data: {
+      sharedFileId: id,
+      userId: user?.id ?? null,
+      ip: clientIp(request),
+      userAgent: request.headers.get("user-agent"),
+    },
+  });
 
   return NextResponse.redirect(url);
 }

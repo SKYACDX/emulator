@@ -66,6 +66,7 @@ model User {
   appFeedback            AppFeedback[]
   passkeys               Passkey[]
   loginAttempts          LoginAttempt[]
+  downloadLogs           DownloadLog[]
 }
 
 // A registered WebAuthn credential (Face ID, fingerprint, or a physical
@@ -419,6 +420,7 @@ model SharedFile {
   uploader   User   @relation(fields: [uploaderId], references: [id])
 
   reports FileReport[]
+  downloads DownloadLog[]
 
   @@index([uploaderId])
   @@index([platformId])
@@ -453,7 +455,29 @@ model Patch {
   hackId String
   hack   Hack   @relation(fields: [hackId], references: [id])
 
+  downloads DownloadLog[]
+
   @@index([hackId])
+}
+
+// One row per download of a SharedFile or Patch (exactly one of the two is
+// set). userId is null for anonymous downloads — still worth recording.
+model DownloadLog {
+  id        String   @id @default(cuid())
+  ip        String
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  sharedFileId String?
+  sharedFile   SharedFile? @relation(fields: [sharedFileId], references: [id], onDelete: Cascade)
+  patchId      String?
+  patch        Patch?      @relation(fields: [patchId], references: [id], onDelete: Cascade)
+  userId       String?
+  user         User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([sharedFileId])
+  @@index([patchId])
+  @@index([userId])
 }
 
 /// Long-lived bearer tokens for the companion emulator app — a native app
