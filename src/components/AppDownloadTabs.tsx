@@ -24,8 +24,10 @@ const TABS = [
 
 export default function AppDownloadTabs({
   releases,
+  screenshots,
 }: {
   releases: Record<"ANDROID" | "WINDOWS", Release>;
+  screenshots: Record<"ANDROID" | "WINDOWS", string[]>;
 }) {
   const available = TABS.filter((t) => releases[t.key]);
   const [active, setActive] = useState(available[0]?.key ?? "ANDROID");
@@ -34,6 +36,7 @@ export default function AppDownloadTabs({
 
   const release = releases[active];
   const tab = TABS.find((t) => t.key === active)!;
+  const shots = screenshots[active];
 
   return (
     <div className="flex flex-col gap-3">
@@ -87,6 +90,20 @@ export default function AppDownloadTabs({
           </h2>
           <p className="text-muted whitespace-pre-wrap text-sm">{release.changelog}</p>
         </section>
+      )}
+
+      {shots.length > 0 && (
+        <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2">
+          {shots.map((url, i) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={i}
+              src={url}
+              alt={`Captura ${i + 1}`}
+              className="border-base h-64 w-auto shrink-0 rounded-lg border object-cover"
+            />
+          ))}
+        </div>
       )}
     </div>
   );

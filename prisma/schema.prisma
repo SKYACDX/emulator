@@ -285,14 +285,16 @@ model AppListing {
 }
 
 model AppScreenshot {
-  id         String   @id @default(cuid())
+  id         String      @id @default(cuid())
   storedName String
-  createdAt  DateTime @default(now())
+  platform   AppPlatform @default(ANDROID)
+  createdAt  DateTime    @default(now())
 
   listingId String
   listing   AppListing @relation(fields: [listingId], references: [id])
 
   @@index([listingId])
+  @@index([listingId, platform])
 }
 
 model AppRelease {

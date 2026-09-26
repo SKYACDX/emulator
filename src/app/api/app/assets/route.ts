@@ -18,7 +18,7 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Datos inválidos" }, { status: 400 });
   }
-  const { slot, storedName } = parsed.data;
+  const { slot, storedName, platform } = parsed.data;
 
   if (!storedName.startsWith(`app-assets/${slot.replace(/[^a-z0-9:-]/gi, "_")}/`)) {
     return NextResponse.json({ error: "Archivo no permitido" }, { status: 400 });
@@ -59,7 +59,9 @@ export async function POST(request: Request) {
       await deleteSharedFile(storedName).catch(() => {});
       return NextResponse.json({ error: "La captura es demasiado grande (máx. 5MB)" }, { status: 400 });
     }
-    await prisma.appScreenshot.create({ data: { listingId: listing.id, storedName } });
+    await prisma.appScreenshot.create({
+      data: { listingId: listing.id, storedName, platform: platform.toUpperCase() as "ANDROID" | "WINDOWS" },
+    });
     const updated = await prisma.appListing.findUnique({
       where: { id: listing.id },
       include: { screenshots: true },

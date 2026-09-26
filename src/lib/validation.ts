@@ -150,6 +150,9 @@ export const registerAppAssetSchema = z.object({
   slot: z.string().trim().min(1).max(60),
   storedName: z.string().trim().min(1),
   originalName: z.string().trim().min(1).max(255),
+  // Only meaningful for slot "screenshot" — which platform's gallery it
+  // belongs to. Ignored for "icon" and "apk:<releaseId>".
+  platform: z.enum(["android", "windows"]).optional().default("android"),
 });
 
 export const createAppFeedbackSchema = z.object({

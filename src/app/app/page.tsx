@@ -75,21 +75,7 @@ export default async function AppPage() {
         </div>
       </div>
 
-      <AppDownloadTabs releases={releases} />
-
-      {listing.screenshots.length > 0 && (
-        <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2">
-          {listing.screenshots.map((url, i) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={i}
-              src={url}
-              alt={`Captura ${i + 1}`}
-              className="border-base h-64 w-auto shrink-0 rounded-lg border object-cover"
-            />
-          ))}
-        </div>
-      )}
+      <AppDownloadTabs releases={releases} screenshots={listing.screenshotsByPlatform} />
 
       <section>
         <h2 className="font-pixel mb-4 text-[13px] tracking-wide text-base">Funcionalidades</h2>

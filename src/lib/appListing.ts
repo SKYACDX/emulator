@@ -4,6 +4,8 @@ import { getAvatarUrl, getFileDownloadUrl } from "@/lib/storage";
 type ListingWithScreenshots = AppListing & { screenshots: AppScreenshot[] };
 
 export async function serializeAppListing(listing: ListingWithScreenshots) {
+  const androidShots = listing.screenshots.filter((s) => s.platform === "ANDROID");
+  const windowsShots = listing.screenshots.filter((s) => s.platform === "WINDOWS");
   return {
     slug: listing.slug,
     name: listing.name,
@@ -11,7 +13,14 @@ export async function serializeAppListing(listing: ListingWithScreenshots) {
     description: listing.description,
     features: listing.features,
     iconUrl: listing.iconKey ? await getAvatarUrl(listing.iconKey) : null,
+    // Every screenshot regardless of platform — kept for existing
+    // consumers of this field. New code should use screenshotsByPlatform
+    // instead so Android and Windows galleries don't mix.
     screenshots: await Promise.all(listing.screenshots.map((s) => getAvatarUrl(s.storedName))),
+    screenshotsByPlatform: {
+      ANDROID: await Promise.all(androidShots.map((s) => getAvatarUrl(s.storedName))),
+      WINDOWS: await Promise.all(windowsShots.map((s) => getAvatarUrl(s.storedName))),
+    },
     updatedAt: listing.updatedAt.toISOString(),
   };
 }
