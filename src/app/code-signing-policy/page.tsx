@@ -182,11 +182,12 @@ export default function CodeSigningPolicyPage() {
               <code>multiemu-</code> y seis caracteres hexadecimales.
             </li>
             <li>
-              Un identificador de la consola emulada: el hash SHA-256 del ID
-              que Azahar genera al azar la primera vez que arranca la consola
-              emulada en tu instalación. Se mantiene igual entre sesiones y no
-              se obtiene de tu hardware; el servidor lo usa para no admitir dos
-              consolas con el mismo ID en una sala.
+              Un identificador aleatorio de sesión: 64 caracteres hexadecimales
+              generados al azar en cada entrada a una sala. No se obtiene de tu
+              equipo ni de tu instalación y es distinto cada vez, así que no
+              permite reconocerte de una sesión a otra; el servidor lo usa solo
+              para no admitir dos consolas con el mismo identificador en una
+              sala.
             </li>
             <li>
               El nombre y el identificador del juego de 3DS que tienes abierto.
@@ -215,10 +216,8 @@ export default function CodeSigningPolicyPage() {
         <div>
           <h3 className="mb-1 font-medium text-base">Lo que no se envía</h3>
           <p className="text-muted">
-            Tus ROMs, la lista o las rutas de tus archivos, identificadores del
-            hardware de tu equipo, ni datos de uso. La única excepción es el
-            identificador de la consola emulada de la inalámbrica por internet
-            de 3DS, descrita arriba, y solo si la usas.
+            Tus ROMs, la lista o las rutas de tus archivos, identificadores de
+            tu equipo o de su hardware, ni datos de uso.
           </p>
         </div>
 
