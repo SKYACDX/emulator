@@ -209,7 +209,10 @@ export default function CodeSigningPolicyPage() {
             registro del sistema del servidor. No registra el contenido del
             tráfico del juego, pero ese tráfico viaja sin cifrar entre tu
             consola y el servidor, que lo retransmite al resto de la sala, así
-            que técnicamente puede verlo.
+            que técnicamente puede verlo. Esos registros se conservan 7 días y
+            luego se borran solos. No se copian a otros archivos del servidor,
+            su cortafuegos no registra conexiones y no se envían a servicios de
+            terceros.
           </p>
         </div>
 
