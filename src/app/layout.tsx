@@ -106,6 +106,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             <Link href="/contact" className="hover-text-accent">
               Contacto
             </Link>
+            <Link href="/code-signing-policy" className="hover-text-accent">
+              Política de firma de código
+            </Link>
           </nav>
         </footer>
         <Analytics />

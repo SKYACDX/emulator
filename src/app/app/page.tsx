@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { serializeAppListing, serializeAppRelease } from "@/lib/appListing";
@@ -91,6 +92,64 @@ export default async function AppPage() {
       <section>
         <h2 className="font-pixel mb-3 text-[13px] tracking-wide text-base">Acerca de</h2>
         <AppDescription text={listing.description} />
+      </section>
+
+      <section>
+        <h2 className="font-pixel mb-3 text-[13px] tracking-wide text-base">
+          Código abierto y licencia
+        </h2>
+        <div className="text-muted flex flex-col gap-2 text-sm">
+          <p>
+            multiemu es software libre, publicado bajo la licencia{" "}
+            <a
+              href="https://www.gnu.org/licenses/gpl-3.0.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-accent underline"
+            >
+              GPL-3.0-or-later
+            </a>
+            . Puedes leer, modificar y redistribuir el código fuente de la
+            versión que descargues:
+          </p>
+          <ul className="list-disc pl-5">
+            <li>
+              Windows:{" "}
+              <a
+                href="https://github.com/SKYACDX/multiemu_exe"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent underline"
+              >
+                github.com/SKYACDX/multiemu_exe
+              </a>
+            </li>
+            <li>
+              Android:{" "}
+              <a
+                href="https://github.com/SKYACDX/multiemu"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent underline"
+              >
+                github.com/SKYACDX/multiemu
+              </a>
+            </li>
+          </ul>
+          <p>
+            Incluye componentes de terceros con sus propias licencias (melonDS,
+            mGBA, Azahar, Electron y React Native); el detalle está en el
+            archivo <code>THIRD_PARTY_NOTICES.md</code> de cada repositorio.
+          </p>
+          <p>
+            El instalador de Windows se firma con un certificado gratuito de
+            SignPath Foundation. Lee la{" "}
+            <Link href="/code-signing-policy" className="text-accent underline">
+              política de firma de código
+            </Link>{" "}
+            para saber qué se firma y qué datos envía la app por red.
+          </p>
+        </div>
       </section>
 
       <section>

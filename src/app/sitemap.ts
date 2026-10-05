@@ -21,6 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/themes`, changeFrequency: "daily", priority: 0.5 },
     { url: `${BASE_URL}/about`, changeFrequency: "yearly", priority: 0.3 },
     { url: `${BASE_URL}/contact`, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${BASE_URL}/code-signing-policy`, changeFrequency: "yearly", priority: 0.3 },
     ...(hasAppListing
       ? [{ url: `${BASE_URL}/app`, changeFrequency: "weekly" as const, priority: 0.7 }]
       : []),
