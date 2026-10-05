@@ -189,15 +189,26 @@ export default function CodeSigningPolicyPage() {
               consolas con el mismo ID en una sala.
             </li>
             <li>
+              El nombre y el identificador del juego de 3DS que tienes abierto.
+            </li>
+            <li>
               El tráfico inalámbrico del juego: lo que el propio juego envía a
               los demás jugadores de la sala, por ejemplo en un intercambio o un
               combate.
             </li>
           </ul>
           <p className="text-muted mt-1">
-            No envía datos de tu cuenta de RomHack Hub, tokens, contraseñas ni
-            ROMs. Es el servidor de salas estándar de Azahar, que ejecuta el
-            proyecto.
+            No envía datos de tu cuenta de RomHack Hub, tokens, contraseñas,
+            ROMs ni mensajes de chat. Es el servidor de salas estándar de
+            Azahar, que ejecuta el proyecto.
+          </p>
+          <p className="text-muted mt-1">
+            El servidor registra cada entrada y salida de una sala con tu
+            dirección IP y tu apodo, y qué juego está jugando cada apodo, en el
+            registro del sistema del servidor. No registra el contenido del
+            tráfico del juego, pero ese tráfico viaja sin cifrar entre tu
+            consola y el servidor, que lo retransmite al resto de la sala, así
+            que técnicamente puede verlo.
           </p>
         </div>
 
