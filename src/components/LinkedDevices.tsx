@@ -7,7 +7,10 @@ type Token = {
   label: string | null;
   createdAt: string;
   lastUsedAt: string | null;
+  expiresAt: string;
 };
+
+export const LINKED_DEVICES_CHANGED = "linked-devices:changed";
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("es", { year: "numeric", month: "short", day: "numeric" });
@@ -19,10 +22,15 @@ export default function LinkedDevices() {
   const [revoking, setRevoking] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/me/tokens")
-      .then((res) => res.json())
-      .then((data) => setTokens(data.tokens ?? []))
-      .catch(() => setError("No se pudieron cargar los dispositivos"));
+    const load = () =>
+      fetch("/api/me/tokens")
+        .then((res) => res.json())
+        .then((data) => setTokens(data.tokens ?? []))
+        .catch(() => setError("No se pudieron cargar los dispositivos"));
+    load();
+    // Fired by the change-password / revoke-all forms, which wipe the tokens.
+    window.addEventListener(LINKED_DEVICES_CHANGED, load);
+    return () => window.removeEventListener(LINKED_DEVICES_CHANGED, load);
   }, []);
 
   async function handleRevoke(id: string) {
@@ -67,6 +75,7 @@ export default function LinkedDevices() {
               <p className="text-muted text-xs">
                 Vinculado el {formatDate(token.createdAt)}
                 {token.lastUsedAt && ` · usado por última vez el ${formatDate(token.lastUsedAt)}`}
+                {` · caduca el ${formatDate(token.expiresAt)}`}
               </p>
             </div>
             <button

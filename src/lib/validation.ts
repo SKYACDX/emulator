@@ -2,6 +2,14 @@ import { z } from "zod";
 import { REPORT_REASONS } from "@/lib/fileReports";
 import { isValidHexColor } from "@/lib/themes";
 
+export const passwordSchema = z.string().min(8, "La contraseña debe tener al menos 8 caracteres");
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, "Escribe tu contraseña actual"),
+  newPassword: passwordSchema,
+  code: z.string().trim().min(6).max(8).optional(),
+});
+
 export const registerSchema = z.object({
   email: z.string().trim().toLowerCase().email("Correo inválido"),
   username: z
@@ -10,7 +18,7 @@ export const registerSchema = z.object({
     .min(3, "El nombre de usuario debe tener al menos 3 caracteres")
     .max(24, "El nombre de usuario debe tener como máximo 24 caracteres")
     .regex(/^[a-zA-Z0-9_]+$/, "Solo letras, números y guion bajo"),
-  password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
+  password: passwordSchema,
 });
 
 export const loginSchema = z.object({

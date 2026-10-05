@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import TotpSettings from "@/components/TotpSettings";
 import LinkedDevices from "@/components/LinkedDevices";
 import PasskeyManager from "@/components/PasskeyManager";
+import ChangePasswordForm from "@/components/ChangePasswordForm";
+import RevokeSessions from "@/components/RevokeSessions";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +32,11 @@ export default async function SecurityPage() {
       <TotpSettings initialEnabled={user.totpEnabled} />
 
       <section>
+        <h2 className="text-base mb-3 text-lg font-semibold">Contraseña</h2>
+        <ChangePasswordForm totpEnabled={user.totpEnabled} />
+      </section>
+
+      <section>
         <h2 className="text-base mb-3 text-lg font-semibold">Passkeys</h2>
         <PasskeyManager />
       </section>
@@ -42,6 +49,11 @@ export default async function SecurityPage() {
           o que hayas perdido.
         </p>
         <LinkedDevices />
+      </section>
+
+      <section>
+        <h2 className="text-base mb-3 text-lg font-semibold">Sesiones</h2>
+        <RevokeSessions />
       </section>
 
       <section>

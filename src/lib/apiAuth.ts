@@ -6,11 +6,18 @@ function hashToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
 }
 
-/** Issues a new long-lived bearer token for the emulator app. Shown once. */
+const API_TOKEN_TTL_MS = 90 * 24 * 60 * 60 * 1000;
+
+/** Issues a new bearer token for the emulator app (valid 90 days). Shown once. */
 export async function issueApiToken(userId: string, label?: string): Promise<string> {
   const token = randomBytes(32).toString("hex");
   await prisma.apiToken.create({
-    data: { userId, tokenHash: hashToken(token), label },
+    data: {
+      userId,
+      tokenHash: hashToken(token),
+      label,
+      expiresAt: new Date(Date.now() + API_TOKEN_TTL_MS),
+    },
   });
   return token;
 }
@@ -27,7 +34,7 @@ export async function getUserFromBearerToken(request: Request) {
     where: { tokenHash: hashToken(token) },
     include: { user: true },
   });
-  if (!apiToken) return null;
+  if (!apiToken || apiToken.expiresAt <= new Date()) return null;
 
   await prisma.apiToken.update({
     where: { id: apiToken.id },

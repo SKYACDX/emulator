@@ -26,16 +26,23 @@ export async function verifyPassword(
   return bcrypt.compare(password, passwordHash);
 }
 
-type SessionPayload = { userId: string };
+// `sv` is the user's sessionVersion at signing time; getCurrentUser rejects
+// the token once the DB value moves on.
+type SessionPayload = { userId: string; sv: number };
 
 export function signSession(payload: SessionPayload): string {
   return jwt.sign(payload, getJwtSecret(), {
+    algorithm: "HS256",
     expiresIn: SESSION_MAX_AGE_SECONDS,
   });
 }
 
 export async function createSessionCookie(userId: string): Promise<void> {
-  const token = signSession({ userId });
+  const { sessionVersion } = await prisma.user.findUniqueOrThrow({
+    where: { id: userId },
+    select: { sessionVersion: true },
+  });
+  const token = signSession({ userId, sv: sessionVersion });
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE, token, {
     httpOnly: true,
@@ -58,14 +65,15 @@ export async function getCurrentUser() {
 
   let payload: SessionPayload;
   try {
-    payload = jwt.verify(token, getJwtSecret()) as SessionPayload;
+    payload = jwt.verify(token, getJwtSecret(), { algorithms: ["HS256"] }) as SessionPayload;
   } catch {
     return null;
   }
 
-  const user = await prisma.user.findUnique({
+  const found = await prisma.user.findUnique({
     where: { id: payload.userId },
     select: {
+      sessionVersion: true,
       id: true,
       email: true,
       username: true,
@@ -80,6 +88,11 @@ export async function getCurrentUser() {
       createdAt: true,
     },
   });
+  if (!found) return null;
+
+  // Tokens minted before sessionVersion existed have no `sv` and fail here too.
+  const { sessionVersion, ...user } = found;
+  if (payload.sv !== sessionVersion) return null;
   return user;
 }
 
@@ -110,13 +123,16 @@ type TotpPendingPayload = { userId: string; purpose: "totp-pending" };
 export function signTotpPendingToken(userId: string): string {
   const payload: TotpPendingPayload = { userId, purpose: "totp-pending" };
   return jwt.sign(payload, getJwtSecret(), {
+    algorithm: "HS256",
     expiresIn: TOTP_PENDING_MAX_AGE_SECONDS,
   });
 }
 
 export function verifyTotpPendingToken(token: string): string | null {
   try {
-    const payload = jwt.verify(token, getJwtSecret()) as TotpPendingPayload;
+    const payload = jwt.verify(token, getJwtSecret(), {
+      algorithms: ["HS256"],
+    }) as TotpPendingPayload;
     if (payload.purpose !== "totp-pending") return null;
     return payload.userId;
   } catch {

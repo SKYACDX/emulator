@@ -10,9 +10,9 @@ export async function GET() {
   }
 
   const tokens = await prisma.apiToken.findMany({
-    where: { userId: user.id },
+    where: { userId: user.id, expiresAt: { gt: new Date() } },
     orderBy: { createdAt: "desc" },
-    select: { id: true, label: true, createdAt: true, lastUsedAt: true },
+    select: { id: true, label: true, createdAt: true, lastUsedAt: true, expiresAt: true },
   });
 
   return NextResponse.json({
@@ -21,6 +21,7 @@ export async function GET() {
       label: t.label,
       createdAt: t.createdAt.toISOString(),
       lastUsedAt: t.lastUsedAt?.toISOString() ?? null,
+      expiresAt: t.expiresAt.toISOString(),
     })),
   });
 }
