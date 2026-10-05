@@ -31,7 +31,7 @@ export default function CodeSigningPolicyPage() {
         </Link>{" "}
         (el emulador de Game Boy, GBA, Nintendo DS y 3DS), qué se firma, quién
         puede aprobarlo y qué datos envía la app por red. Última actualización:
-        4 de octubre de 2026.
+        5 de octubre de 2026.
       </p>
 
       <section className="game-card flex flex-col gap-2 p-4">
@@ -89,8 +89,10 @@ export default function CodeSigningPolicyPage() {
         <p className="text-muted">
           multiemu no incluye analíticas, telemetría ni reporte automático de
           errores. Esto es todo lo que la app de Windows transmite por red, y
-          solo va a RomHack Hub (<code>emulatornds.online</code>) o a los
-          servicios de archivos e imágenes que RomHack Hub indica:
+          solo va a RomHack Hub (<code>emulatornds.online</code>), a los
+          servicios de archivos e imágenes que RomHack Hub indica y, solo si tú
+          entras a una sala de la inalámbrica por internet de 3DS, al servidor
+          de salas del proyecto:
         </p>
 
         <div>
@@ -146,9 +148,13 @@ export default function CodeSigningPolicyPage() {
             <li>
               <strong>Guardados en la nube</strong>: el archivo de guardado o
               el estado, su ranura, el nombre del archivo y un identificador del
-              juego (el sistema más el CRC32 de la ROM). Con un juego de GBA o
-              DS abierto, el guardado se sube solo cada 45 segundos si cambió;
-              en Game Boy, solo con el botón de subir. Nunca se suben ROMs.
+              juego (el sistema más el CRC32 de la ROM; en 3DS, el
+              identificador del juego que lleva la propia ROM). En un juego de
+              3DS el guardado es la carpeta de datos del juego, empaquetada en
+              un zip. Con un juego de GBA, DS o 3DS abierto, el guardado se
+              sube solo cada 45 segundos si cambió (en 3DS, también al salir
+              del juego); en Game Boy, solo con el botón de subir. Nunca se
+              suben ROMs.
             </li>
             <li>
               <strong>Comentarios</strong> enviados con la sesión iniciada
@@ -158,10 +164,50 @@ export default function CodeSigningPolicyPage() {
         </div>
 
         <div>
+          <h3 className="mb-1 font-medium text-base">
+            Si usas la inalámbrica por internet de 3DS (opcional)
+          </h3>
+          <p className="text-muted mb-1">
+            Es opcional: solo ocurre cuando eliges una sala (de la 1 a la 10)
+            en el menú de pausa de un juego de 3DS. Sin hacerlo, la app nunca se
+            conecta a ese servidor. Al entrar, la app se conecta por UDP al
+            servidor de salas del proyecto (<code>160.34.211.121</code>, puertos
+            24872 a 24881, alojado en Oracle Cloud, Querétaro, México) y le
+            envía:
+          </p>
+          <ul className="text-muted list-disc pl-5">
+            <li>Tu dirección IP, como en cualquier conexión de red.</li>
+            <li>
+              Un apodo aleatorio, distinto en cada entrada a una sala:{" "}
+              <code>multiemu-</code> y seis caracteres hexadecimales.
+            </li>
+            <li>
+              Un identificador de la consola emulada: el hash SHA-256 del ID
+              que Azahar genera al azar la primera vez que arranca la consola
+              emulada en tu instalación. Se mantiene igual entre sesiones y no
+              se obtiene de tu hardware; el servidor lo usa para no admitir dos
+              consolas con el mismo ID en una sala.
+            </li>
+            <li>
+              El tráfico inalámbrico del juego: lo que el propio juego envía a
+              los demás jugadores de la sala, por ejemplo en un intercambio o un
+              combate.
+            </li>
+          </ul>
+          <p className="text-muted mt-1">
+            No envía datos de tu cuenta de RomHack Hub, tokens, contraseñas ni
+            ROMs. Es el servidor de salas estándar de Azahar, que ejecuta el
+            proyecto.
+          </p>
+        </div>
+
+        <div>
           <h3 className="mb-1 font-medium text-base">Lo que no se envía</h3>
           <p className="text-muted">
-            Tus ROMs, la lista o las rutas de tus archivos, identificadores de
-            tu equipo o de su hardware, ni datos de uso.
+            Tus ROMs, la lista o las rutas de tus archivos, identificadores del
+            hardware de tu equipo, ni datos de uso. La única excepción es el
+            identificador de la consola emulada de la inalámbrica por internet
+            de 3DS, descrita arriba, y solo si la usas.
           </p>
         </div>
 
