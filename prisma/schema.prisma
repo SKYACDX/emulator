@@ -33,6 +33,9 @@ model User {
   // it logs out every existing web session (password change, "cerrar todas
   // las sesiones"). Stateless JWTs can't be revoked any other way.
   sessionVersion Int    @default(0)
+  // Whether the public profile names the games with cloud saves (titles the
+  // apps read from the ROMs). Off: only the count is shown.
+  showSavedGameTitles Boolean @default(true)
   // R2 object key, not a URL — signed URLs expire, so a fresh one is
   // generated at render time via getAvatarUrl() instead of storing one.
   avatarKey    String?

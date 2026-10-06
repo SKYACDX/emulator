@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import ThemePicker from "@/components/ThemePicker";
 import AvatarUpload from "@/components/AvatarUpload";
+import SavedGamesVisibility from "@/components/SavedGamesVisibility";
 import { DEFAULT_CUSTOM_COLORS } from "@/lib/themes";
 import { getAvatarUrl } from "@/lib/storage";
 
@@ -87,10 +88,11 @@ export default async function MyHacksPage() {
           Partidas en la nube ({saves.length} {saves.length === 1 ? "juego" : "juegos"})
         </h2>
         <p className="text-muted mb-3 text-sm">
-          Solo tú ves las claves. Tu perfil público muestra los nombres de los
-          juegos, que la app del emulador lee de la propia ROM, y solo cuenta
-          los que todavía no tienen nombre. Se gestionan desde la app.
+          Solo tú ves las claves. Tu perfil público muestra cuántos juegos
+          tienes y, si lo dejas activado, sus nombres, que la app del emulador
+          lee de la propia ROM. Las partidas se gestionan desde la app.
         </p>
+        <SavedGamesVisibility initial={user.showSavedGameTitles} />
         {saves.length === 0 ? (
           <p className="text-muted text-sm">Todavía no has subido ninguna partida.</p>
         ) : (

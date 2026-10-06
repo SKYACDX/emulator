@@ -16,6 +16,7 @@ async function getProfile(username: string) {
       username: true,
       avatarKey: true,
       createdAt: true,
+      showSavedGameTitles: true,
       hacks: {
         include: { game: { include: { platform: true } } },
         orderBy: { createdAt: "desc" },
@@ -69,6 +70,8 @@ export default async function ProfilePage({
 
   const avatarUrl = user.avatarKey ? await getAvatarUrl(user.avatarKey) : null;
   const savedGames = summarizeSavedGames(user.gameSaves);
+  // Owner turned the names off in /me: count only.
+  const showTitles = user.showSavedGameTitles;
 
   const viewer = await getCurrentUser();
   let friendStatus: "none" | "friends" | "incoming" | "outgoing" = "none";
@@ -123,7 +126,7 @@ export default async function ProfilePage({
           <h2 className="mb-2 text-lg font-semibold text-base">
             Juegos con partida guardada ({savedGames.count})
           </h2>
-          {savedGames.titles.length > 0 && (
+          {showTitles && savedGames.titles.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {savedGames.titles.map((title) => (
                 <span key={title} className="badge-accent rounded px-2 py-1 text-sm">
@@ -132,7 +135,7 @@ export default async function ProfilePage({
               ))}
             </div>
           )}
-          {savedGames.unnamed > 0 && (
+          {showTitles && savedGames.unnamed > 0 && (
             <p className="text-muted mt-2 text-sm">
               {savedGames.titles.length > 0 ? "y " : ""}
               {savedGames.unnamed} {savedGames.unnamed === 1 ? "juego" : "juegos"}

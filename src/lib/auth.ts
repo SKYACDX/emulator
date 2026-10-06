@@ -85,6 +85,7 @@ export async function getCurrentUser() {
       customThemeSurface: true,
       customThemeAccent: true,
       customThemeText: true,
+      showSavedGameTitles: true,
       createdAt: true,
     },
   });

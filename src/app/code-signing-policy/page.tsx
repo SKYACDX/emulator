@@ -154,7 +154,11 @@ export default function CodeSigningPolicyPage() {
               un zip. Con un juego de GBA, DS o 3DS abierto, el guardado se
               sube solo cada 45 segundos si cambió (en 3DS, también al salir
               del juego); en Game Boy, solo con el botón de subir. Nunca se
-              suben ROMs.
+              suben ROMs. La app envía también el título del juego, leído de
+              la propia ROM (nunca del nombre del archivo), y aparece en tu
+              perfil público de RomHack Hub junto con cuántos juegos tienes
+              guardados; puedes ocultar los títulos desde tu cuenta, y el
+              número de juegos sigue visible.
             </li>
             <li>
               <strong>Comentarios</strong> enviados con la sesión iniciada
