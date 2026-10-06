@@ -24,10 +24,27 @@ async function getProfile(username: string) {
         where: { isPublic: true },
         orderBy: { createdAt: "desc" },
       },
-      gameSaves: { select: { gameKey: true }, distinct: ["gameKey"] },
+      gameSaves: {
+        select: { gameKey: true, title: true },
+        orderBy: { updatedAt: "desc" },
+      },
     },
   });
   return user;
+}
+
+// One entry per game (a game has several saves: slots, states). Its name is
+// the newest save's that has one; games with no name yet are only counted.
+function summarizeSavedGames(saves: { gameKey: string; title: string | null }[]) {
+  const titleByKey = new Map<string, string | null>();
+  for (const save of saves) {
+    if (!titleByKey.get(save.gameKey)) titleByKey.set(save.gameKey, save.title);
+  }
+  const titles = [...new Set([...titleByKey.values()].filter((t): t is string => Boolean(t)))].sort(
+    (a, b) => a.localeCompare(b, "es")
+  );
+  const unnamed = [...titleByKey.values()].filter((t) => !t).length;
+  return { count: titleByKey.size, titles, unnamed };
 }
 
 export async function generateMetadata({
@@ -51,6 +68,7 @@ export default async function ProfilePage({
   if (!user) notFound();
 
   const avatarUrl = user.avatarKey ? await getAvatarUrl(user.avatarKey) : null;
+  const savedGames = summarizeSavedGames(user.gameSaves);
 
   const viewer = await getCurrentUser();
   let friendStatus: "none" | "friends" | "incoming" | "outgoing" = "none";
@@ -97,14 +115,32 @@ export default async function ProfilePage({
         )}
       </div>
 
-      {/* Only the count is public: a save's key can be built from the ROM's
-          file name (e.g. Android's DS keys), so the list itself is shown only
-          to its owner, on /me. */}
-      {user.gameSaves.length > 0 && (
-        <p className="text-muted text-sm">
-          Tiene partidas guardadas en la nube de {user.gameSaves.length}{" "}
-          {user.gameSaves.length === 1 ? "juego" : "juegos"}.
-        </p>
+      {/* Never the keys: one can be built from the ROM's file name (e.g.
+          Android's DS keys). Only the names the apps read from the ROMs
+          themselves, and a count for games that have none yet. */}
+      {savedGames.count > 0 && (
+        <section>
+          <h2 className="mb-2 text-lg font-semibold text-base">
+            Juegos con partida guardada ({savedGames.count})
+          </h2>
+          {savedGames.titles.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {savedGames.titles.map((title) => (
+                <span key={title} className="badge-accent rounded px-2 py-1 text-sm">
+                  {title}
+                </span>
+              ))}
+            </div>
+          )}
+          {savedGames.unnamed > 0 && (
+            <p className="text-muted mt-2 text-sm">
+              {savedGames.titles.length > 0 ? "y " : ""}
+              {savedGames.unnamed} {savedGames.unnamed === 1 ? "juego" : "juegos"}
+              {savedGames.titles.length > 0 ? " más" : ""}
+              {savedGames.titles.length > 0 ? "." : " sin nombre todavía."}
+            </p>
+          )}
+        </section>
       )}
 
       <section>

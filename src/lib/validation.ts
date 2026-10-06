@@ -76,11 +76,26 @@ export const presignSaveSchema = z.object({
   contentType: z.string().trim().min(1).max(255),
 });
 
+// A game's name as read from the ROM. Shown on the public profile, so no
+// control characters and a sane length.
+export const saveTitleSchema = z
+  .string()
+  .trim()
+  .min(1, "El nombre del juego está vacío")
+  .max(120, "El nombre del juego es demasiado largo")
+  .regex(/^[^\u0000-\u001f\u007f]*$/, "El nombre del juego tiene caracteres no válidos");
+
 export const createSaveSchema = z.object({
   gameKey: z.string().trim().min(1, "Falta el identificador del juego").max(200),
   slot: z.number().int().min(0).max(99).optional().default(0),
   storedName: z.string().trim().min(1),
   originalName: z.string().trim().min(1).max(255),
+  title: saveTitleSchema.optional(),
+});
+
+export const setSaveTitleSchema = z.object({
+  gameKey: z.string().trim().min(1, "Falta el identificador del juego").max(200),
+  title: saveTitleSchema,
 });
 
 export const createCommunityThemeSchema = z.object({

@@ -28,7 +28,9 @@ export default async function MyHacksPage() {
       by: ["gameKey"],
       where: { userId: user.id },
       _count: { _all: true },
-      _max: { updatedAt: true },
+      // Every save of a game carries the same title (the API sets them
+      // together), so any of them will do.
+      _max: { updatedAt: true, title: true },
       orderBy: { _max: { updatedAt: "desc" } },
     }),
   ]);
@@ -85,8 +87,9 @@ export default async function MyHacksPage() {
           Partidas en la nube ({saves.length} {saves.length === 1 ? "juego" : "juegos"})
         </h2>
         <p className="text-muted mb-3 text-sm">
-          Solo tú ves esta lista; tu perfil público muestra únicamente cuántos
-          juegos son. Se gestionan desde la app del emulador.
+          Solo tú ves las claves. Tu perfil público muestra los nombres de los
+          juegos, que la app del emulador lee de la propia ROM, y solo cuenta
+          los que todavía no tienen nombre. Se gestionan desde la app.
         </p>
         {saves.length === 0 ? (
           <p className="text-muted text-sm">Todavía no has subido ninguna partida.</p>
@@ -97,7 +100,10 @@ export default async function MyHacksPage() {
                 key={save.gameKey}
                 className="border-base bg-surface flex flex-wrap items-center justify-between gap-2 rounded border p-2 text-sm"
               >
-                <code className="text-base break-all">{save.gameKey}</code>
+                <span className="flex min-w-0 flex-col">
+                  <span className="text-base">{save._max.title ?? "Sin nombre todavía"}</span>
+                  <code className="text-muted break-all text-xs">{save.gameKey}</code>
+                </span>
                 <span className="text-muted text-xs">
                   {save._count._all} {save._count._all === 1 ? "archivo" : "archivos"}
                   {save._max.updatedAt &&

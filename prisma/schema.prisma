@@ -521,6 +521,11 @@ model GameSave {
   id           String   @id @default(cuid())
   gameKey      String
   slot         Int      @default(0)
+  // The game's name as the app read it from the ROM itself (DS banner, 3DS
+  // SMDH, GB/GBA header), never from the file name: it is what the public
+  // profile shows instead of the key. Per user, so nobody can name a game on
+  // someone else's profile. Null until an app sends it.
+  title        String?
   originalName String
   storedName   String
   fileSize     Int

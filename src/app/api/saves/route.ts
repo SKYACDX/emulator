@@ -23,6 +23,7 @@ export async function GET(request: Request) {
       id: s.id,
       gameKey: s.gameKey,
       slot: s.slot,
+      title: s.title,
       originalName: s.originalName,
       fileSize: s.fileSize,
       createdAt: s.createdAt.toISOString(),
@@ -51,7 +52,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { gameKey, slot, storedName, originalName } = parsed.data;
+  const { gameKey, slot, storedName, originalName, title } = parsed.data;
 
   if (!storedName.startsWith(`saves/${user.id}/`)) {
     return NextResponse.json({ error: "Archivo no permitido" }, { status: 400 });
@@ -82,13 +83,23 @@ export async function POST(request: Request) {
       storedName,
       originalName,
       fileSize: info.size,
+      title,
     },
+    // An upload without a title keeps the one already there: older app
+    // versions don't send it and must not wipe what a newer one wrote.
     update: {
       storedName,
       originalName,
       fileSize: info.size,
+      ...(title ? { title } : {}),
     },
   });
+
+  // The name belongs to the game, not the slot: give it to every save of that
+  // game, so states uploaded before the app sent titles get it too.
+  if (title) {
+    await prisma.gameSave.updateMany({ where: { userId: user.id, gameKey }, data: { title } });
+  }
 
   if (existing && existing.storedName !== storedName) {
     await deleteSharedFile(existing.storedName).catch(() => {});
