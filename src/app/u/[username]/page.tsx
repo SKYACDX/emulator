@@ -97,19 +97,14 @@ export default async function ProfilePage({
         )}
       </div>
 
+      {/* Only the count is public: a save's key can be built from the ROM's
+          file name (e.g. Android's DS keys), so the list itself is shown only
+          to its owner, on /me. */}
       {user.gameSaves.length > 0 && (
-        <section>
-          <h2 className="mb-2 text-lg font-semibold text-base">
-            Juegos con partida guardada ({user.gameSaves.length})
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {user.gameSaves.map((s) => (
-              <span key={s.gameKey} className="badge-accent rounded px-2 py-1 text-sm">
-                {s.gameKey}
-              </span>
-            ))}
-          </div>
-        </section>
+        <p className="text-muted text-sm">
+          Tiene partidas guardadas en la nube de {user.gameSaves.length}{" "}
+          {user.gameSaves.length === 1 ? "juego" : "juegos"}.
+        </p>
       )}
 
       <section>

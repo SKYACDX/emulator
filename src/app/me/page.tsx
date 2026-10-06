@@ -13,14 +13,25 @@ export default async function MyHacksPage() {
 
   const avatarUrl = user.avatarKey ? await getAvatarUrl(user.avatarKey) : null;
 
-  const hacks = await prisma.hack.findMany({
-    where: { authorId: user.id },
-    orderBy: { createdAt: "desc" },
-    include: {
-      game: { include: { platform: true } },
-      patches: { select: { id: true } },
-    },
-  });
+  const [hacks, saves] = await Promise.all([
+    prisma.hack.findMany({
+      where: { authorId: user.id },
+      orderBy: { createdAt: "desc" },
+      include: {
+        game: { include: { platform: true } },
+        patches: { select: { id: true } },
+      },
+    }),
+    // Private: the public profile only shows how many games, since a key can
+    // carry the ROM's file name.
+    prisma.gameSave.groupBy({
+      by: ["gameKey"],
+      where: { userId: user.id },
+      _count: { _all: true },
+      _max: { updatedAt: true },
+      orderBy: { _max: { updatedAt: "desc" } },
+    }),
+  ]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -67,6 +78,35 @@ export default async function MyHacksPage() {
             text: user.customThemeText ?? DEFAULT_CUSTOM_COLORS.text,
           }}
         />
+      </section>
+
+      <section>
+        <h2 className="mb-1 text-lg font-semibold text-base">
+          Partidas en la nube ({saves.length} {saves.length === 1 ? "juego" : "juegos"})
+        </h2>
+        <p className="text-muted mb-3 text-sm">
+          Solo tú ves esta lista; tu perfil público muestra únicamente cuántos
+          juegos son. Se gestionan desde la app del emulador.
+        </p>
+        {saves.length === 0 ? (
+          <p className="text-muted text-sm">Todavía no has subido ninguna partida.</p>
+        ) : (
+          <ul className="flex flex-col gap-1">
+            {saves.map((save) => (
+              <li
+                key={save.gameKey}
+                className="border-base bg-surface flex flex-wrap items-center justify-between gap-2 rounded border p-2 text-sm"
+              >
+                <code className="text-base break-all">{save.gameKey}</code>
+                <span className="text-muted text-xs">
+                  {save._count._all} {save._count._all === 1 ? "archivo" : "archivos"}
+                  {save._max.updatedAt &&
+                    ` · actualizado el ${save._max.updatedAt.toLocaleDateString("es")}`}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       {hacks.length === 0 ? (
